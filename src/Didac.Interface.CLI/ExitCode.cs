@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Didac.Monitor.Windows.EasyHook
+namespace Didac.Base.Interface
 {
-    public class Class1
+    public enum ExitCode
     {
+        Success= 0,
+        FileNotFound = 1
     }
 }
