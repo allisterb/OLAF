@@ -15,9 +15,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Didact.Hooks.Windows.FileAc
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Loggers", "Loggers", "{D6D3BF19-4E46-4BE1-802E-2B0D3FFE4F83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Didact.Monitors.Windows.FileSystemWatcher", "Didact.Monitors.Windows.FileSystemWatcher\Didact.Monitors.Windows.FileSystemWatcher.csproj", "{DBA4C2FE-6C57-4C11-8446-591DA0A594EB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Didact.Monitors.FileSystemWatcher", "Didact.Monitors.FileSystemWatcher\Didact.Monitors.FileSystemWatcher.csproj", "{DBA4C2FE-6C57-4C11-8446-591DA0A594EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Didact.Monitors.Windows.D3DCapture", "Didact.Monitors.Windows.D3DCapture\Didact.Monitors.Windows.D3DCapture.csproj", "{F623FD8C-A3F4-4999-86E2-57288F20E7B9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Didact.Monitors.Windows.WindowCapture", "Didact.Monitors.Windows.WindowCapture\Didact.Monitors.Windows.WindowCapture.csproj", "{F623FD8C-A3F4-4999-86E2-57288F20E7B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

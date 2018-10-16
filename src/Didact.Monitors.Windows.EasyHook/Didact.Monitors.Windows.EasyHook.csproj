@@ -7,8 +7,8 @@
     <ProjectGuid>{1539ECC4-464C-4B5C-86DC-1039EF4F9547}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Didac.Monitor.Windows.EasyHook</RootNamespace>
-    <AssemblyName>Didac.Monitor.Windows.EasyHook</AssemblyName>
+    <RootNamespace>Didact.Monitors.Windows.EasyHook</RootNamespace>
+    <AssemblyName>Didact.Monitors.Windows.EasyHook</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

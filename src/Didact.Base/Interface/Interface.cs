@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Didact
 {
-    public abstract class UserInterface : DidactApi<UserInterface>
+    public abstract class Interface : DidactApi<Interface>
     {
         public static Dictionary<int, string> GetCurrentProcesses()
         {

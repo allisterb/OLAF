@@ -65,11 +65,11 @@
     <Compile Include="Api\Message.cs" />
     <Compile Include="Api\MessageQueue.cs" />
     <Compile Include="Api\StatusCode.cs" />
-    <Compile Include="Monitors\Monitor.cs" />
-    <Compile Include="UserInterface\UserInterface.cs" />
+    <Compile Include="Monitor\Monitor.cs" />
+    <Compile Include="Interface\Interface.cs" />
     <Compile Include="Logger\ILogger.cs" />
     <Compile Include="Logger\LoggerException.cs" />
-    <Compile Include="Monitors\OSHookMonitor.cs" />
+    <Compile Include="Monitor\OSHookMonitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

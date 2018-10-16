@@ -7,8 +7,8 @@
     <ProjectGuid>{8C8EF527-DC14-48CE-9423-4CD3665A3DE8}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Didac.Interfaces.CLI</RootNamespace>
-    <AssemblyName>Didac.Interfaces.CLI</AssemblyName>
+    <RootNamespace>Didact.Interfaces.CLI</RootNamespace>
+    <AssemblyName>Didact.Interfaces.CLI</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

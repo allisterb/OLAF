@@ -11,8 +11,7 @@ using Didact.Monitors.Windows;
 
 namespace Didact
 {
-
-    class Program : UserInterface
+    class Program : Interface
     {
         public static bool WithLogFile { get; set; } = false;
         public static string LogFileName { get; set; }
@@ -61,6 +60,7 @@ namespace Didact
 
             Global.SetLogger(() => SerilogLogger.CreateDefaultLogger("Didact.log"));
             Global.SetupHookMessageQueue();
+            LL = Global.Logger;
 
             var processes = GetCurrentProcesses();
             Monitor = new EasyHookMonitor(
