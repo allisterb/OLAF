@@ -20,7 +20,7 @@ namespace OLAF.Loggers
             {
                 throw new InvalidOperationException("The Serilog logger is not configured.");
             }
-            L = Serilog.Log.Logger;
+            L = Log.Logger;
         }
 
         public static SerilogLogger CreateDefaultLogger(string logFilename = "OLAF.log")
@@ -30,7 +30,7 @@ namespace OLAF.Loggers
                 LoggerConfiguration = new LoggerConfiguration()
                     .WriteTo.RollingFile(logFilename,
                         outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] {Message}{NewLine}{Exception}");
-                Serilog.Log.Logger = LoggerConfiguration.CreateLogger();
+                Log.Logger = LoggerConfiguration.CreateLogger();
                 LoggerConfigured = true;
             }
             return new SerilogLogger();
@@ -40,13 +40,14 @@ namespace OLAF.Loggers
         {
             if (!LoggerConfigured)
             {
-                LoggerConfiguration = new LoggerConfiguration();
+                LoggerConfiguration = new LoggerConfiguration()
+                    .Enrich.WithThreadId();
 
                 if (enabledOptions.Contains("WithLogFile"))
                 {
                     LoggerConfiguration = LoggerConfiguration
                     .WriteTo.RollingFile("OLAF.log",
-                        outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] {Message}{NewLine}{Exception}");
+                        outputTemplate: "{Timestamp:HH:mm:ss}<{ThreadId:d2}> [{Level:u3}] {Message}{NewLine}{Exception}");
                 }
 
                 if (enabledOptions.Contains("WithDebugOutput"))
@@ -56,9 +57,9 @@ namespace OLAF.Loggers
 
                 if (!enabledOptions.Contains("WithoutConsole"))
                 {
-                    LoggerConfiguration = LoggerConfiguration.WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss} [{ThreadId:d2}][{Level:u3}] {Message}{NewLine}{Exception}");
+                    LoggerConfiguration = LoggerConfiguration
+                        .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss}<{ThreadId:d2}> [{Level:u3}] {Message}{NewLine}{Exception}");
                 }
-
                 Log.Logger = LoggerConfiguration.CreateLogger();
                 LoggerConfigured = true;
             }

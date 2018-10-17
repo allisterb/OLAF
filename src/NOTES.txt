@@ -1,0 +1,2 @@
+Get-ChildItem '*.cs' -Recurse | ForEach {(Get-Content -Path $_.PSPath | ForEach  { $_ -replace 'Didact', 'OLAF' }) | Set-Content -Path $_.PSPath }
+Get-ChildItem -File -Recurse | % { Rename-Item -Path $_.PSPath -NewName $_.Name.replace("Didact","OLAF")} | Set-Content $_

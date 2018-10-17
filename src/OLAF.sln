@@ -1,4 +1,3 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2036
@@ -18,6 +17,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Monitors.FileSystemWatcher", "OLAF.Monitors.FileSystemWatcher\OLAF.Monitors.FileSystemWatcher.csproj", "{DBA4C2FE-6C57-4C11-8446-591DA0A594EB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Monitors.Windows.WindowCapture", "OLAF.Monitors.Windows.WindowCapture\OLAF.Monitors.Windows.WindowCapture.csproj", "{F623FD8C-A3F4-4999-86E2-57288F20E7B9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8B93A94A-A06D-4EE6-A744-33FA6D49A055}"
+	ProjectSection(SolutionItems) = preProject
+		NOTES.txt = NOTES.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
