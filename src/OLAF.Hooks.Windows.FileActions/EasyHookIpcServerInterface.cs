@@ -24,8 +24,9 @@
 // about the project, latest updates and other tutorials.
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ namespace OLAF.Hooks.Windows
     /// <summary>
     /// Provides an interface for communicating from the client (target) to the server (injector)
     /// </summary>
-    public class EasyHookIpcServerInterface : OLAFHook
+    public class EasyHookIpcServerInterface : MarshalByRefObject
     {
         /// <summary>
         /// Output the message to the console.
@@ -72,6 +73,44 @@ namespace OLAF.Hooks.Windows
         public void Ping()
         {
            
+        }
+
+ 
+        protected static ILogger L => Global.Logger;
+
+        [DebuggerStepThrough]
+        public virtual void Info(string messageTemplate, params object[] propertyValues) =>
+            L.Info(messageTemplate, propertyValues);
+
+        [DebuggerStepThrough]
+        public virtual void Debug(string messageTemplate, params object[] propertyValues) =>
+            L.Debug(messageTemplate, propertyValues);
+
+        [DebuggerStepThrough]
+        public virtual void Error(string messageTemplate, params object[] propertyValues) =>
+            L.Error(messageTemplate, propertyValues);
+
+        [DebuggerStepThrough]
+        public virtual void Error(Exception e, string messageTemplate, params object[] propertyValues) =>
+            L.Error(e, messageTemplate, propertyValues);
+
+        [DebuggerStepThrough]
+        public virtual void Verbose(string messageTemplate, params object[] propertyValues) =>
+            L.Verbose(messageTemplate, propertyValues);
+
+        [DebuggerStepThrough]
+        public virtual void Warn(string messageTemplate, params object[] propertyValues) =>
+            L.Warn(messageTemplate, propertyValues);
+
+        protected static void SetPropFromDict(Type t, object o, Dictionary<string, object> p)
+        {
+            foreach (var prop in t.GetProperties())
+            {
+                if (p.ContainsKey(prop.Name) && prop.PropertyType == p[prop.Name].GetType())
+                {
+                    prop.SetValue(o, p[prop.Name]);
+                }
+            }
         }
     }
 }

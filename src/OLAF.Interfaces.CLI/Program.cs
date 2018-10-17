@@ -14,17 +14,12 @@ namespace OLAF
     class Program : Interface
     {
         public static bool WithLogFile { get; set; } = false;
-        public static string LogFileName { get; set; }
         public static bool WithoutConsole { get; set; } = false;
         public static bool WithDebugOutput { get; set; } = false;
         public static OSHookMonitor Monitor { get; protected set; }
-
         protected static ILogger Logger;
 
-        static Program()
-        {
-            
-        }
+        static Program() {}
 
         static void Main(string[] args)
         {
@@ -64,11 +59,11 @@ namespace OLAF
 
             Global.SetLogger(() => SerilogLogger.CreateLogger(enabledLogOptions));
             Logger = Global.Logger;
-            Global.SetupHookMessageQueue();
 
+            Global.SetupHookMessageQueue();
             var processes = GetCurrentProcesses();
             Monitor = new EasyHookMonitor(
-                GetCurrentProcesses().First(p => p.Value == "chrome").Key,
+                GetCurrentProcesses().First(p => p.Value == "explorer").Key,
                 "OLAF.Hooks.Windows.FileActions.dll");
             if (!Monitor.Initialized)
             {

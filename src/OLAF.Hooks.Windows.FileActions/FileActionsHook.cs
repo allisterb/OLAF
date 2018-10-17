@@ -42,7 +42,7 @@ namespace OLAF.Hooks.Windows
     /// EH will look for a class implementing <see cref="IEntryPoint"/> during injection. This
     /// becomes the entry point within the target process after injection is complete.
     /// </summary>
-    public class EasyHookFileActions : IEntryPoint
+    public class FileActionsHook : IEntryPoint
     {
         /// <summary>
         /// Reference to the server interface within FileMonitor
@@ -62,7 +62,7 @@ namespace OLAF.Hooks.Windows
         /// </summary>
         /// <param name="context">The RemoteHooking context</param>
         /// <param name="channelName">The name of the IPC channel</param>
-        public EasyHookFileActions(RemoteHooking.IContext context, string channelName)
+        public FileActionsHook(RemoteHooking.IContext context, string channelName)
         {
             // Connect to server object using provided channel name
             _server = RemoteHooking.IpcConnectClient<EasyHookIpcServerInterface>(channelName);
