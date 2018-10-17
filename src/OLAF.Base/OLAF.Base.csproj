@@ -85,6 +85,7 @@
     <Compile Include="Api\Message.cs" />
     <Compile Include="Api\MessageQueue.cs" />
     <Compile Include="Api\StatusCode.cs" />
+    <Compile Include="Logger\SimpleConsoleLogger.cs" />
     <Compile Include="Monitor\Monitor.cs" />
     <Compile Include="Interface\Interface.cs" />
     <Compile Include="Logger\ILogger.cs" />

@@ -42,7 +42,7 @@ namespace OLAF.Hooks.Windows
     /// EH will look for a class implementing <see cref="IEntryPoint"/> during injection. This
     /// becomes the entry point within the target process after injection is complete.
     /// </summary>
-    public class FileActionsHook : IEntryPoint
+    public class FileActionsHook : Detector<FileActionsHook>, IEntryPoint
     {
         /// <summary>
         /// Reference to the server interface within FileMonitor

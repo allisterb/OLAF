@@ -8,5 +8,12 @@ namespace OLAF
 {
     public abstract class Detector<T> : OLAFApi<T> where T : Detector<T>
     {
+        static Detector()
+        {
+            if (Global.Logger == null)
+            {
+                Global.SetLogger(() => new SimpleConsoleLogger());
+            }
+        }
     }
 }
