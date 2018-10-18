@@ -12,7 +12,7 @@ namespace OLAF
         {
             if (Global.Logger == null)
             {
-                Global.SetLogger(() => new SimpleConsoleLogger());
+                Global.SetupLogger(() => new SimpleConsoleLogger());
             }
         }
     }

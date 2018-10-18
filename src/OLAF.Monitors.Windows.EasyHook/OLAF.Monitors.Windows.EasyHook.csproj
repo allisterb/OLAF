@@ -112,9 +112,9 @@
       <Project>{8d448b26-d206-48c8-b17f-a31133c25665}</Project>
       <Name>OLAF.Base</Name>
     </ProjectReference>
-    <ProjectReference Include="..\OLAF.Hooks.Windows.FileActions\OLAF.Hooks.Windows.FileActions.csproj">
+    <ProjectReference Include="..\OLAF.Detectors.Windows.FileActionsHook\OLAF.Detectors.Windows.FileActionsHook.csproj">
       <Project>{43d2571f-d4a3-4d24-bad7-5b7da42b6293}</Project>
-      <Name>OLAF.Hooks.Windows.FileActions</Name>
+      <Name>OLAF.Detectors.Windows.FileActionsHook</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

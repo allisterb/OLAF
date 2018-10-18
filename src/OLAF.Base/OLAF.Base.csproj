@@ -79,12 +79,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Api\Detector.cs" />
-    <Compile Include="Api\Hook.cs" />
     <Compile Include="Api\OLAFApi.cs" />
     <Compile Include="Api\Global.cs" />
     <Compile Include="Api\Message.cs" />
     <Compile Include="Api\MessageQueue.cs" />
     <Compile Include="Api\StatusCode.cs" />
+    <Compile Include="Extensions\AssemblyExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Logger\SimpleConsoleLogger.cs" />
     <Compile Include="Monitor\Monitor.cs" />
     <Compile Include="Interface\Interface.cs" />

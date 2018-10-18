@@ -10,15 +10,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Loggers.Serilog", "Log
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Interfaces.CLI", "OLAF.Interfaces.CLI\OLAF.Interfaces.CLI.csproj", "{8C8EF527-DC14-48CE-9423-4CD3665A3DE8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Hooks.Windows.FileActions", "OLAF.Hooks.Windows.FileActions\OLAF.Hooks.Windows.FileActions.csproj", "{43D2571F-D4A3-4D24-BAD7-5B7DA42B6293}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Detectors.Windows.FileActionsHook", "OLAF.Detectors.Windows.FileActionsHook\OLAF.Detectors.Windows.FileActionsHook.csproj", "{43D2571F-D4A3-4D24-BAD7-5B7DA42B6293}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Loggers", "Loggers", "{D6D3BF19-4E46-4BE1-802E-2B0D3FFE4F83}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Monitors.FileSystemWatcher", "OLAF.Monitors.FileSystemWatcher\OLAF.Monitors.FileSystemWatcher.csproj", "{DBA4C2FE-6C57-4C11-8446-591DA0A594EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Monitors.Windows.WindowCapture", "OLAF.Monitors.Windows.WindowCapture\OLAF.Monitors.Windows.WindowCapture.csproj", "{F623FD8C-A3F4-4999-86E2-57288F20E7B9}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8B93A94A-A06D-4EE6-A744-33FA6D49A055}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{8B93A94A-A06D-4EE6-A744-33FA6D49A055}"
 	ProjectSection(SolutionItems) = preProject
 		NOTES.txt = NOTES.txt
 	EndProjectSection
@@ -79,14 +77,6 @@ Global
 		{DBA4C2FE-6C57-4C11-8446-591DA0A594EB}.Release|x64.Build.0 = Release|x64
 		{DBA4C2FE-6C57-4C11-8446-591DA0A594EB}.Release|x86.ActiveCfg = Release|x86
 		{DBA4C2FE-6C57-4C11-8446-591DA0A594EB}.Release|x86.Build.0 = Release|x86
-		{F623FD8C-A3F4-4999-86E2-57288F20E7B9}.Debug|x64.ActiveCfg = Debug|x64
-		{F623FD8C-A3F4-4999-86E2-57288F20E7B9}.Debug|x64.Build.0 = Debug|x64
-		{F623FD8C-A3F4-4999-86E2-57288F20E7B9}.Debug|x86.ActiveCfg = Debug|x86
-		{F623FD8C-A3F4-4999-86E2-57288F20E7B9}.Debug|x86.Build.0 = Debug|x86
-		{F623FD8C-A3F4-4999-86E2-57288F20E7B9}.Release|x64.ActiveCfg = Release|x64
-		{F623FD8C-A3F4-4999-86E2-57288F20E7B9}.Release|x64.Build.0 = Release|x64
-		{F623FD8C-A3F4-4999-86E2-57288F20E7B9}.Release|x86.ActiveCfg = Release|x86
-		{F623FD8C-A3F4-4999-86E2-57288F20E7B9}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +13,18 @@ namespace OLAF
         #region Constructor
         static Global()
         {
+            MonitorAssemblies = Assembly.GetExecutingAssembly().LoadAllFrom("OLAF.Monitors.*.dll");
+            foreach (string n in ExcludedAssemblyNames)
+            {
+                if (MonitorAssemblies.Any(a => a.FullName.StartsWith(n)))
+                {
+                    MonitorAssemblies.RemoveAll(a => a.FullName.StartsWith(n));
+                }
+            }
+            if (MonitorAssemblies == null)
+            {
+                throw new Exception("Did not load any OLAF monitor assemblies.");
+            }
             CancellationTokenSource = new CancellationTokenSource();
         }
         #endregion
@@ -19,15 +32,22 @@ namespace OLAF
         #region Properties
         public static ILogger Logger { get; private set; }
 
+        public static List<Assembly> MonitorAssemblies { get; internal set; }
+
+        public static List<Assembly> OLAFLoadedAssemblies { get; internal set; }
+
+        public static string[] ExcludedAssemblyNames { get; } = new string[0];
+
         public static CancellationTokenSource CancellationTokenSource { get; }
 
-        public static MessageQueue HookMessageQueue { get; private set; }
+
+        public static MessageQueue MessageQueue { get; private set; }
         #endregion
 
         #region Methods
-        public static void SetLogger(Func<ILogger> logger)
+        public static void SetupLogger(Func<ILogger> logger)
         {
-            lock (setLogLock)
+            lock (setupLoggerLock)
             {
                 if (Logger == null)
                 {
@@ -45,15 +65,40 @@ namespace OLAF
             Logger.Close();
         }
 
-        public static void SetupHookMessageQueue()
+        public static void SetupMessageQueue()
         {
-            HookMessageQueue = new MessageQueue(CancellationTokenSource.Token);
+            lock (setupMessageQueueLock)
+            {
+                if (MessageQueue == null)
+                {
+                    MessageQueue = new MessageQueue(GetSubTypes<Monitor>());
+                }
+            }
         }
 
-        #endregion
+        public static Type[] GetSubTypes<T>(string assemblyName = "")
+        {
+            IEnumerable<Assembly> assemblies = MonitorAssemblies;
+            if (MonitorAssemblies.Count(a => assemblyName.IsNotEmpty() && a.GetName().Name == assemblyName) > 0)
+            {
+                assemblies = MonitorAssemblies.Where(a => a.FullName.StartsWith(assemblyName));
+            }
+            else if (assemblyName.IsNotEmpty())
+            {
+                return null;
+            }
 
+            return assemblies
+                 .Select(a => a.GetTypes())
+                 .SelectMany(t => t)
+                 .Where(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract)?
+                 .ToArray();
+        }
+        #endregion
+        
         #region Fields
-        private static object setLogLock = new object();
+        private static object setupLoggerLock = new object();
+        private static object setupMessageQueueLock = new object();
         #endregion
     }
 }

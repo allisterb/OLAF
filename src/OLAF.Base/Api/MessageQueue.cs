@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
@@ -10,32 +11,28 @@ namespace OLAF
     public class MessageQueue : OLAFApi<MessageQueue>
     {
         #region Constructors
-        public MessageQueue(CancellationToken ct)
+        public MessageQueue(Type[] types)
         {
-            CancellationToken = ct;
+            Index = new SortedList(types.Length);
+            Queue = new BlockingCollection<Message>[(types.Length)];
+            for (int i = 0; i < types.Length; i++)
+            {
+                Queue[i] = new BlockingCollection<Message>();
+                Index.Add(i, types[i]);
+
+            }
         }
         #endregion
 
         #region Properties
-        public ConcurrentDictionary<OLAFHook, BlockingCollection<Message>> Queue { get; } =
-            new ConcurrentDictionary<OLAFHook, BlockingCollection<Message>>();
-
-        protected CancellationToken CancellationToken { get; }
+        public SortedList Index { get; }
+        public BlockingCollection<Message>[] Queue { get; }
         #endregion
 
         #region Methods
-        public void AddHook(OLAFHook hook)
+        public void Enqueue<T>(Message message)
         {
-            Queue.AddOrUpdate(hook, new BlockingCollection<Message>(new ConcurrentQueue<Message>()), 
-            (h, u) =>
-            {
-                return null;
-            });
-        }
-
-        public void AddAction(OLAFHook hook, Message action)
-        {
-            Queue[hook].Add(action);
+            Queue[Index.IndexOfValue(typeof(T))].Add(message);
         }
         #endregion
     }

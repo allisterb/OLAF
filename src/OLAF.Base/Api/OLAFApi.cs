@@ -19,10 +19,11 @@ namespace OLAF
             }
         }
 
-
         protected static DirectoryInfo AssemblyDirectory = new FileInfo(Assembly.GetExecutingAssembly().Location).Directory;
 
         protected static Version AssemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
+
+        protected static string ProcessFileName => Process.GetCurrentProcess().MainModule.FileName;
 
         protected static ILogger L => Global.Logger;
 

@@ -62,14 +62,13 @@ namespace OLAF
                 enabledLogOptions.Add("WithoutConsole");
             }
 
-            Global.SetLogger(() => SerilogLogger.CreateLogger(enabledLogOptions));
-            L.Info("here");
+            Global.SetupLogger(() => SerilogLogger.CreateLogger(enabledLogOptions));
 
-            Global.SetupHookMessageQueue();
+            Global.SetupMessageQueue();
             var processes = GetCurrentProcesses();
             Monitor = new EasyHookMonitor(
                 GetCurrentProcesses().First(p => p.Value == "explorer").Key,
-                "OLAF.Hooks.Windows.FileActions.dll");
+                "OLAF.Detectors.Windows.FileActionsHook.dll");
             if (!Monitor.Initialized)
             {
                 L.Error("Could not initialize hook monitor.");

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OLAF
 {
-    public abstract class OSHookMonitor : OLAFApi<OSHookMonitor>
+    public abstract class OSHookMonitor : Monitor
     {
         #region Constructors
         public OSHookMonitor(int processId, string hookAssemblyName) : base()

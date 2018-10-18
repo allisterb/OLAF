@@ -7,8 +7,8 @@
     <ProjectGuid>{43D2571F-D4A3-4D24-BAD7-5B7DA42B6293}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OLAF.Hooks.Windows.FileActions</RootNamespace>
-    <AssemblyName>OLAF.Hooks.Windows.FileActions</AssemblyName>
+    <RootNamespace>OLAF.Detectors.Windows</RootNamespace>
+    <AssemblyName>OLAF.Detectors.Windows.FileActionsHook</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

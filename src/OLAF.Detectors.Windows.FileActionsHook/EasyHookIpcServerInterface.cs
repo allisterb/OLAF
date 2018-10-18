@@ -1,4 +1,7 @@
-// RemoteFileMonitor (File: FileMonitorHook\ServerInterface.cs)
+#region Attribution and License
+// Contains code from the EasyHook project
+
+// RemoteFileMonitor (File: FileMonitorHook\InjectionEntryPoint.cs)
 //
 // Copyright (c) 2017 Justin Stenning
 //
@@ -20,8 +23,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-// Please visit https://easyhook.github.io for more information
+// Please visit https://github.io for more information
 // about the project, latest updates and other tutorials.
+#endregion
 
 using System;
 using System.Collections.Generic;
@@ -32,13 +36,15 @@ using System.Text;
 using System.Threading.Tasks;
 
 using OLAF;
-namespace OLAF.Hooks.Windows
+namespace OLAF.Detectors.Windows
 {
     /// <summary>
     /// Provides an interface for communicating from the client (target) to the server (injector)
     /// </summary>
     public class EasyHookIpcServerInterface : MarshalByRefObject
     {
+        protected static ILogger L => Global.Logger;
+
         /// <summary>
         /// Output the message to the console.
         /// </summary>
@@ -72,11 +78,8 @@ namespace OLAF.Hooks.Windows
         /// </summary>
         public void Ping()
         {
-           
+            Verbose("Ping from client-side IPC channel succeded.");
         }
-
- 
-        protected static ILogger L => Global.Logger;
 
         [DebuggerStepThrough]
         public virtual void Info(string messageTemplate, params object[] propertyValues) =>
@@ -101,16 +104,5 @@ namespace OLAF.Hooks.Windows
         [DebuggerStepThrough]
         public virtual void Warn(string messageTemplate, params object[] propertyValues) =>
             L.Warn(messageTemplate, propertyValues);
-
-        protected static void SetPropFromDict(Type t, object o, Dictionary<string, object> p)
-        {
-            foreach (var prop in t.GetProperties())
-            {
-                if (p.ContainsKey(prop.Name) && prop.PropertyType == p[prop.Name].GetType())
-                {
-                    prop.SetValue(o, p[prop.Name]);
-                }
-            }
-        }
     }
 }

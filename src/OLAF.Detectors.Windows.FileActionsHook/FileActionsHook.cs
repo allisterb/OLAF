@@ -1,4 +1,4 @@
-#region License and attribution
+#region Attribution and License
 // Contains code from the EasyHook project
 
 // RemoteFileMonitor (File: FileMonitorHook\InjectionEntryPoint.cs)
@@ -36,7 +36,7 @@ using System.Threading.Tasks;
 
 using EasyHook;
 
-namespace OLAF.Hooks.Windows
+namespace OLAF.Detectors.Windows
 {
     /// <summary>
     /// EH will look for a class implementing <see cref="IEntryPoint"/> during injection. This

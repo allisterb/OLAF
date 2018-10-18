@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 using EasyHook;
 
-using OLAF.Hooks.Windows;
+using OLAF.Detectors.Windows;
 
 namespace OLAF.Monitors.Windows
 {
