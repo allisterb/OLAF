@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace OLAF
 {
-    public abstract class Detector<T> : OLAFApi<T> where T : Detector<T>
+    public abstract class Detector : OLAFApi<Detector>
     {
+        #region Constructors
         static Detector()
         {
             if (Global.Logger == null)
@@ -15,5 +16,11 @@ namespace OLAF
                 Global.SetupLogger(() => new SimpleConsoleLogger());
             }
         }
+        #endregion
+
+        #region Properties
+        public Type MonitorType { get; protected set; }
+        public int ProcessId { get; protected set; }
+        #endregion
     }
 }

@@ -8,6 +8,18 @@ namespace OLAF
 {
     public abstract class Message
     {
+        #region Constructors
+        public Message(int processId, int threadId)
+        {
+            ProcessId = processId;
+            ThreadId = threadId;
+        }
+        #endregion
 
+        #region Properties
+        public int ProcessId { get; }
+
+        public int ThreadId { get; }
+        #endregion
     }
 }

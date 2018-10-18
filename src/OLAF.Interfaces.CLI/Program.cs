@@ -18,7 +18,6 @@ namespace OLAF
         public static bool WithDebugOutput { get; set; } = false;
         public static OSHookMonitor Monitor { get; protected set; }
        
-
         static Program()
         {
             AppDomain.CurrentDomain.UnhandledException += Program_UnhandledException;
@@ -67,8 +66,7 @@ namespace OLAF
             Global.SetupMessageQueue();
             var processes = GetCurrentProcesses();
             Monitor = new EasyHookMonitor(
-                GetCurrentProcesses().First(p => p.Value == "explorer").Key,
-                "OLAF.Detectors.Windows.FileActionsHook.dll");
+                GetCurrentProcesses().First(p => p.Value == "explorer").Key);
             if (!Monitor.Initialized)
             {
                 L.Error("Could not initialize hook monitor.");

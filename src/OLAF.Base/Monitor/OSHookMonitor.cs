@@ -11,9 +11,8 @@ namespace OLAF
     public abstract class OSHookMonitor : Monitor
     {
         #region Constructors
-        public OSHookMonitor(int processId, string hookAssemblyName) : base()
+        public OSHookMonitor(int processId, Type hookType) : base()
         {
-
             try
             {
                 Process = Process.GetProcessById(processId);
@@ -24,16 +23,8 @@ namespace OLAF
                 Error(e, "Exception occurred finding process with ID {0}.", processId);
                 return;
             }
-            if (File.Exists(hookAssemblyName))
-            {
-                HookAssemblyName = hookAssemblyName;
-            }
-            else
-            {
-                Error("The file {0} could not be found.", hookAssemblyName);
-                return;
-            }
-            HookAssemblyName = hookAssemblyName;
+            HookType = hookType ?? throw new ArgumentNullException(nameof(hookType));
+            HookAssemblyName = HookType.Assembly.FullName.Split(',').First() + ".dll";
             Initialized = true;
         }
         #endregion
@@ -42,6 +33,7 @@ namespace OLAF
         public bool Initialized { get; } = false;
         public Process Process { get; }
         public int ProcessID { get; }
+        public Type HookType { get; }
         public string HookAssemblyName { get; }
         #endregion
 

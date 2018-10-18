@@ -34,6 +34,11 @@ namespace OLAF
         {
             Queue[Index.IndexOfValue(typeof(T))].Add(message);
         }
+
+        public void Enqueue(Type type, Message message)
+        {
+            Queue[Index.IndexOfValue(type)].Add(message);
+        }
         #endregion
     }
 }

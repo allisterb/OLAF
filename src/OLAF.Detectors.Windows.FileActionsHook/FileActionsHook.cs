@@ -38,22 +38,9 @@ using EasyHook;
 
 namespace OLAF.Detectors.Windows
 {
-    /// <summary>
-    /// EH will look for a class implementing <see cref="IEntryPoint"/> during injection. This
-    /// becomes the entry point within the target process after injection is complete.
-    /// </summary>
-    public class FileActionsHook : Detector<FileActionsHook>, IEntryPoint
+    public class FileActionsHook : Detector, IEntryPoint
     {
-        /// <summary>
-        /// Reference to the server interface within FileMonitor
-        /// </summary>
-        EasyHookIpcServerInterface _server = null;
-
-        /// <summary>
-        /// Message queue of all files accessed
-        /// </summary>
-        Queue<string> _messageQueue = new Queue<string>();
-
+        #region Constructors
         /// <summary>
         /// EH requires a constructor that matches <paramref name="context"/> and any additional parameters as provided
         /// in the original call to <see cref="RemoteHooking.Inject(int, InjectionOptions, string, string, object[])"/>.
@@ -62,15 +49,24 @@ namespace OLAF.Detectors.Windows
         /// </summary>
         /// <param name="context">The RemoteHooking context</param>
         /// <param name="channelName">The name of the IPC channel</param>
-        public FileActionsHook(RemoteHooking.IContext context, string channelName)
+        public FileActionsHook(RemoteHooking.IContext context, string channelName, int processId, Type monitorType)
         {
+            ProcessId = processId;
+            MonitorType = monitorType;
             // Connect to server object using provided channel name
             _server = RemoteHooking.IpcConnectClient<EasyHookIpcServerInterface>(channelName);
 
             // If Ping fails then the Run method will be not be called
             _server.Ping();
         }
+        #endregion
 
+        #region Fields
+        EasyHookIpcServerInterface _server = null;
+        Queue<string> _messageQueue = new Queue<string>();
+        #endregion
+
+        #region Methods
         /// <summary>
         /// The main entry point for our logic once injected within the target process. 
         /// This is where the hooks will be created, and a loop will be entered until host process exits.
@@ -78,10 +74,11 @@ namespace OLAF.Detectors.Windows
         /// </summary>
         /// <param name="context">The RemoteHooking context</param>
         /// <param name="channelName">The name of the IPC channel</param>
-        public void Run(RemoteHooking.IContext context, string channelName)
+        public void Run(RemoteHooking.IContext context, string channelName, int processId, Type monitorType)
         {
             // Injection is now complete and the server interface is connected
-            _server.Info("Injected into {0}.", RemoteHooking.GetCurrentProcessId());
+            _server.Info("FileActionsHook detector active in process id {0} with monitor type {1}.", 
+                processId, monitorType.FullName);
 
             // Install hooks
 
@@ -108,7 +105,7 @@ namespace OLAF.Detectors.Windows
             readFileHook.ThreadACL.SetExclusiveACL(new Int32[] { 0 });
             writeFileHook.ThreadACL.SetExclusiveACL(new Int32[] { 0 });
 
-            _server.ReportMessage("CreateFile, ReadFile and WriteFile hooks installed");
+            _server.Info("CreateFile, ReadFile and WriteFile hooks installed");
 
             // Wake up the process (required if using RemoteHooking.CreateAndInject)
             RemoteHooking.WakeUpProcess();
@@ -346,21 +343,11 @@ namespace OLAF.Detectors.Windows
 
             try
             {
-                lock (this._messageQueue)
-                {
-                    if (this._messageQueue.Count < 1000)
-                    {
-                        // Retrieve filename from the file handle
-                        StringBuilder filename = new StringBuilder(255);
-                        GetFinalPathNameByHandle(hFile, filename, 255, 0);
-
-                        // Add message to send to FileMonitor
-                        this._messageQueue.Enqueue(
-                            string.Format("[{0}:{1}]: READ ({2} bytes) \"{3}\"",
-                            RemoteHooking.GetCurrentProcessId(), RemoteHooking.GetCurrentThreadId()
-                            , lpNumberOfBytesRead, filename));
-                    }
-                }
+                StringBuilder filename = new StringBuilder(255);
+                GetFinalPathNameByHandle(hFile, filename, 255, 0);
+                Global.MessageQueue.Enqueue(MonitorType,
+                    new FileActionMessage(ProcessId, RemoteHooking.GetCurrentThreadId(),
+                    FileOp.Read, filename.ToString()));
             }
             catch
             {
@@ -456,6 +443,8 @@ namespace OLAF.Detectors.Windows
 
             return result;
         }
+
+        #endregion
 
         #endregion
     }
