@@ -16,7 +16,7 @@ namespace OLAF
         public static bool WithLogFile { get; set; } = false;
         public static bool WithoutConsole { get; set; } = false;
         public static bool WithDebugOutput { get; set; } = false;
-        public static OSHookMonitor Monitor { get; protected set; }
+        public static AppHookMonitor Monitor { get; protected set; }
        
         static Program()
         {

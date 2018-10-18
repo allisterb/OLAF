@@ -75,21 +75,18 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Colorful.Console, Version=1.2.9.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Colorful.Console.1.2.9\lib\net461\Colorful.Console.dll</HintPath>
-    </Reference>
     <Reference Include="CommandLine, Version=2.3.0.0, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
-      <HintPath>..\packages\CommandLineParser.2.3.0\lib\net45\CommandLine.dll</HintPath>
+      <HintPath>..\..\packages\CommandLineParser.2.3.0\lib\net45\CommandLine.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Console, Version=4.0.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Console.4.3.1\lib\net46\System.Console.dll</HintPath>
+    <Reference Include="System.Console, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Console.4.0.0\lib\net46\System.Console.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Reflection.TypeExtensions, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reflection.TypeExtensions.4.5.1\lib\net461\System.Reflection.TypeExtensions.dll</HintPath>
+    <Reference Include="System.Reflection.TypeExtensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Reflection.TypeExtensions.4.1.0\lib\net46\System.Reflection.TypeExtensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -107,15 +104,19 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OLAF.Base\OLAF.Base.csproj">
+    <ProjectReference Include="..\..\ActivityDetectors\OLAF.ActivityDetectors.Windows.FileActionsHook\OLAF.ActivityDetectors.Windows.FileActionsHook.csproj">
+      <Project>{43d2571f-d4a3-4d24-bad7-5b7da42b6293}</Project>
+      <Name>OLAF.ActivityDetectors.Windows.FileActionsHook</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Monitors\OLAF.Monitors.Windows.AppHook\OLAF.Monitors.Windows.AppHook.csproj">
+      <Project>{1539ecc4-464c-4b5c-86dc-1039ef4f9547}</Project>
+      <Name>OLAF.Monitors.Windows.AppHook</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\OLAF.Base\OLAF.Base.csproj">
       <Project>{8d448b26-d206-48c8-b17f-a31133c25665}</Project>
       <Name>OLAF.Base</Name>
     </ProjectReference>
-    <ProjectReference Include="..\OLAF.Monitors.Windows.EasyHook\OLAF.Monitors.Windows.EasyHook.csproj">
-      <Project>{1539ecc4-464c-4b5c-86dc-1039ef4f9547}</Project>
-      <Name>OLAF.Monitors.Windows.EasyHook</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Loggers\OLAF.Loggers.Serilog\OLAF.Loggers.Serilog.csproj">
+    <ProjectReference Include="..\..\Loggers\OLAF.Loggers.Serilog\OLAF.Loggers.Serilog.csproj">
       <Project>{81a43067-e9cf-4cab-bb84-13ac75d85240}</Project>
       <Name>OLAF.Loggers.Serilog</Name>
     </ProjectReference>

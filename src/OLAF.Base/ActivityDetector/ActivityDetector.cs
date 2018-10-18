@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace OLAF
 {
-    public abstract class Detector : OLAFApi<Detector>
+    public abstract class ActivityDetector : OLAFApi<ActivityDetector>
     {
         #region Constructors
-        static Detector()
+        static ActivityDetector()
         {
             if (Global.Logger == null)
             {

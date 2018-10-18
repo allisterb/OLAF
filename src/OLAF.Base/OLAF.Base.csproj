@@ -78,7 +78,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\Detector.cs" />
+    <Compile Include="ActivityDetector\ActivityDetector.cs" />
     <Compile Include="Api\OLAFApi.cs" />
     <Compile Include="Api\Global.cs" />
     <Compile Include="Api\Message.cs" />
@@ -91,7 +91,7 @@
     <Compile Include="Interface\Interface.cs" />
     <Compile Include="Logger\ILogger.cs" />
     <Compile Include="Logger\LoggerException.cs" />
-    <Compile Include="Monitor\OSHookMonitor.cs" />
+    <Compile Include="Monitor\AppHookMonitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -36,9 +36,9 @@ using System.Threading.Tasks;
 
 using EasyHook;
 
-namespace OLAF.Detectors.Windows
+namespace OLAF.ActivityDetectors.Windows
 {
-    public class FileActionsHook : Detector, IEntryPoint
+    public class FileActionsHook : ActivityDetector, IEntryPoint
     {
         #region Constructors
         /// <summary>
@@ -77,7 +77,7 @@ namespace OLAF.Detectors.Windows
         public void Run(RemoteHooking.IContext context, string channelName, int processId, Type monitorType)
         {
             // Injection is now complete and the server interface is connected
-            _server.Info("FileActionsHook detector active in process id {0} with monitor type {1}.", 
+            _server.Info("FileActionsHook.ActivityDetector active in process id {0} with monitor type {1}.", 
                 processId, monitorType.FullName);
 
             // Install hooks

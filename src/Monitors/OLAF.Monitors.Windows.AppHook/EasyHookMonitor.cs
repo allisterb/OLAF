@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 using EasyHook;
 
-using OLAF.Detectors.Windows;
+using OLAF.ActivityDetectors.Windows;
 
 namespace OLAF.Monitors.Windows
 {
-    public class EasyHookMonitor : OSHookMonitor
+    public class EasyHookMonitor : AppHookMonitor
     {
         #region Constructors
         public EasyHookMonitor(int processId) : base(processId, typeof(FileActionsHook))

@@ -8,6 +8,6 @@ namespace OLAF
 {
     public class Monitor : OLAFApi<Monitor>
     {
-        public List<Detector> Detectors { get; protected set; }
+        public List<ActivityDetector> ActivityDetectors { get; protected set; }
     }
 }

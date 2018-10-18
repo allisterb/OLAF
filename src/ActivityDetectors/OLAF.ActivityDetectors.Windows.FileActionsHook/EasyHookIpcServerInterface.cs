@@ -36,7 +36,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using OLAF;
-namespace OLAF.Detectors.Windows
+namespace OLAF.ActivityDetectors.Windows
 {
     /// <summary>
     /// Provides an interface for communicating from the client (target) to the server (injector)

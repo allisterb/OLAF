@@ -108,13 +108,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OLAF.Base\OLAF.Base.csproj">
+    <ProjectReference Include="..\..\OLAF.Base\OLAF.Base.csproj">
       <Project>{8d448b26-d206-48c8-b17f-a31133c25665}</Project>
       <Name>OLAF.Base</Name>
     </ProjectReference>
-    <ProjectReference Include="..\OLAF.Detectors.Windows.FileActionsHook\OLAF.Detectors.Windows.FileActionsHook.csproj">
+    <ProjectReference Include="..\..\ActivityDetectors\OLAF.ActivityDetectors.Windows.FileActionsHook\OLAF.ActivityDetectors.Windows.FileActionsHook.csproj">
       <Project>{43d2571f-d4a3-4d24-bad7-5b7da42b6293}</Project>
-      <Name>OLAF.Detectors.Windows.FileActionsHook</Name>
+      <Name>OLAF.ActivityDetectors.Windows.FileActionsHook</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
