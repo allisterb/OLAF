@@ -93,6 +93,7 @@
     <Compile Include="Interface\Interface.cs" />
     <Compile Include="Logger\ILogger.cs" />
     <Compile Include="Logger\LoggerException.cs" />
+    <Compile Include="Profile\Profile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -77,7 +77,7 @@ namespace OLAF.ActivityDetectors.Windows
         {
             // Injection is now complete and the server interface is connected
             remote.Info("{0} injected into process id {1} with monitor type {2}.", 
-                typeof(FileActivityHook).Name, processId, monitorType.FullName);
+                typeof(FileActivityHook).Name, processId, monitorType.Name);
 
             // Install hooks
 

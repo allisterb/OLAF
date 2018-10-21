@@ -81,7 +81,8 @@ namespace OLAF.Monitors.Windows
             {
                 try
                 {
-                    Message msg = Global.MessageQueue.Dequeue<TDetector>(cancellationToken);
+                    TMessage msg = (TMessage) Global.MessageQueue.Dequeue<TDetector>(cancellationToken);
+                    Debug(msg.ProcessId.ToString());
                 }
                 catch (OperationCanceledException)
                 {
@@ -114,7 +115,7 @@ namespace OLAF.Monitors.Windows
             string injectionLibrary = Path.Combine(AssemblyDirectory.FullName, HookAssemblyName);
             try
             {
-                Info("Attempting to inject {0} assembly into process {1} ({2})...", injectionLibrary, 
+                Info("Attempting to inject {0} assembly into process {1} ({2})...", HookAssemblyName, 
                     ProcessID, Process.ProcessName);
                 RemoteHooking.Inject(
                     ProcessID,          // ID of process to inject into
@@ -124,7 +125,7 @@ namespace OLAF.Monitors.Windows
                     ProcessID,
                     typeof(WindowsAppHookMonitor<TDetector, TMessage>)
                 );
-                Info("Injected {0} assembly into process id {1} ({2}).", injectionLibrary, ProcessID, Process.ProcessName);
+                Info("Injected {0} assembly into process id {1} ({2}).", HookAssemblyName, ProcessID, Process.ProcessName);
                 return true;
             }
             catch (Exception e)
