@@ -11,7 +11,7 @@ namespace OLAF.Monitors.Windows
     public class ExplorerMonitor : WindowsAppHookMonitor<FileActivityHook, FileActivityMessage>
     {
         #region Constructors
-        public ExplorerMonitor(int pid) : base(pid)
+        public ExplorerMonitor() : base("explorer")
         {
 
         }

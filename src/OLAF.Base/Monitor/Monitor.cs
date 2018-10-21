@@ -11,27 +11,28 @@ namespace OLAF
     public abstract class Monitor : OLAFApi<Monitor>
     {
         #region Constructors
-        public Monitor(int pid)
+        public Monitor(string name)
         {
-            try
+            var processes = Process.GetProcessesByName(name);
+            if (processes == null || processes.Length == 0)
             {
-                Process = Process.GetProcessById(pid);
-                ProcessID = pid;
-                Status = ApiStatus.Initializing;
-            }
-            catch (Exception e)
-            {
-                Error(e, "Exception occurred finding process with ID {0}.", pid);
-                Status = ApiStatus.FileNotFound;
+                Error("No processes to monitor.");
+                Status = ApiStatus.ProcessNotFound;
                 return;
+            }
+            else
+            {
+                Processes = processes;
+                ProcessName = name;
+                Status = ApiStatus.Initializing;
             }
         }
         #endregion
 
         #region Properties
-        public int ProcessID { get; protected set; }
+        public string ProcessName { get; protected set; }
 
-        public Process Process { get; protected set; }
+        public Process[] Processes { get; protected set; }
 
         public Thread QueueMonitorThread { get; protected set; }
         #endregion
@@ -43,6 +44,20 @@ namespace OLAF
         public abstract ApiResult Shutdown();
 
         protected abstract void MonitorQueue(CancellationToken token);
+        #endregion
+
+        #region Methods
+        protected static Process GetProcessById(int id)
+        {
+            try
+            {
+                return Process.GetProcessById(id);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
         #endregion
     }
 }

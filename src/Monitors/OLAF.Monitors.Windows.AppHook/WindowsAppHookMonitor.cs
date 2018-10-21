@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.Remoting;
@@ -19,7 +20,7 @@ namespace OLAF.Monitors.Windows
         where TMessage : Message
     {
         #region Constructors
-        public WindowsAppHookMonitor(int processId) : base(processId)
+        public WindowsAppHookMonitor(string processName) : base(processName)
         {
             if (Status != ApiStatus.Initializing)
             {
@@ -41,7 +42,15 @@ namespace OLAF.Monitors.Windows
         #region Overriden members
         public override ApiResult Init()
         {
-            if (Inject())
+            int injected = 0;
+            for (int i = 0; i < Processes.Length; i++)
+            {
+               if (Inject(Processes[i]))
+                {
+                    injected++;
+                }
+            }
+            if (injected > 0)
             {
                 Status = ApiStatus.Initialized;
                 return ApiResult.Success;
@@ -107,7 +116,7 @@ namespace OLAF.Monitors.Windows
         #endregion
 
         #region Methods
-        protected virtual bool Inject()
+        protected virtual bool Inject(Process process)
         {
             string channelName = null;
             Channel = RemoteHooking.IpcCreateServer<EasyHookIpcInterface>(ref channelName, WellKnownObjectMode.Singleton);
@@ -115,23 +124,24 @@ namespace OLAF.Monitors.Windows
             string injectionLibrary = Path.Combine(AssemblyDirectory.FullName, HookAssemblyName);
             try
             {
-                Info("Attempting to inject {0} assembly into process {1} ({2})...", HookAssemblyName, 
-                    ProcessID, Process.ProcessName);
+                Info("Attempting to inject {0} assembly into process id {1} ({2})...", HookAssemblyName, 
+                    process.Id, process.ProcessName);
                 RemoteHooking.Inject(
-                    ProcessID,          // ID of process to inject into
+                    process.Id,          // ID of process to inject into
                     injectionLibrary,   // 32-bit library to inject (if target is 32-bit)
                     injectionLibrary,   // 64-bit library to inject (if target is 64-bit)
                     ChannelName,        // IPC chanel name
-                    ProcessID,
+                    process.Id,
                     typeof(WindowsAppHookMonitor<TDetector, TMessage>)
                 );
-                Info("Injected {0} assembly into process id {1} ({2}).", HookAssemblyName, ProcessID, Process.ProcessName);
+                Info("Injected {0} assembly into process id {1} ({2}).", HookAssemblyName, process.Id, 
+                    process.ProcessName);
                 return true;
             }
             catch (Exception e)
             {
-                Error(e, "Exception thrown injecting {0} assembly into process id {1} ({2}).", injectionLibrary, ProcessID,
-                    Process.ProcessName);
+                Error(e, "Exception thrown injecting {0} assembly into process id {1} ({2}).", injectionLibrary, process.Id,
+                    process.ProcessName);
                 return false;
             }
         }

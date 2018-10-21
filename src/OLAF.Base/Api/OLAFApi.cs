@@ -30,8 +30,6 @@ namespace OLAF
 
         protected static Version AssemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
 
-        protected static string ProcessFileName => Process.GetCurrentProcess().MainModule.FileName;
-
         protected static ILogger L => Global.Logger;
         #endregion
 
@@ -48,6 +46,10 @@ namespace OLAF
             L.Debug(messageTemplate, propertyValues);
 
         [DebuggerStepThrough]
+        protected static void Warn(string messageTemplate, params object[] propertyValues) =>
+            L.Warn(messageTemplate, propertyValues);
+
+        [DebuggerStepThrough]
         protected static void Error(string messageTemplate, params object[] propertyValues) =>
             L.Error(messageTemplate, propertyValues);
 
@@ -58,10 +60,6 @@ namespace OLAF
         [DebuggerStepThrough]
         protected static void Verbose(string messageTemplate, params object[] propertyValues) =>
             L.Verbose(messageTemplate, propertyValues);
-
-        [DebuggerStepThrough]
-        protected static void Warn(string messageTemplate, params object[] propertyValues) =>
-            L.Warn(messageTemplate, propertyValues);
 
         protected static void SetPropFromDict(Type t, object o, Dictionary<string, object> p)
         {
@@ -78,7 +76,6 @@ namespace OLAF
         #endregion
 
         #region Fields
-
         protected CancellationToken cancellationToken;
         #endregion
     }

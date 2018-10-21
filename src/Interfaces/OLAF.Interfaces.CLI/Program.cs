@@ -81,8 +81,7 @@ namespace OLAF
 
             Global.SetupMessageQueue();
        
-            Monitor m = new ExplorerMonitor(
-                GetCurrentProcesses().First(p => p.Value == "explorer").Key);
+            Monitor m = new ExplorerMonitor();
             if (m.Status != ApiStatus.Ok )
             {
                 Error("Could not load monitor {0}.", typeof(ExplorerMonitor).Name);
