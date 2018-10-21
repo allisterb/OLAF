@@ -16,12 +16,11 @@ namespace OLAF
         public static bool WithLogFile { get; set; } = false;
         public static bool WithoutConsole { get; set; } = false;
         public static bool WithDebugOutput { get; set; } = false;
-        public static AppHookMonitor Monitor { get; protected set; }
+        public static List<Monitor> Monitors { get; protected set; }
        
         static Program()
         {
             AppDomain.CurrentDomain.UnhandledException += Program_UnhandledException;
-
             Console.CancelKeyPress += Console_CancelKeyPress;
         }
 
@@ -65,35 +64,74 @@ namespace OLAF
 
             Global.SetupMessageQueue();
             var processes = GetCurrentProcesses();
-            Monitor = new EasyHookMonitor(
+            
+            Monitor m = new ExplorerMonitor(
                 GetCurrentProcesses().First(p => p.Value == "explorer").Key);
-            if (!Monitor.Initialized)
+            if (m.Status != ApiStatus.Ok )
             {
-                L.Error("Could not initialize hook monitor.");
+                Error("Could not load monitor {0}.", typeof(ExplorerMonitor).Name);
                 Exit(ExitCode.UnhandledException);
             }
-            Monitor.Inject();
-            while(true)
+            m.Init();
+            if (m.Status != ApiStatus.Initialized)
             {
-
+                Error("Could not initialize monitor {0}.", typeof(ExplorerMonitor).Name);
+                Exit(ExitCode.UnhandledException);
             }
+            m.Start();
         }
 
         static void Program_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            if (Global.CancellationTokenSource != null)
-            {
-                Global.CancellationTokenSource.Dispose();
-            }
+            Exception cancelException = null;
             try
             {
-                L.Error(e.ExceptionObject as Exception, "An unhandled runtime exception occurred. OLAF CLI will terminate.");
-                Global.Logger.Close();
+                if (Global.Logger != null && Global.CancellationTokenSource != null)
+                {
+                    if (!Global.CancellationTokenSource.IsCancellationRequested)
+                    {
+                        Global.CancellationTokenSource.Cancel();
+                    }
+                    Global.CancellationTokenSource.Dispose();
+                }
             }
-            catch (Exception exc)
+            catch(Exception ee)
             {
-                Console.WriteLine("An unhandled runtime exception occurred. Additionally an exception was thrown logging this event: {0}\n{1}\n OLAF CLI will terminate.", exc.Message, exc.StackTrace);
+                cancelException = ee;
             }
+
+            if (Global.Logger != null)
+            {
+                try
+
+                {
+                    Error(e.ExceptionObject as Exception, "An unhandled runtime exception occurred. OLAF CLI will terminate.");
+                    if (cancelException != null)
+                    {
+                        Error(cancelException, "Additionally an exception was thrown attempting to stop all running threads.");
+                    }
+                    Global.Logger.Close();
+                }
+                catch (Exception exc)
+                {
+                    Console.WriteLine("An unhandled runtime exception occurred. Additionally an exception was thrown logging this event: {0}\n{1}\n OLAF CLI will terminate.", 
+                        exc.Message, exc.StackTrace);
+                }
+            }
+            else
+            {
+                Console.WriteLine("An unhandled runtime exception occurred. OLAF CLI will terminate.");
+                if (e.ExceptionObject is Exception exception)
+                {
+                    Console.WriteLine(exception.Message);
+                }
+                if (cancelException != null)
+                {
+                    Console.WriteLine("Additionally an exception was thrown attempting to stop all running threads.");
+                    Console.WriteLine(cancelException.Message);
+                }
+            }
+
             if (e.IsTerminating)
             {
                 Environment.Exit((int) ExitCode.UnhandledException);
@@ -102,8 +140,13 @@ namespace OLAF
 
         static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
-            L.Info("Stop requested by user.");
-            Exit(ExitCode.Successsd);
+            Info("Stopping...");
+            if (Global.CancellationTokenSource.IsCancellationRequested)
+            {
+                Global.CancellationTokenSource.Cancel();
+            }
+            
+            Exit(ExitCode.Success);
         }
 
         static void Exit(ExitCode result)

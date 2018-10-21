@@ -31,39 +31,38 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 using EasyHook;
 
 namespace OLAF.ActivityDetectors.Windows
 {
-    public class FileActionsHook : ActivityDetector, IEntryPoint
+    public class FileActivityHook : ActivityDetector, IEntryPoint
     {
         #region Constructors
         /// <summary>
-        /// EH requires a constructor that matches <paramref name="context"/> and any additional parameters as provided
+        /// EasyHook requires a constructor that matches <paramref name="context"/> and any additional parameters as provided
         /// in the original call to <see cref="RemoteHooking.Inject(int, InjectionOptions, string, string, object[])"/>.
         /// 
         /// Multiple constructors can exist on the same <see cref="IEntryPoint"/>, providing that each one has a corresponding Run method (e.g. <see cref="Run(RemoteHooking.IContext, string)"/>).
         /// </summary>
         /// <param name="context">The RemoteHooking context</param>
         /// <param name="channelName">The name of the IPC channel</param>
-        public FileActionsHook(RemoteHooking.IContext context, string channelName, int processId, Type monitorType)
+        public FileActivityHook(RemoteHooking.IContext context, string channelName, int processId, Type monitorType) :
+            base(processId, monitorType)
         {
-            ProcessId = processId;
-            MonitorType = monitorType;
             // Connect to server object using provided channel name
-            _server = RemoteHooking.IpcConnectClient<EasyHookIpcServerInterface>(channelName);
+            remote = RemoteHooking.IpcConnectClient<EasyHookIpcInterface>(channelName);
 
             // If Ping fails then the Run method will be not be called
-            _server.Ping();
+            remote.Ping();
         }
         #endregion
 
         #region Fields
-        EasyHookIpcServerInterface _server = null;
-        Queue<string> _messageQueue = new Queue<string>();
+        EasyHookIpcInterface remote = null;
         #endregion
 
         #region Methods
@@ -77,8 +76,8 @@ namespace OLAF.ActivityDetectors.Windows
         public void Run(RemoteHooking.IContext context, string channelName, int processId, Type monitorType)
         {
             // Injection is now complete and the server interface is connected
-            _server.Info("FileActionsHook.ActivityDetector active in process id {0} with monitor type {1}.", 
-                processId, monitorType.FullName);
+            remote.Info("{0} injected into process id {1} with monitor type {2}.", 
+                typeof(FileActivityHook).Name, processId, monitorType.FullName);
 
             // Install hooks
 
@@ -94,60 +93,45 @@ namespace OLAF.ActivityDetectors.Windows
                 new ReadFile_Delegate(ReadFile_Hook),
                 this);
 
-            // WriteFile https://msdn.microsoft.com/en-us/library/windows/desktop/aa365747(v=vs.85).aspx
-            var writeFileHook = LocalHook.Create(
-                LocalHook.GetProcAddress("kernel32.dll", "WriteFile"),
-                new WriteFile_Delegate(WriteFile_Hook),
-                this);
-
+            
+             // WriteFile https://msdn.microsoft.com/en-us/library/windows/desktop/aa365747(v=vs.85).aspx
+             var writeFileHook = LocalHook.Create(
+                 LocalHook.GetProcAddress("kernel32.dll", "WriteFile"),
+                 new WriteFile_Delegate(WriteFile_Hook),
+                 this);
+             
             // Activate hooks on all threads except the current thread
             createFileHook.ThreadACL.SetExclusiveACL(new Int32[] { 0 });
             readFileHook.ThreadACL.SetExclusiveACL(new Int32[] { 0 });
             writeFileHook.ThreadACL.SetExclusiveACL(new Int32[] { 0 });
 
-            _server.Info("CreateFile, ReadFile and WriteFile hooks installed");
+            remote.Info("{0}, {1} and {2} hooks installed in process {3}.", nameof(createFileHook), nameof(readFileHook), 
+                nameof(writeFileHook), processId);
 
             // Wake up the process (required if using RemoteHooking.CreateAndInject)
-            RemoteHooking.WakeUpProcess();
+            //RemoteHooking.WakeUpProcess();
 
             try
             {
-                // Loop until FileMonitor closes (i.e. IPC fails)
-                while (true)
-                {
-                    System.Threading.Thread.Sleep(500);
-
-                    string[] queued = null;
-
-                    lock (_messageQueue)
-                    {
-                        queued = _messageQueue.ToArray();
-                        _messageQueue.Clear();
-                    }
-
-                    // Send newly monitored file accesses to FileMonitor
-                    if (queued != null && queued.Length > 0)
-                    {
-                        _server.ReportMessages(queued);
-                    }
-                    else
-                    {
-                        _server.Ping();
-                    }
-                }
+                while (!remote.IsCancellationRequested());
+                remote.Info("File activity hook shutting down.");
             }
             catch
             {
-                // Ping() or ReportMessages() will raise an exception if host is unreachable
+                
             }
 
             // Remove hooks
             createFileHook.Dispose();
             readFileHook.Dispose();
             writeFileHook.Dispose();
+            remote.Info("{0}, {1} and {2} hooks removed from process {3}.", nameof(createFileHook), nameof(readFileHook),
+               nameof(writeFileHook), processId);
 
             // Finalise cleanup of hooks
             LocalHook.Release();
+            remote.Info("{0} with monitor type {1} removed from process id {2} .",
+                typeof(FileActivityHook).Name, monitorType.FullName, processId);
         }
 
         /// <summary>
@@ -159,6 +143,7 @@ namespace OLAF.ActivityDetectors.Windows
         /// <param name="cchFilePath"></param>
         /// <param name="dwFlags"></param>
         /// <returns></returns>
+        [SuppressUnmanagedCodeSecurity]
         [DllImport("Kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         static extern uint GetFinalPathNameByHandle(IntPtr hFile, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder lpszFilePath, uint cchFilePath, uint dwFlags);
 
@@ -201,7 +186,8 @@ namespace OLAF.ActivityDetectors.Windows
         /// <returns></returns>
         [DllImport("kernel32.dll",
             CharSet = CharSet.Unicode,
-            SetLastError = true, CallingConvention = CallingConvention.StdCall)]
+            SetLastError = true, CallingConvention = CallingConvention.StdCall),
+            SuppressUnmanagedCodeSecurity]
         static extern IntPtr CreateFileW(
             String filename,
             UInt32 desiredAccess,
@@ -233,37 +219,7 @@ namespace OLAF.ActivityDetectors.Windows
         {
             try
             {
-                lock (this._messageQueue)
-                {
-                    if (this._messageQueue.Count < 1000)
-                    {
-                        string mode = string.Empty;
-                        switch (creationDisposition)
-                        {
-                            case 1:
-                                mode = "CREATE_NEW";
-                                break;
-                            case 2:
-                                mode = "CREATE_ALWAYS";
-                                break;
-                            case 3:
-                                mode = "OPEN_ALWAYS";
-                                break;
-                            case 4:
-                                mode = "OPEN_EXISTING";
-                                break;
-                            case 5:
-                                mode = "TRUNCATE_EXISTING";
-                                break;
-                        }
-
-                        // Add message to send to FileMonitor
-                        this._messageQueue.Enqueue(
-                            string.Format("[{0}:{1}]: CREATE ({2}) \"{3}\"",
-                            RemoteHooking.GetCurrentProcessId(), RemoteHooking.GetCurrentThreadId()
-                            , mode, filename));
-                    }
-                }
+                remote.EnqueueFileActivity(processId, RemoteHooking.GetCurrentThreadId(), FileOp.Create, filename);
             }
             catch
             {
@@ -311,6 +267,7 @@ namespace OLAF.ActivityDetectors.Windows
         /// <param name="lpNumberOfBytesRead"></param>
         /// <param name="lpOverlapped"></param>
         /// <returns></returns>
+        [SuppressUnmanagedCodeSecurity]
         [DllImport("kernel32.dll", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
         static extern bool ReadFile(
             IntPtr hFile,
@@ -345,9 +302,7 @@ namespace OLAF.ActivityDetectors.Windows
             {
                 StringBuilder filename = new StringBuilder(255);
                 GetFinalPathNameByHandle(hFile, filename, 255, 0);
-                Global.MessageQueue.Enqueue(MonitorType,
-                    new FileActionMessage(ProcessId, RemoteHooking.GetCurrentThreadId(),
-                    FileOp.Read, filename.ToString()));
+                remote.EnqueueFileActivity(processId, FileOp.Read, filename.ToString());
             }
             catch
             {
@@ -359,6 +314,7 @@ namespace OLAF.ActivityDetectors.Windows
 
         #endregion
 
+        
         #region WriteFile Hook
 
         /// <summary>
@@ -388,7 +344,8 @@ namespace OLAF.ActivityDetectors.Windows
         /// <param name="lpNumberOfBytesWritten"></param>
         /// <param name="lpOverlapped"></param>
         /// <returns></returns>
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true, CallingConvention = CallingConvention.StdCall)]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true, 
+            CallingConvention = CallingConvention.StdCall), SuppressUnmanagedCodeSecurity]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool WriteFile(
             IntPtr hFile,
@@ -420,21 +377,10 @@ namespace OLAF.ActivityDetectors.Windows
 
             try
             {
-                lock (this._messageQueue)
-                {
-                    if (this._messageQueue.Count < 1000)
-                    {
-                        // Retrieve filename from the file handle
-                        StringBuilder filename = new StringBuilder(255);
-                        GetFinalPathNameByHandle(hFile, filename, 255, 0);
-
-                        // Add message to send to FileMonitor
-                        this._messageQueue.Enqueue(
-                            string.Format("[{0}:{1}]: WRITE ({2} bytes) \"{3}\"",
-                            RemoteHooking.GetCurrentProcessId(), RemoteHooking.GetCurrentThreadId()
-                            , lpNumberOfBytesWritten, filename));
-                    }
-                }
+                StringBuilder filename = new StringBuilder(255);
+                GetFinalPathNameByHandle(hFile, filename, 255, 0);
+                remote.EnqueueFileActivity(processId, RemoteHooking.GetCurrentThreadId(), FileOp.Write,
+                    filename.ToString());
             }
             catch
             {
@@ -445,7 +391,7 @@ namespace OLAF.ActivityDetectors.Windows
         }
 
         #endregion
-
+    
         #endregion
     }
 }

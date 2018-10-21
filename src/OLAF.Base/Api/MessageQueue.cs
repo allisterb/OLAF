@@ -30,10 +30,9 @@ namespace OLAF
         #endregion
 
         #region Methods
-        public void Enqueue<T>(Message message)
-        {
-            Queue[Index.IndexOfValue(typeof(T))].Add(message);
-        }
+        public bool Enqueue<T>(Message message) => Queue[Index.IndexOfValue(typeof(T))].TryAdd(message);
+        
+        public Message Dequeue<T>(CancellationToken token) => Queue[Index.IndexOfValue(typeof(T))].Take(token);
 
         public void Enqueue(Type type, Message message)
         {

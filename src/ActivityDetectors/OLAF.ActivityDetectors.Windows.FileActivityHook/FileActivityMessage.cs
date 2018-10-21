@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 namespace OLAF.ActivityDetectors.Windows
 {
     [Serializable]
-    public class FileActionMessage : Message
+    public class FileActivityMessage : Message
     {
         #region Constructors
-        public FileActionMessage(int processId, int threadId, FileOp op, string path) : base(processId, threadId)
+        public FileActivityMessage(int processId, int threadId, FileOp op, string path) : base(processId, threadId)
         {
             Op = op;
             Path = path;
@@ -18,6 +18,7 @@ namespace OLAF.ActivityDetectors.Windows
         #endregion
 
         #region Properties
+        
         public FileOp Op { get; }
 
         public string Path { get; }

@@ -33,7 +33,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 using OLAF;
 namespace OLAF.ActivityDetectors.Windows
@@ -41,38 +41,23 @@ namespace OLAF.ActivityDetectors.Windows
     /// <summary>
     /// Provides an interface for communicating from the client (target) to the server (injector)
     /// </summary>
-    public class EasyHookIpcServerInterface : MarshalByRefObject
+    public class EasyHookIpcInterface : MarshalByRefObject
     {
+        #region Constructors
+        public EasyHookIpcInterface() {}
+        #endregion
+
+        #region Properties
+        protected CancellationToken cancellationToken = Global.CancellationTokenSource.Token;
+
         protected static ILogger L => Global.Logger;
 
-        /// <summary>
-        /// Output the message to the console.
-        /// </summary>
-        /// <param name="fileNames"></param>
-        public void ReportMessages(string[] messages)
-        {
-            for (int i = 0; i < messages.Length; i++)
-            {
-                Info(messages[i]);
-            }
-        }
+        public bool IsCancellationRequested() => cancellationToken.IsCancellationRequested;
 
-        public void ReportMessage(string message)
-        {
-            Info(message);
-        }
+        public bool HookShutdownComplete { get; protected set; }
+        #endregion
 
-        /// <summary>
-        /// Report exception
-        /// </summary>
-        /// <param name="e"></param>
-        public void ReportException(Exception e)
-        {
-            Error(e, "");
-            Console.WriteLine("The target process has reported an error:\r\n" + e.ToString());
-        }
-
-        //int count = 0;
+        #region Methods
         /// <summary>
         /// Called to confirm that the IPC channel is still open / host application has not closed
         /// </summary>
@@ -80,6 +65,18 @@ namespace OLAF.ActivityDetectors.Windows
         {
             Verbose("Ping from client-side IPC channel succeded.");
         }
+
+        public void EnqueueFileActivity(int processId, int threadId, FileOp op, string path)
+        {
+            Global.MessageQueue.Enqueue<FileActivityHook>(new FileActivityMessage(processId, threadId, op, path));
+        }
+
+        public void EnqueueFileActivity(int processId, FileOp op, string path)
+        {
+            Global.MessageQueue.Enqueue<FileActivityHook>(new FileActivityMessage(processId, -1, op, path));
+        }
+
+        public void SetHookShutdownComplete() => HookShutdownComplete = true;
 
         [DebuggerStepThrough]
         public virtual void Info(string messageTemplate, params object[] propertyValues) =>
@@ -104,5 +101,6 @@ namespace OLAF.ActivityDetectors.Windows
         [DebuggerStepThrough]
         public virtual void Warn(string messageTemplate, params object[] propertyValues) =>
             L.Warn(messageTemplate, propertyValues);
+        #endregion
     }
 }

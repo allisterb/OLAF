@@ -18,7 +18,8 @@ namespace OLAF
             => Console.WriteLine(messageTemplate, propertyValues);
 
         public void Error(Exception e, string messageTemplate, params object[] propertyValues)
-            => Console.WriteLine(messageTemplate + Environment.NewLine + e.Message, propertyValues);
+            => Console.WriteLine(messageTemplate + Environment.NewLine + e.Message + Environment.NewLine + 
+                e.StackTrace, propertyValues);
 
         public void Verbose(string messageTemplate, params object[] propertyValues)
             => Console.WriteLine(messageTemplate, propertyValues);

@@ -2,25 +2,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace OLAF
 {
     public abstract class ActivityDetector : OLAFApi<ActivityDetector>
     {
         #region Constructors
-        static ActivityDetector()
+        public ActivityDetector(int pid, Type mt)
         {
-            if (Global.Logger == null)
-            {
-                Global.SetupLogger(() => new SimpleConsoleLogger());
-            }
+            processId = pid;
+            monitorType = mt;
         }
         #endregion
 
-        #region Properties
-        public Type MonitorType { get; protected set; }
-        public int ProcessId { get; protected set; }
+        #region Fields
+        protected Type monitorType;
+        protected int processId;
         #endregion
     }
 }

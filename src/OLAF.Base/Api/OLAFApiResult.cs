@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace OLAF
 {
-    public enum ExitCode
+    [Flags]
+    public enum ApiResult
     {
+        Unknown = -1,
         Success = 0,
-        UnhandledException = 1,
-        InvalidOptions = 2,
-        FileOrDirectoryNotFound = 3,
+        Failure = 1
     }
 }

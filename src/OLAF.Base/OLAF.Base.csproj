@@ -7,7 +7,7 @@
     <ProjectGuid>{8D448B26-D206-48C8-B17F-A31133C25665}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OLAF.Base</RootNamespace>
+    <RootNamespace>OLAF</RootNamespace>
     <AssemblyName>OLAF.Base</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -41,7 +41,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
+    <OutputPath>..\..\bin\x64\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -79,11 +79,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActivityDetector\ActivityDetector.cs" />
+    <Compile Include="Api\OLAFApiStatus.cs" />
     <Compile Include="Api\OLAFApi.cs" />
     <Compile Include="Api\Global.cs" />
     <Compile Include="Api\Message.cs" />
     <Compile Include="Api\MessageQueue.cs" />
-    <Compile Include="Api\StatusCode.cs" />
+    <Compile Include="Api\OLAFApiMessage.cs" />
+    <Compile Include="Api\OLAFApiResult.cs" />
     <Compile Include="Extensions\AssemblyExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Logger\SimpleConsoleLogger.cs" />
@@ -91,7 +93,6 @@
     <Compile Include="Interface\Interface.cs" />
     <Compile Include="Logger\ILogger.cs" />
     <Compile Include="Logger\LoggerException.cs" />
-    <Compile Include="Monitor\AppHookMonitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

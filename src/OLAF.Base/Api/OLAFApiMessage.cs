@@ -1,14 +1,12 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OLAF.Base.Interface
+namespace OLAF
 {
-    public enum ExitCode
+    public class ApiMessage<T> where T : OLAFApi<T>
     {
-        Success= 0,
-        FileNotFound = 1
     }
 }

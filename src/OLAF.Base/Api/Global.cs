@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -13,33 +14,31 @@ namespace OLAF
         #region Constructor
         static Global()
         {
-            MonitorAssemblies = Assembly.GetExecutingAssembly().LoadAllFrom("OLAF.Monitors.*.dll");
-            foreach (string n in ExcludedAssemblyNames)
-            {
-                if (MonitorAssemblies.Any(a => a.FullName.StartsWith(n)))
-                {
-                    MonitorAssemblies.RemoveAll(a => a.FullName.StartsWith(n));
-                }
-            }
-            if (MonitorAssemblies == null)
-            {
-                throw new Exception("Did not load any OLAF monitor assemblies.");
-            }
+            MonitorAssemblies = Assembly.GetExecutingAssembly().LoadAllFrom("OLAF.Monitors.*.dll") ??
+                throw new Exception("No monitor assemblies found in directory: " + AssemblyDirectory.FullName + ".");
+            ActivityDetectorAssemblies = Assembly.GetExecutingAssembly().LoadAllFrom("OLAF.ActivityDetectors.*.dll") ??
+                throw new Exception("No activity detector assemblies found in directory: " + AssemblyDirectory.FullName + ".");
+            LoadedAssemblies = MonitorAssemblies.Concat(ActivityDetectorAssemblies).ToList();
             CancellationTokenSource = new CancellationTokenSource();
         }
         #endregion
 
         #region Properties
-        public static ILogger Logger { get; private set; }
+        public static ILogger Logger { get; private set; } = new SimpleConsoleLogger();
+
+        private static DirectoryInfo AssemblyDirectory = new FileInfo(Assembly.GetExecutingAssembly().Location).Directory;
+
+        private static Version AssemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
 
         public static List<Assembly> MonitorAssemblies { get; internal set; }
 
-        public static List<Assembly> OLAFLoadedAssemblies { get; internal set; }
+        public static List<Assembly> ActivityDetectorAssemblies { get; internal set; }
 
         public static string[] ExcludedAssemblyNames { get; } = new string[0];
 
-        public static CancellationTokenSource CancellationTokenSource { get; }
+        public static List<Assembly> LoadedAssemblies { get; internal set; }
 
+        public static CancellationTokenSource CancellationTokenSource { get; }
 
         public static MessageQueue MessageQueue { get; private set; }
         #endregion
@@ -49,9 +48,14 @@ namespace OLAF
         {
             lock (setupLoggerLock)
             {
-                if (Logger == null)
+                if (!loggerIsSetup)
                 {
                     Logger = logger();
+                    loggerIsSetup = true;
+                }
+                else
+                {
+                    throw new InvalidOperationException("The global logger is already configured.");
                 }
             }
         }
@@ -71,17 +75,18 @@ namespace OLAF
             {
                 if (MessageQueue == null)
                 {
-                    MessageQueue = new MessageQueue(GetSubTypes<Monitor>());
+                    MessageQueue = new MessageQueue(GetSubTypes<Monitor>().Concat(GetSubTypes<ActivityDetector>())
+                        .ToArray());
                 }
             }
         }
 
         public static Type[] GetSubTypes<T>(string assemblyName = "")
         {
-            IEnumerable<Assembly> assemblies = MonitorAssemblies;
-            if (MonitorAssemblies.Count(a => assemblyName.IsNotEmpty() && a.GetName().Name == assemblyName) > 0)
+            IEnumerable<Assembly> assemblies = LoadedAssemblies;
+            if (LoadedAssemblies.Count(a => assemblyName.IsNotEmpty() && a.GetName().Name == assemblyName) > 0)
             {
-                assemblies = MonitorAssemblies.Where(a => a.FullName.StartsWith(assemblyName));
+                assemblies = LoadedAssemblies.Where(a => a.FullName.StartsWith(assemblyName));
             }
             else if (assemblyName.IsNotEmpty())
             {
@@ -98,6 +103,7 @@ namespace OLAF
         
         #region Fields
         private static object setupLoggerLock = new object();
+        private static bool loggerIsSetup = false;
         private static object setupMessageQueueLock = new object();
         #endregion
     }
