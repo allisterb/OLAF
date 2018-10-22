@@ -44,7 +44,7 @@ namespace OLAF
                         }
                         else
                         {
-                            Warn("Path {0} currently has no files.", kv.Value);
+                            Warn("Path {0} currently has no files matching pattern {1}.", dir.FullName, kv.Value);
                             Debug("Adding {0} {1} to monitored paths.", dir.FullName, kv.Value);
                             Paths.Add(dir, kv.Value);
                         }
@@ -74,6 +74,10 @@ namespace OLAF
         }
         #endregion
 
+        #region Abstract methods
+        protected abstract ApiResult ProcessQueueMessage(TMessage message);
+        #endregion
+
         #region Properties
         protected Dictionary<DirectoryInfo, string> Paths;
         #endregion
@@ -81,25 +85,25 @@ namespace OLAF
         #region Methods
         protected override void MonitorQueue(CancellationToken token)
         {
-            while (!token.IsCancellationRequested)
+            try
             {
-                try
+                while (!token.IsCancellationRequested)
                 {
-                    TMessage msg =
-                        (TMessage) Global.MessageQueue.Dequeue<TMessage>(cancellationToken);
-                }
-                catch (OperationCanceledException)
-                {
-                    Info("Stopping {0} queue monitor.", typeof(TDetector).Name);
-                    Status = ApiStatus.Ok;
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    Error(ex, "Exception thrown during {0} queue monitoring.", typeof(TDetector).Name);
+                    TMessage message =
+                        (TMessage)Global.MessageQueue.Dequeue<TDetector>(cancellationToken);
+                    ProcessQueueMessage(message);
                 }
             }
-
+            catch (OperationCanceledException)
+            {
+                Info("Stopping {0} queue monitor.", typeof(TDetector).Name);
+                Status = ApiStatus.Ok;
+                return;
+            }
+            catch (Exception ex)
+            {
+                Error(ex, "Exception thrown during {0} queue monitoring.", typeof(TDetector).Name);
+            }
         }
         #endregion
     }

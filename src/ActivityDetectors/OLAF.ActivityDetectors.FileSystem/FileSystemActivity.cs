@@ -33,7 +33,7 @@ namespace OLAF.ActivityDetectors
         #region Event Handlers
         private void FileSystemActivity_Created(object sender, FileSystemEventArgs e)
         {
-            throw new NotImplementedException();
+            Global.MessageQueue.Enqueue<FileSystemActivity>(new FileSystemChangeMessage(e.FullPath, e.ChangeType));
         }
         #endregion
     }

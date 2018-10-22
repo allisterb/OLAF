@@ -63,6 +63,11 @@ namespace OLAF.Monitors
             return ApiResult.Success;
         }
 
+        protected override ApiResult ProcessQueueMessage(FileSystemChangeMessage message)
+        {
+            Info(message.Path);
+            return ApiResult.Success;
+        }
         #endregion
 
         #region Properties
