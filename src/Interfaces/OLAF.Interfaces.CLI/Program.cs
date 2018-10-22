@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using OLAF.Loggers;
+using OLAF.Monitors;
 using OLAF.Monitors.Windows;
 
 namespace OLAF
@@ -66,31 +67,27 @@ namespace OLAF
             }
 
             Global.SetupLogger(() => SerilogLogger.CreateLogger(enabledLogOptions));
-            if (WithDebugOutput)
-            {
-                Info("Log level is {0}.", "Debug");
-            }
-            if (WithLogFile)
-            {
-                Info("Log file is {0}.", "OLAF-(date).log");
-            }
-            if (WithoutConsole)
-            {
-                Info("Not logging to console.");
-            }
 
             Global.SetupMessageQueue();
-       
+
+            /*
             Monitor m = new ExplorerMonitor();
-            if (m.Status != ApiStatus.Ok )
+            
+            */
+            Dictionary<string, string> paths = new Dictionary<string, string>()
             {
-                Error("Could not load monitor {0}.", typeof(ExplorerMonitor).Name);
+                {@"D:\Downloads", "*.txt" }
+            };
+            Monitor m = new DirectoryChangesMonitor(paths);
+            if (m.Status != ApiStatus.Ok)
+            {
+                Error("Could not load monitor {0}.", typeof(DirectoryChangesMonitor).Name);
                 Exit(ExitCode.UnhandledException);
             }
             m.Init();
             if (m.Status != ApiStatus.Initialized)
             {
-                Error("Could not initialize monitor {0}.", typeof(ExplorerMonitor).Name);
+                Error("Could not initialize monitor {0}.", typeof(DirectoryChangesMonitor).Name);
                 Exit(ExitCode.UnhandledException);
             }
             m.Start();
@@ -145,7 +142,6 @@ namespace OLAF
 
         static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
-            Info("Ctrl-C pressed. Stopping...");
             if (!Global.CancellationTokenSource.IsCancellationRequested)
             {
                 Global.CancellationTokenSource.Cancel();

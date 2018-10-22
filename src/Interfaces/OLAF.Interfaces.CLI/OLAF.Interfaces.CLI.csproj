@@ -104,9 +104,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\ActivityDetectors\OLAF.ActivityDetectors.Windows.FileActivityHook\OLAF.ActivityDetectors.Windows.FileActivityHook.csproj">
-      <Project>{43d2571f-d4a3-4d24-bad7-5b7da42b6293}</Project>
-      <Name>OLAF.ActivityDetectors.Windows.FileActivityHook</Name>
+    <ProjectReference Include="..\..\Monitors\OLAF.Monitors.DirectoryChanges\OLAF.Monitors.DirectoryChanges.csproj">
+      <Project>{dba4c2fe-6c57-4c11-8446-591da0a594eb}</Project>
+      <Name>OLAF.Monitors.DirectoryChanges</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Monitors\OLAF.Monitors.Windows.AppHook\OLAF.Monitors.Windows.AppHook.csproj">
       <Project>{1539ecc4-464c-4b5c-86dc-1039ef4f9547}</Project>

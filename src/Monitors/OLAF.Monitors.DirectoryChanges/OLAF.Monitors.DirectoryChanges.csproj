@@ -80,8 +80,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="DirectoryChangesMonitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ActivityDetectors\OLAF.ActivityDetectors.FileSystem\OLAF.ActivityDetectors.FileSystem.csproj">
+      <Project>{7aa345d8-730f-4dd2-ba79-d63efe3131cd}</Project>
+      <Name>OLAF.ActivityDetectors.FileSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\OLAF.Base\OLAF.Base.csproj">
+      <Project>{8d448b26-d206-48c8-b17f-a31133c25665}</Project>
+      <Name>OLAF.Base</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -29,29 +29,9 @@ namespace OLAF
             return new string(c, 1);
         }
 
-        public static string ToStringInvariant<T>(this T value)
+        public static string ToSpaces(this string s)
         {
-            return Convert.ToString(value, CultureInfo.InvariantCulture);
-        }
-
-        public static string ToStringLocal<T>(this T value)
-        {
-            return Convert.ToString(value, CultureInfo.CurrentCulture);
-        }
-
-        public static string FormatInvariant(this string value, params object[] arguments)
-        {
-            return string.Format(CultureInfo.InvariantCulture, value, arguments);
-        }
-
-        public static string FormatLocal(this string value, params object[] arguments)
-        {
-            return string.Format(CultureInfo.CurrentCulture, value, arguments);
-        }
-
-        public static string Spaces(this int value)
-        {
-            return new string(' ', value);
+            return new string(' ', s.Length);
         }
 
         public static bool EqualsOrdinal(this string strA, string strB)

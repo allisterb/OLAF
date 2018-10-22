@@ -15,7 +15,7 @@ using OLAF.ActivityDetectors.Windows;
 
 namespace OLAF.Monitors.Windows
 {
-    public class WindowsAppHookMonitor<TDetector, TMessage> : Monitor 
+    public class WindowsAppHookMonitor<TDetector, TMessage> : AppMonitor 
         where TDetector : ActivityDetector
         where TMessage : Message
     {
@@ -49,6 +49,10 @@ namespace OLAF.Monitors.Windows
                 {
                     injected++;
                 }
+               else
+                {
+                    Warn("Not monitoring process id {0}.", Processes[i].Id);
+                }
             }
             if (injected > 0)
             {
@@ -65,7 +69,7 @@ namespace OLAF.Monitors.Windows
 
         public override ApiResult Start()
         {
-            QueueMonitorThread = new Thread(() => MonitorQueue(cancellationToken));
+            QueueMonitorThread = new Thread(() => MonitorQueue(Global.CancellationTokenSource.Token));
             QueueMonitorThread.Start();
             return ApiResult.Success;
         }
@@ -91,17 +95,16 @@ namespace OLAF.Monitors.Windows
                 try
                 {
                     TMessage msg = (TMessage) Global.MessageQueue.Dequeue<TDetector>(cancellationToken);
-                    Debug(msg.ProcessId.ToString());
                 }
                 catch (OperationCanceledException)
                 {
-                    Info("Stopping queue monitor");
+                    Info("Stopping queue monitor.");
                     Status = ApiStatus.Ok;
                     return;
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine(ex);
+                    Error(ex, "Exception thrown during queue monitoring.");
                 }
             }
             

@@ -53,16 +53,13 @@ namespace OLAF.ActivityDetectors.Windows
         public FileActivityHook(RemoteHooking.IContext context, string channelName, int processId, Type monitorType) :
             base(processId, monitorType)
         {
+            
             // Connect to server object using provided channel name
             remote = RemoteHooking.IpcConnectClient<EasyHookIpcInterface>(channelName);
 
             // If Ping fails then the Run method will be not be called
             remote.Ping();
         }
-        #endregion
-
-        #region Fields
-        EasyHookIpcInterface remote = null;
         #endregion
 
         #region Methods
@@ -86,8 +83,8 @@ namespace OLAF.ActivityDetectors.Windows
                 LocalHook.GetProcAddress("kernel32.dll", "CreateFileW"),
                 new CreateFile_Delegate(CreateFile_Hook),
                 this);
-
-            // ReadFile https://msdn.microsoft.com/en-us/library/windows/desktop/aa365467(v=vs.85).aspx
+            
+             //ReadFile https://msdn.microsoft.com/en-us/library/windows/desktop/aa365467(v=vs.85).aspx
             var readFileHook = LocalHook.Create(
                 LocalHook.GetProcAddress("kernel32.dll", "ReadFile"),
                 new ReadFile_Delegate(ReadFile_Hook),
@@ -105,16 +102,19 @@ namespace OLAF.ActivityDetectors.Windows
             readFileHook.ThreadACL.SetExclusiveACL(new Int32[] { 0 });
             writeFileHook.ThreadACL.SetExclusiveACL(new Int32[] { 0 });
 
-            remote.Info("{0}, {1} and {2} hooks installed in process {3}.", nameof(createFileHook), nameof(readFileHook), 
+            remote.Info("{0}, {1} and {2} hooks active in process {3}.", nameof(createFileHook), nameof(readFileHook), 
                 nameof(writeFileHook), processId);
 
             // Wake up the process (required if using RemoteHooking.CreateAndInject)
-            //RemoteHooking.WakeUpProcess();
+            RemoteHooking.WakeUpProcess();
 
             try
             {
-                while (!remote.IsCancellationRequested());
-                remote.Info("File activity hook shutting down.");
+                
+                while (!remote.IsCancellationRequested())
+                {
+                    Thread.Sleep(500);
+                }
             }
             catch
             {
@@ -127,11 +127,11 @@ namespace OLAF.ActivityDetectors.Windows
             writeFileHook.Dispose();
             remote.Info("{0}, {1} and {2} hooks removed from process {3}.", nameof(createFileHook), nameof(readFileHook),
                nameof(writeFileHook), processId);
-
+            
             // Finalise cleanup of hooks
             LocalHook.Release();
             remote.Info("{0} with monitor type {1} removed from process id {2} .",
-                typeof(FileActivityHook).Name, monitorType.FullName, processId);
+                typeof(FileActivityHook).Name, monitorType.Name, processId);
         }
 
         /// <summary>
@@ -234,7 +234,7 @@ namespace OLAF.ActivityDetectors.Windows
                 securityAttributes,
                 creationDisposition,
                 flagsAndAttributes,
-                templateFile);
+                templateFile);   
         }
 
         #endregion
@@ -292,9 +292,10 @@ namespace OLAF.ActivityDetectors.Windows
             out uint lpNumberOfBytesRead,
             IntPtr lpOverlapped)
         {
+            
             bool result = false;
             lpNumberOfBytesRead = 0;
-
+            
             // Call original first so we have a value for lpNumberOfBytesRead
             result = ReadFile(hFile, lpBuffer, nNumberOfBytesToRead, out lpNumberOfBytesRead, lpOverlapped);
 
@@ -304,12 +305,12 @@ namespace OLAF.ActivityDetectors.Windows
                 GetFinalPathNameByHandle(hFile, filename, 255, 0);
                 remote.EnqueueFileActivity(processId, FileOp.Read, filename.ToString());
             }
-            catch
+            catch(Exception)
             {
+
                 // swallow exceptions so that any issues caused by this code do not crash target process
             }
-
-            return result;
+            return result;            
         }
 
         #endregion
@@ -379,7 +380,7 @@ namespace OLAF.ActivityDetectors.Windows
             {
                 StringBuilder filename = new StringBuilder(255);
                 GetFinalPathNameByHandle(hFile, filename, 255, 0);
-                remote.EnqueueFileActivity(processId, RemoteHooking.GetCurrentThreadId(), FileOp.Write,
+                remote.EnqueueFileActivity(processId, FileOp.Write,
                     filename.ToString());
             }
             catch
@@ -391,7 +392,11 @@ namespace OLAF.ActivityDetectors.Windows
         }
 
         #endregion
-    
+
+        #endregion
+
+        #region Fields
+        EasyHookIpcInterface remote = null;
         #endregion
     }
 }

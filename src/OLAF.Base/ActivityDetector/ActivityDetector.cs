@@ -14,6 +14,12 @@ namespace OLAF
             processId = pid;
             monitorType = mt;
         }
+
+        public ActivityDetector(Type mt)
+        {
+            processId = 0;
+            monitorType = mt;
+        }
         #endregion
 
         #region Fields

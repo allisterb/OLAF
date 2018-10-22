@@ -62,6 +62,18 @@ namespace OLAF.Loggers
                 }
                 Log.Logger = LoggerConfiguration.CreateLogger();
                 LoggerConfigured = true;
+                if (enabledOptions.Contains("WithDebugOutput"))
+                {
+                    Log.Logger.Information("Log level is {0}.", "Debug");
+                }
+                if (enabledOptions.Contains("WithLogFile"))
+                {
+                    Log.Logger.Information("Log file is {0}.", "OLAF.log");
+                }
+                if (enabledOptions.Contains("WithoutConsole"))
+                {
+                    Log.Logger.Information("Not logging to console.");
+                }
             }
             return new SerilogLogger();
         }
