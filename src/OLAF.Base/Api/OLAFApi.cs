@@ -13,6 +13,30 @@ namespace OLAF
     public abstract class OLAFApi<T>
     {
         #region Cosnstructors
+        static OLAFApi()
+        {
+            if (!Directory.Exists(GetCurrentDirectoryPathTo("data")))
+            {
+                DataDirectory = CurrentDirectory.CreateSubdirectory("data");
+            }
+            else
+            {
+                DataDirectory = new DirectoryInfo(GetCurrentDirectoryPathTo("data"));
+            }
+
+            if (!Directory.Exists(GetCurrentDirectoryPathTo("data", "artifacts")))
+            {
+                BaseArtifactsDirectory = DataDirectory.CreateSubdirectory("artifacts");
+            }
+            else BaseArtifactsDirectory = new DirectoryInfo(GetCurrentDirectoryPathTo("data", "artifacts"));
+
+            if (!Directory.Exists(GetCurrentDirectoryPathTo("data", "dictionaries")))
+            {
+                BaseDictionariesDirectory = DataDirectory.CreateSubdirectory("dictionaries");
+            }
+            else BaseDictionariesDirectory = new DirectoryInfo(GetCurrentDirectoryPathTo("data", "dictionaries"));
+        }
+
         public OLAFApi()
         {
             if (L == null)
@@ -26,16 +50,29 @@ namespace OLAF
         #region Properties
         public ApiStatus Status { get; protected set; } = ApiStatus.Unknown;
 
-        protected static DirectoryInfo AssemblyDirectory = new FileInfo(Assembly.GetExecutingAssembly().Location).Directory;
+        protected static DirectoryInfo AssemblyDirectory { get; } = new FileInfo(Assembly.GetExecutingAssembly().Location).Directory;
 
-        protected static Version AssemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
+        protected static Version AssemblyVersion { get; } = Assembly.GetExecutingAssembly().GetName().Version;
+
+        protected static DirectoryInfo CurrentDirectory { get; } = new DirectoryInfo(Directory.GetCurrentDirectory());
+
+        protected static DirectoryInfo DataDirectory { get; }
+
+        protected static DirectoryInfo BaseArtifactsDirectory { get; }
+
+        protected static DirectoryInfo BaseDictionariesDirectory { get; }
 
         protected static ILogger L => Global.Logger;
         #endregion
 
         #region Methods
-        protected static string GetAssemblyDirectoryFullPath(string path) =>
+        [DebuggerStepThrough]
+        protected static string GetAssemblyDirectoryPathTo(string path) =>
             Path.Combine(AssemblyDirectory.FullName, path);
+
+        [DebuggerStepThrough]
+        protected static string GetCurrentDirectoryPathTo(params string[] paths) =>
+            Path.Combine(CurrentDirectory.FullName, Path.Combine(paths));
 
         [DebuggerStepThrough]
         protected static void Info(string messageTemplate, params object[] propertyValues) =>

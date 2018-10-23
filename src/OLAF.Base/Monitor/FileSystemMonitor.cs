@@ -160,11 +160,7 @@ namespace OLAF
         protected abstract ApiResult ProcessQueueMessage(TMessage message);
         #endregion
 
-        #region Properties
-        protected Dictionary<DirectoryInfo, string> Paths;
-        #endregion
-
-        #region Methods
+        #region OVerriden members
         protected override void MonitorQueue(CancellationToken token)
         {
             try
@@ -175,6 +171,9 @@ namespace OLAF
                         (TMessage)Global.MessageQueue.Dequeue<TDetector>(cancellationToken);
                     ProcessQueueMessage(message);
                 }
+                Info("Stopping {0} queue monitor.", typeof(TDetector).Name);
+                Status = ApiStatus.Ok;
+                return;
             }
             catch (OperationCanceledException)
             {
@@ -187,6 +186,10 @@ namespace OLAF
                 Error(ex, "Exception thrown during {0} queue monitoring.", typeof(TDetector).Name);
             }
         }
+        #endregion
+
+        #region Properties
+        protected Dictionary<DirectoryInfo, string> Paths;
         #endregion
     }
 }

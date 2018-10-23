@@ -59,7 +59,13 @@ namespace OLAF.ActivityDetectors.Windows
 
             // If Ping fails then the Run method will be not be called
             remote.Ping();
+
+            Status = ApiStatus.Ok;
         }
+        #endregion
+
+        #region Overridden members
+        public override ApiResult Enable() => throw new NotSupportedException();
         #endregion
 
         #region Methods

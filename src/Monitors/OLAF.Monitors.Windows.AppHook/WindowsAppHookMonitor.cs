@@ -68,13 +68,6 @@ namespace OLAF.Monitors.Windows
             
         }
 
-        public override ApiResult Start()
-        {
-            QueueMonitorThread = new Thread(() => MonitorQueue(Global.CancellationTokenSource.Token));
-            QueueMonitorThread.Start();
-            return ApiResult.Success;
-        }
-
         public override ApiResult Shutdown()
         {
             if(!cancellationToken.IsCancellationRequested)
@@ -86,7 +79,7 @@ namespace OLAF.Monitors.Windows
 
         protected override void MonitorQueue(CancellationToken token)
         {
-            while (!token.IsCancellationRequested)
+            while (!token.IsCancellationRequested && !ShutdownRequested)
             {
                 try
                 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,11 @@ namespace OLAF
         public Profile(string name)
         {
             Name = name;
+            string artifactsdir = GetCurrentDirectoryPathTo("data", "artifacts", GetArtifactsDirectoryName());
+            if(!Directory.Exists(artifactsdir))
+            {
+                Directory.CreateDirectory(artifactsdir);
+            }
             Status = ApiStatus.Initializing;
         }
         #endregion
@@ -23,10 +29,12 @@ namespace OLAF
         #endregion
 
         #region Properties
-        public List<Monitor> Monitors { get; protected set; }
-
         public static string[] ImageWildcardExtensions = {"*.bmp", "*.dib", "*.rle", "*.jpg", "*.jpeg", "*.jpe", "*.jfif", "*.gif", "*.tif",
             "*.tiff", "*.png"};
+
+        public List<Monitor> Monitors { get; protected set; }
+        
+        //public DirectoryInfo Arti
         #endregion
 
         #region Methods
@@ -49,6 +57,11 @@ namespace OLAF
                 return ApiResult.Failure;
             }
         }
+
+        protected string GetArtifactsDirectoryName() =>
+            string.Format("{0:D4}{1:D2}{2:D2}_{3}_{4}", DateTime.Today.Year, DateTime.Today.Month,
+                DateTime.Today.Day, Name, DateTime.UtcNow.Ticks);
+        
         #endregion
     }
 }

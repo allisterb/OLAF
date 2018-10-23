@@ -22,6 +22,10 @@ namespace OLAF
         }
         #endregion
 
+        #region Abstract methods
+        public abstract ApiResult Enable();
+        #endregion
+
         #region Fields
         protected Type monitorType;
         protected int processId;

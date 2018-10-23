@@ -16,9 +16,21 @@ namespace OLAF.ActivityDetectors
             FileSystemWatcher.Created += FileSystemActivity_Created;
             FileSystemWatcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.CreationTime | NotifyFilters.Size;
             Path = path;
+            Status = ApiStatus.Ok;
         }
         #endregion
 
+        #region Overriden members
+        public override ApiResult Enable()
+        {
+            if (Status != ApiStatus.Ok)
+            {
+                throw new InvalidOperationException("An error ocurred during detector creation.");
+            }
+            FileSystemWatcher.EnableRaisingEvents = true;
+            return FileSystemWatcher.EnableRaisingEvents ? ApiResult.Success : ApiResult.Failure;
+        }
+        #endregion
         #region Properties
         public string Path { get; protected set; }
         protected FileSystemWatcher FileSystemWatcher { get; set; }

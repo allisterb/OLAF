@@ -48,13 +48,15 @@ namespace OLAF.ActivityDetectors.Windows
         #endregion
 
         #region Properties
-        protected CancellationToken cancellationToken = Global.CancellationTokenSource.Token;
+        public bool IsCancellationRequested() => cancellationToken.IsCancellationRequested;
+
+
+        public bool HookShutdownComplete { get; protected set; }
 
         protected static ILogger L => Global.Logger;
 
-        public bool IsCancellationRequested() => cancellationToken.IsCancellationRequested;
+        protected CancellationToken cancellationToken = Global.CancellationTokenSource.Token;
 
-        public bool HookShutdownComplete { get; protected set; }
         #endregion
 
         #region Methods
@@ -101,6 +103,10 @@ namespace OLAF.ActivityDetectors.Windows
         [DebuggerStepThrough]
         public virtual void Warn(string messageTemplate, params object[] propertyValues) =>
             L.Warn(messageTemplate, propertyValues);
+        #endregion
+
+        #region Fields
+    
         #endregion
     }
 }
