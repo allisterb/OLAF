@@ -79,7 +79,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActivityDetector\ActivityDetector.cs" />
-    <Compile Include="Api\Native.cs" />
+    <Compile Include="Native\WindowsKnownFolders.cs" />
+    <Compile Include="Native\Win32.cs" />
     <Compile Include="Api\OLAFApiStatus.cs" />
     <Compile Include="Api\OLAFApi.cs" />
     <Compile Include="Api\Global.cs" />
@@ -91,7 +92,6 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Logger\SimpleConsoleLogger.cs" />
     <Compile Include="Monitor\AppMonitor.cs" />
-    <Compile Include="Monitor\FileOp.cs" />
     <Compile Include="Monitor\FileSystemMonitor.cs" />
     <Compile Include="Monitor\Monitor.cs" />
     <Compile Include="Interface\Interface.cs" />

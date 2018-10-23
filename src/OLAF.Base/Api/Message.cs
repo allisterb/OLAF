@@ -9,6 +9,11 @@ namespace OLAF
     public abstract class Message
     {
         #region Constructors
+        public Message()
+        {
+
+        }
+
         public Message(int? processId, int? threadId)
         {
             ProcessId = processId;

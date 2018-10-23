@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace OLAF
 {
-    public class ApiMessage<T> where T : OLAFApi<T>
+    public class ApiMessage : Message
     {
+        
     }
 }

@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7AA345D8-730F-4DD2-BA79-D63EFE3131CD}</ProjectGuid>
+    <ProjectGuid>{8186BC60-7CC7-4FCD-8C2F-6EB7B92E955F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OLAF.ActivityDetectors.FileSystemWatcher</RootNamespace>
-    <AssemblyName>OLAF.ActivityDetectors.FileSystemWatcher</AssemblyName>
+    <RootNamespace>OLAF.Profiles</RootNamespace>
+    <AssemblyName>OLAF.Profiles.Core</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\bin\x64\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -59,11 +59,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileSystemActivity.cs" />
-    <Compile Include="FileSystemChangeMessage.cs" />
+    <Compile Include="UserDownloadedImages.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Monitors\OLAF.Monitors.DirectoryChanges\OLAF.Monitors.DirectoryChanges.csproj">
+      <Project>{dba4c2fe-6c57-4c11-8446-591da0a594eb}</Project>
+      <Name>OLAF.Monitors.DirectoryChanges</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\OLAF.Base\OLAF.Base.csproj">
       <Project>{8d448b26-d206-48c8-b17f-a31133c25665}</Project>
       <Name>OLAF.Base</Name>

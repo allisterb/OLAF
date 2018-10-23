@@ -13,7 +13,6 @@ namespace OLAF
         #region Abstract methods
         public abstract ApiResult Init();
         public abstract ApiResult Start();
-        public abstract ApiResult Stop();
         public abstract ApiResult Shutdown();
 
         protected abstract void MonitorQueue(CancellationToken token);
@@ -21,6 +20,14 @@ namespace OLAF
 
         #region Properties
         public Thread QueueMonitorThread { get; protected set; }
+        
+        public Profile Profile { get; protected set; }
+
+        public bool ShutdownRequested => shutdownRequested;
+
+        public bool ShutdownCompleted => shutdownCompleted;
+
+        protected List<Thread> Threads { get; set; }
         #endregion
 
         #region Methods
@@ -35,6 +42,11 @@ namespace OLAF
                 return null;
             }
         }
+        #endregion
+
+        #region Fields
+        protected bool shutdownRequested = false;
+        protected bool shutdownCompleted = false;
         #endregion
     }
 }

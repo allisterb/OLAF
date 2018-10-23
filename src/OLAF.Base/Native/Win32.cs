@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OLAF
 {
-    public class Native
+    public class Win32
     {
         public static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
         public const int FILE_ATTRIBUTE_DIRECTORY = 16;

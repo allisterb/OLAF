@@ -42,6 +42,7 @@ namespace OLAF.Monitors.Windows
         #region Overriden members
         public override ApiResult Init()
         {
+            if (Status != ApiStatus.Ok) return ApiResult.Failure;
             int injected = 0;
             for (int i = 0; i < Processes.Length; i++)
             {
@@ -74,17 +75,12 @@ namespace OLAF.Monitors.Windows
             return ApiResult.Success;
         }
 
-        public override ApiResult Stop()
+        public override ApiResult Shutdown()
         {
             if(!cancellationToken.IsCancellationRequested)
             {
                 Global.CancellationTokenSource.Cancel();
             }
-            return ApiResult.Success;
-        }
-
-        public override ApiResult Shutdown()
-        {
             return ApiResult.Success;
         }
 

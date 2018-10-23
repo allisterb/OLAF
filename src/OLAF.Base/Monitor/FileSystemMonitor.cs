@@ -13,7 +13,7 @@ namespace OLAF
         where TMessage : Message
     {
         #region Constructors
-        public FileSystemMonitor(Dictionary<string, string> paths)
+        public FileSystemMonitor(Dictionary<string, string> paths, Profile profile = null)
         {
             if (paths == null)
             {
@@ -25,6 +25,7 @@ namespace OLAF
             }
 
             Paths = new Dictionary<DirectoryInfo, string>(paths.Keys.Count);
+            Profile = profile;
             foreach (KeyValuePair<string, string> kv in paths)
             {
                 try
@@ -34,9 +35,9 @@ namespace OLAF
                         DirectoryInfo dir = new DirectoryInfo(kv.Key);
                         string searchPattern = Path.Combine(dir.FullName, kv.Value);
                         //IEnumerable c = dir.EnumerateFileSystemInfos(kv.Value, SearchOption.AllDirectories);
-                        var findFileData = new Native.WIN32_FIND_DATA();
-                        IntPtr hFindFile = Native.FindFirstFile(searchPattern, ref findFileData);
-                        if (hFindFile != Native.INVALID_HANDLE_VALUE)
+                        var findFileData = new Win32.WIN32_FIND_DATA();
+                        IntPtr hFindFile = Win32.FindFirstFile(searchPattern, ref findFileData);
+                        if (hFindFile != Win32.INVALID_HANDLE_VALUE)
                         {
                             Debug("Adding {0} {1} to monitored paths.", dir.FullName, kv.Value);
                             Paths.Add(dir, kv.Value);
@@ -65,7 +66,88 @@ namespace OLAF
             }
             if (Paths.Count > 0)
             {
-                Status = ApiStatus.Ok;
+                Status = ApiStatus.Initializing;
+            }
+            else
+            {
+                Status = ApiStatus.FileNotFound;
+            }
+        }
+        
+        public FileSystemMonitor(string[] directories, string[] extensions, Profile profile)
+        {
+            if (directories == null)
+            {
+                throw new ArgumentNullException(nameof(directories));
+            }
+            else if (directories.Length == 0)
+            {
+                throw new ArgumentException("No paths specified.", nameof(directories));
+            }
+
+            if (extensions == null)
+            {
+                throw new ArgumentNullException(nameof(extensions));
+            }
+            else if (extensions.Length == 0)
+            {
+                throw new ArgumentException("No paths specified.", nameof(extensions));
+            }
+
+            Paths = new Dictionary<DirectoryInfo, string>(directories.Length * extensions.Length);
+            foreach (string d in directories)
+            {
+                try
+                {
+                    if (Directory.Exists(d))
+                    {
+                        foreach (string ext in extensions)
+                        {
+                            DirectoryInfo dir = new DirectoryInfo(d);
+                            try
+                            {
+                                string searchPattern = Path.Combine(dir.FullName, ext);
+                                var findFileData = new Win32.WIN32_FIND_DATA();
+                                IntPtr hFindFile = Win32.FindFirstFile(searchPattern, ref findFileData);
+                                if (hFindFile != Win32.INVALID_HANDLE_VALUE)
+                                {
+                                    Debug("Adding {0} {1} to monitored paths.", dir.FullName, ext);
+                                    Paths.Add(dir, ext);
+
+                                }
+                                else
+                                {
+                                    Warn("Path {0} currently has no files matching pattern {1}.", dir.FullName, ext);
+                                    Debug("Adding {0} {1} to monitored paths.", dir.FullName, ext);
+                                    Paths.Add(dir, ext);
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                Error(e, "Error occurred enumerating files in directory {0} using search pattern {1}.",
+                                    d, ext);
+                                Debug("Not adding {0} to monitored paths.", Path.Combine(dir.FullName, ext));
+                                continue;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Warn("The directory {0} does not exist.", d);
+                        continue;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Error(e, "Error occurred enumerating files in directory {0}.", d);
+                    Debug("Not adding {0} to monitored paths.", d);
+                    continue;
+                }
+            }
+            Profile = profile;
+            if (Paths.Count > 0)
+            {
+                Status = ApiStatus.Initializing;
             }
             else
             {
@@ -87,7 +169,7 @@ namespace OLAF
         {
             try
             {
-                while (!token.IsCancellationRequested)
+                while (!shutdownRequested && !token.IsCancellationRequested)
                 {
                     TMessage message =
                         (TMessage)Global.MessageQueue.Dequeue<TDetector>(cancellationToken);

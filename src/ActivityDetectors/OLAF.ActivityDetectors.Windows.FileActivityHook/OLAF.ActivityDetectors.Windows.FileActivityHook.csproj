@@ -84,7 +84,7 @@
   <ItemGroup>
     <Compile Include="FileActivityHook.cs" />
     <Compile Include="FileActivityMessage.cs" />
-    <Compile Include="ProducerConsumer.cs" />
+    <Compile Include="FileOp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EasyHookIpcInterface.cs" />
   </ItemGroup>

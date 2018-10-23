@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using OLAF.Loggers;
 using OLAF.Monitors;
 using OLAF.Monitors.Windows;
+using OLAF.Profiles;
 
 namespace OLAF
 {
@@ -70,10 +71,26 @@ namespace OLAF
 
             Global.SetupMessageQueue();
 
+            UserDownloadedImages m = new UserDownloadedImages();
+
+            if (m.Status != ApiStatus.Initializing)
+            {
+                Error("Could not load m {0}.", typeof(DirectoryChangesMonitor).Name);
+                Exit(ExitCode.UnhandledException);
+            }
+            m.Init();
+            if (m.Status != ApiStatus.Initialized)
+            {
+                Error("Could not initialize monitor {0}.", typeof(DirectoryChangesMonitor).Name);
+                Exit(ExitCode.UnhandledException);
+            }
+            m.Start();
+            ConsoleKeyInfo key = Console.ReadKey();
+            m.Shutdown();
             /*
             Monitor m = new ExplorerMonitor();
             
-            */
+            
             Dictionary<string, string> paths = new Dictionary<string, string>()
             {
                 {@"D:\Downloads", "*.txt" }
@@ -91,9 +108,8 @@ namespace OLAF
                 Exit(ExitCode.UnhandledException);
             }
             m.Start();
-            Info("Monitor(s) started. Press any key to stop...");
-            ConsoleKeyInfo key = Console.ReadKey();
-            Global.CancellationTokenSource.Cancel();
+            Info("Monitor(s) started. Press any key to stop..."); */
+
         }
 
         static void Exit(ExitCode result)

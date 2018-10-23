@@ -15,10 +15,12 @@ namespace OLAF.ActivityDetectors
             FileSystemWatcher = new FileSystemWatcher(path, filter);
             FileSystemWatcher.Created += FileSystemActivity_Created;
             FileSystemWatcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.CreationTime | NotifyFilters.Size;
+            Path = path;
         }
         #endregion
 
         #region Properties
+        public string Path { get; protected set; }
         protected FileSystemWatcher FileSystemWatcher { get; set; }
         #endregion
 

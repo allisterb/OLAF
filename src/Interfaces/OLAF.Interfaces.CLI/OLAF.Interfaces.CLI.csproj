@@ -120,6 +120,10 @@
       <Project>{81a43067-e9cf-4cab-bb84-13ac75d85240}</Project>
       <Name>OLAF.Loggers.Serilog</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Profiles\OLAF.Profiles.Core\OLAF.Profiles.Core.csproj">
+      <Project>{8186bc60-7cc7-4fcd-8c2f-6eb7b92e955f}</Project>
+      <Name>OLAF.Profiles.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
