@@ -13,7 +13,7 @@ namespace OLAF
         where TMessage : Message
     {
         #region Constructors
-        public FileSystemMonitor(Dictionary<string, string> paths, Profile profile = null)
+        public FileSystemMonitor(Dictionary<string, string> paths, Profile profile)
         {
             if (paths == null)
             {
@@ -34,7 +34,6 @@ namespace OLAF
                     {
                         DirectoryInfo dir = new DirectoryInfo(kv.Key);
                         string searchPattern = Path.Combine(dir.FullName, kv.Value);
-                        //IEnumerable c = dir.EnumerateFileSystemInfos(kv.Value, SearchOption.AllDirectories);
                         var findFileData = new Win32.WIN32_FIND_DATA();
                         IntPtr hFindFile = Win32.FindFirstFile(searchPattern, ref findFileData);
                         if (hFindFile != Win32.INVALID_HANDLE_VALUE)
@@ -183,7 +182,7 @@ namespace OLAF
             }
             catch (Exception ex)
             {
-                Error(ex, "Exception thrown during {0} queue monitoring.", typeof(TDetector).Name);
+                Error(ex, "Error occurred during {0} queue monitoring.", typeof(TDetector).Name);
             }
         }
         #endregion

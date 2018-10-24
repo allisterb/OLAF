@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace OLAF.ActivityDetectors
 {
@@ -31,8 +31,10 @@ namespace OLAF.ActivityDetectors
             return FileSystemWatcher.EnableRaisingEvents ? ApiResult.Success : ApiResult.Failure;
         }
         #endregion
+
         #region Properties
         public string Path { get; protected set; }
+
         protected FileSystemWatcher FileSystemWatcher { get; set; }
         #endregion
 
@@ -47,7 +49,8 @@ namespace OLAF.ActivityDetectors
         #region Event Handlers
         private void FileSystemActivity_Created(object sender, FileSystemEventArgs e)
         {
-            Global.MessageQueue.Enqueue<FileSystemActivity>(new FileSystemChangeMessage(e.FullPath, e.ChangeType));
+            Global.MessageQueue.Enqueue<FileSystemActivity>(
+                new FileSystemChangeMessage(Interlocked.Increment(ref messageId), e.FullPath, e.ChangeType));
         }
         #endregion
     }

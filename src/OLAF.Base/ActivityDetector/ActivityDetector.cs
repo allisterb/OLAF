@@ -29,6 +29,7 @@ namespace OLAF
         #region Fields
         protected Type monitorType;
         protected int processId;
+        protected long messageId = 0;
         #endregion
     }
 }

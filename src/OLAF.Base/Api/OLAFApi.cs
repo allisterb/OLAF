@@ -12,7 +12,7 @@ namespace OLAF
 {
     public abstract class OLAFApi<T>
     {
-        #region Cosnstructors
+        #region Constructors
         static OLAFApi()
         {
             if (!Directory.Exists(GetCurrentDirectoryPathTo("data")))

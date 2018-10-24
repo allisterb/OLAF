@@ -6,14 +6,15 @@ using System.Text;
 using System.Threading;
 
 using OLAF.ActivityDetectors;
+
 namespace OLAF.Monitors
 {
     public class DirectoryChangesMonitor : FileSystemMonitor<FileSystemActivity, FileSystemChangeMessage>
     {
         #region Constructors
-        public DirectoryChangesMonitor(Dictionary<string, string> paths, Profile profile = null) : base(paths, profile) {}
+        public DirectoryChangesMonitor(Dictionary<string, string> paths, Profile profile) : base(paths, profile) {}
 
-        public DirectoryChangesMonitor(string[] dirs, string[] exts, Profile profile = null) : base(dirs, exts, profile) { }
+        public DirectoryChangesMonitor(string[] dirs, string[] exts, Profile profile) : base(dirs, exts, profile) {}
         #endregion
 
         #region Overridden members
@@ -28,8 +29,9 @@ namespace OLAF.Monitors
                     KeyValuePair<DirectoryInfo, string> path = Paths.ElementAt(i);
                     Detectors.Add(new FileSystemActivity(path.Key.FullName, path.Value, 
                         typeof(DirectoryChangesMonitor)));
-                    Info("Monitoring path {0}.", Path.Combine(path.Key.FullName, path.Value));
                 }
+                Info("Monitoring {0} paths for files with extension(s) {1}.", Paths.Count,
+                    Paths.Values.Distinct());
                 Status = ApiStatus.Initialized;
                 return ApiResult.Success;
             }
@@ -43,8 +45,38 @@ namespace OLAF.Monitors
 
         protected override ApiResult ProcessQueueMessage(FileSystemChangeMessage message)
         {
-            Info(message.Path);
-            return ApiResult.Success;
+            string artifactName = string.Format("{0}_{1}", message.Id, Path.GetFileName(message.Path));
+            string artifactPath = Profile.GetArtifactsDirectoryPathTo(artifactName);
+            if (TryCopyLockedFileToPath(message.Path, artifactPath))
+            {
+                Debug("Copied artifact {0} to {1}.", message.Path, artifactPath);
+                return ApiResult.Success;
+            }
+            else
+            {
+                Error("Could not copy artifact {0} to {1}.", message.Path, artifactPath);
+                return ApiResult.Success;
+            }
+            
+        }
+
+        protected bool TryCopyLockedFileToPath(string oldPath, string newPath, int maxTries = 60)
+        {
+            int tries = 0;
+            while (tries < maxTries)
+            {
+                try
+                {
+                    File.Copy(oldPath, newPath, false);
+                    return true;
+                }
+                catch (IOException)
+                {
+                    Thread.Sleep(50);
+                    tries++;
+                }
+            }
+            return false;
         }
         #endregion
     }
