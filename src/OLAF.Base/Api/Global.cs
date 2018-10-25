@@ -14,11 +14,20 @@ namespace OLAF
         #region Constructor
         static Global()
         {
-            MonitorAssemblies = Assembly.GetExecutingAssembly().LoadAllFrom("OLAF.Monitors.*.dll") ??
-                throw new Exception("No monitor assemblies found in directory: " + AssemblyDirectory.FullName + ".");
             ActivityDetectorAssemblies = Assembly.GetExecutingAssembly().LoadAllFrom("OLAF.ActivityDetectors.*.dll") ??
                 throw new Exception("No activity detector assemblies found in directory: " + AssemblyDirectory.FullName + ".");
-            LoadedAssemblies = MonitorAssemblies.Concat(ActivityDetectorAssemblies).ToList();
+
+            MonitorAssemblies = Assembly.GetExecutingAssembly().LoadAllFrom("OLAF.Monitors.*.dll") ??
+                throw new Exception("No monitor assemblies found in directory: " + AssemblyDirectory.FullName + ".");
+
+            ServiceAssemblies = Assembly.GetExecutingAssembly().LoadAllFrom("OLAF.Services.*.dll") ??
+                throw new Exception("No service assemblies found in directory: " + AssemblyDirectory.FullName + ".");
+
+            LoadedAssemblies = 
+                MonitorAssemblies
+                .Concat(ActivityDetectorAssemblies)
+                .Concat(ServiceAssemblies)
+                .ToList();
             CancellationTokenSource = new CancellationTokenSource();
         }
         #endregion
@@ -30,9 +39,11 @@ namespace OLAF
 
         private static Version AssemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
 
+        public static List<Assembly> ActivityDetectorAssemblies { get; internal set; }
+
         public static List<Assembly> MonitorAssemblies { get; internal set; }
 
-        public static List<Assembly> ActivityDetectorAssemblies { get; internal set; }
+        public static List<Assembly> ServiceAssemblies { get; internal set; }
 
         public static string[] ExcludedAssemblyNames { get; } = new string[0];
 
@@ -71,12 +82,17 @@ namespace OLAF
 
         public static void SetupMessageQueue()
         {
+            Type[] queueTypes = GetTypesImplementing<IMonitor>()
+                .Concat(GetTypesImplementing<IActivityDetector>())
+                .Concat(GetTypesImplementing<IQueueProducer>())
+                .Concat(GetTypesImplementing<IService>())
+                .ToArray();
+
             lock (setupMessageQueueLock)
             {
                 if (MessageQueue == null)
                 {
-                    MessageQueue = new MessageQueue(GetTypesImplementing<IMonitor>().Concat(GetTypesImplementing<IActivityDetector>())
-                        .ToArray());
+                    MessageQueue = new MessageQueue(queueTypes);
                 }
             }
         }

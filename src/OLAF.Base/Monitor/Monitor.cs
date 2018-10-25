@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 namespace OLAF
 {
     public abstract class Monitor<TDetector, TDetectorMessage, TMonitorMessage> : 
-        OLAFApi<Monitor<TDetector, TDetectorMessage, TMonitorMessage>, TMonitorMessage>, IMonitor
+        OLAFApi<Monitor<TDetector, TDetectorMessage, TMonitorMessage>, TMonitorMessage>, 
+        IMonitor, IQueueProducer
         where TDetector : ActivityDetector<TDetectorMessage>
         where TDetectorMessage : Message
         where TMonitorMessage : Message
@@ -20,6 +21,8 @@ namespace OLAF
         #endregion
 
         #region Properties
+        public Type QueueMessageType { get; } = typeof(TMonitorMessage);
+
         public Thread QueueMonitorThread { get; protected set; }
         
         public Profile Profile { get; protected set; }

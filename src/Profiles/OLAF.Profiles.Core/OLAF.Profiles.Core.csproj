@@ -75,6 +75,10 @@
       <Project>{8d448b26-d206-48c8-b17f-a31133c25665}</Project>
       <Name>OLAF.Base</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Services\OLAF.Services.AzureBlobStorage\OLAF.Services.AzureStorage.csproj">
+      <Project>{18ff34d6-91e0-48ca-ba91-156d90825444}</Project>
+      <Name>OLAF.Services.AzureStorage</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

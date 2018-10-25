@@ -6,28 +6,42 @@ using System.Threading;
 
 namespace OLAF
 {
-    public abstract class Service<TClient, TClientMessage, TServiceMessage> : 
-        OLAFApi<Service<TClient, TClientMessage, TServiceMessage>, TServiceMessage>,
-        IService
-        where TClient : OLAFApi<TClient, TClientMessage>
+    public abstract class Service<TClientMessage, TServiceMessage> : 
+        OLAFApi<Service<TClientMessage, TServiceMessage>, TServiceMessage>, IService
         where TClientMessage : Message
         where TServiceMessage : Message
     {
         #region Constructors
-        public Service(Profile profile, params TClient[] clients) : base()
+        public Service(Profile profile, params Type[] clients) : base()
         {
             Profile = profile ?? throw new ArgumentNullException(nameof(profile));
-            Clients = clients.ToList();
+
+            Clients = clients?.ToList() ?? throw new ArgumentNullException(nameof(clients));
+            if (Clients.Count == 0)
+            {
+                throw new ArgumentException("At least one client must be specified.", nameof(clients));
+            }
+
             Status = ApiStatus.Initializing;
         }
         #endregion
 
-        #region Abstract methods
+        #region Abstract members
         public abstract ApiResult Init();
         protected abstract ApiResult ProcessClientQueue(TClientMessage message);
         #endregion
 
         #region Properties
+        public Type QueueMessageType { get; } = typeof(TServiceMessage);
+
+        public List<Type> Clients { get; }
+
+        public bool ShutdownRequested => shutdownRequested;
+
+        public bool ShutdownCompleted => shutdownCompleted;
+
+        protected List<Thread> Threads { get; set; }
+
         public string ApiAccountName { get; protected set; }
 
         public string ApiAccountKey { get; protected set; }
@@ -37,25 +51,19 @@ namespace OLAF
         public Uri EndpointUrl { get; protected set; }
 
         public Profile Profile { get; }
-
-        public List<TClient> Clients { get; }
-
-        public Thread QueueMonitorThread { get; protected set; }
-
-        public bool ShutdownRequested => shutdownRequested;
-
-        public bool ShutdownCompleted => shutdownCompleted;
-
-        protected List<Thread> Threads { get; set; }
         #endregion
 
         #region Methods
         public virtual ApiResult Start()
         {
             ThrowIfNotInitialized();
-            QueueMonitorThread = new Thread(() => MonitorQueue(Global.CancellationTokenSource.Token));
-            Threads = new List<Thread>() { QueueMonitorThread };
-            QueueMonitorThread.Start();
+            Threads = new List<Thread>(Clients.Count);
+            foreach (Type type in Clients)
+            {
+                Thread observeThread = new Thread(() => ObserveClientQueue(type, Global.CancellationTokenSource.Token));
+                observeThread.Start();
+                Threads.Add(observeThread);
+            }
             return ApiResult.Success;
         }
 
@@ -87,23 +95,23 @@ namespace OLAF
             }
         }
 
-        protected virtual void MonitorQueue(CancellationToken token)
+        protected virtual void ObserveClientQueue(Type client, CancellationToken token)
         {
             try
             {
                 while (!shutdownRequested && !token.IsCancellationRequested)
                 {
                     TClientMessage message =
-                        (TClientMessage)Global.MessageQueue.Dequeue<TClient>(cancellationToken);
+                        (TClientMessage)Global.MessageQueue.Dequeue(client, cancellationToken);
                     ProcessClientQueue(message);
                 }
-                Info("Stopping {0} queue monitor.", type.Name);
+                Info("Stopping client {0} queue monitor.", type.Name);
                 Status = ApiStatus.Ok;
                 return;
             }
             catch (OperationCanceledException)
             {
-                Info("Stopping {0} queue monitor.", type.Name);
+                Info("Stopping client {0} queue monitor.", type.Name);
                 Status = ApiStatus.Ok;
                 return;
             }

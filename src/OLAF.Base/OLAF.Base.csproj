@@ -80,6 +80,8 @@
   <ItemGroup>
     <Compile Include="ActivityDetector\ActivityDetector.cs" />
     <Compile Include="ActivityDetector\IActivityDetector.cs" />
+    <Compile Include="Api\IQueueConsumer.cs" />
+    <Compile Include="Api\IQueueProducer.cs" />
     <Compile Include="Classifier\Classifier.cs" />
     <Compile Include="Logger\IOperationContext.cs" />
     <Compile Include="Logger\SimpleOperation.cs" />

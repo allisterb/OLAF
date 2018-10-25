@@ -15,13 +15,11 @@ using Newtonsoft.Json.Linq;
 
 namespace OLAF.Services
 {
-    public class AzureStorageBlobUpload<TClient> : 
-        Service<TClient, ArtifactMessage, AzureStorageBlobUploadedMessage>
-        where TClient : OLAFApi<TClient, ArtifactMessage>
-
+    public class AzureStorageBlobUpload : 
+        Service<ArtifactMessage, AzureStorageBlobUploadedMessage>, IService
     {
         #region Constructors
-        public AzureStorageBlobUpload(Profile profile) : base(profile)
+        public AzureStorageBlobUpload(Profile profile, params Type[] clients) : base(profile, clients)
         {
             if (ConfigurationManager.ConnectionStrings["OLAFArtifacts"] == null)
             {
@@ -59,13 +57,13 @@ namespace OLAF.Services
             ThrowIfNotInitialized();
             CloudBlockBlob blob = null;
             string containerName = GetAzureResourceName(Profile.Name);
-            string blobName = GetAzureResourceName(message.ArtifactPath);
+            string blobName = GetAzureResourceName(message.ArtifactPath.GetPathFilename());
             try
             {
                 Task<CloudBlob> t = Storage.GetorCreateCloudBlobAsync(containerName, blobName,
                     BlobType.BlockBlob);
                 blob = (CloudBlockBlob)t.Result;
-                Global.MessageQueue.Enqueue<AzureStorageBlobUpload<TClient>>(
+                Global.MessageQueue.Enqueue<AzureStorageBlobUpload>(
                     new AzureStorageBlobUploadedMessage(message.Id, blob));
                 return ApiResult.Success;
             

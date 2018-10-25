@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using OLAF.Monitors;
+using OLAF.Services;
 
 namespace OLAF.Profiles
 {
@@ -44,20 +45,32 @@ namespace OLAF.Profiles
                 Status = ApiStatus.FileNotFound;
                 return ApiResult.Failure;
             }
-            
+
+            Monitors = new List<IMonitor>();
             DirectoryChangesMonitor monitor = new DirectoryChangesMonitor(UserKnownFolders.ToArray(), 
                 ImageWildcardExtensions.ToArray(), this);
-            if (monitor.Init() == ApiResult.Success)
-            {
-                Monitors = new List<IMonitor>(1) { monitor };
-                Status = ApiStatus.Initialized;
-                return ApiResult.Success;
-            }
-            else
+            if (monitor.Init() != ApiResult.Success)
             {
                 Status = ApiStatus.Error;
                 return ApiResult.Failure;
             }
+            else
+            {
+                Monitors.Add(monitor);
+            }
+            Services = new List<IService>();
+            AzureStorageBlobUpload service = new AzureStorageBlobUpload(this, typeof(DirectoryChangesMonitor));
+            if (service.Init() != ApiResult.Success)
+            {
+                Status = ApiStatus.Error;
+                return ApiResult.Failure;
+            }
+            else
+            {
+                Services.Add(service);
+            }
+            Status = ApiStatus.Initialized;
+            return ApiResult.Success;
         }
 
         public override ApiResult Start()
@@ -69,11 +82,22 @@ namespace OLAF.Profiles
             if (Monitors.All(m => m.Start() == ApiResult.Success))
             {
                 Status = ApiStatus.Ok;
-                return ApiResult.Success;
             }
             else
             {
                 Error("One or more of the monitors did not start.");
+                Status = ApiStatus.Error;
+                return ApiResult.Failure;
+            }
+
+            if (Services.All(m => m.Start() == ApiResult.Success))
+            {
+                Status = ApiStatus.Ok;
+                return ApiResult.Success;
+            }
+            else
+            {
+                Error("One or more of the services did not start.");
                 Status = ApiStatus.Error;
                 return ApiResult.Failure;
             }
