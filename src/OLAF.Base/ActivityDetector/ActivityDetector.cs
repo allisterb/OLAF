@@ -6,7 +6,8 @@ using System.Threading;
 
 namespace OLAF
 {
-    public abstract class ActivityDetector : OLAFApi<ActivityDetector>
+    public abstract class ActivityDetector<TMessage>: OLAFApi<ActivityDetector<TMessage>, TMessage>, IActivityDetector
+        where TMessage : Message
     {
         #region Constructors
         public ActivityDetector(int pid, Type mt)

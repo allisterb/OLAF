@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace OLAF.Service
 {
-    public abstract class Service<TMessage> : OLAFApi<Service<TMessage>> where TMessage : Message
+    public abstract class Service<TMessage> : OLAFApi<Service<TMessage>, TMessage> where TMessage : Message
     {
         #region Constructors
         public Service(Profile profile) : base()

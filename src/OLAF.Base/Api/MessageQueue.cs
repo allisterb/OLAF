@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OLAF
 {
-    public class MessageQueue : OLAFApi<MessageQueue>
+    public class MessageQueue : OLAFApi<MessageQueue, Message>
     {
         #region Constructors
         public MessageQueue(Type[] types)

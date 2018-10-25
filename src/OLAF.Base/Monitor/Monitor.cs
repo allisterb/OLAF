@@ -8,11 +8,15 @@ using System.Threading.Tasks;
 
 namespace OLAF
 {
-    public abstract class Monitor : OLAFApi<Monitor>
+    public abstract class Monitor<TDetector, TDetectorMessage, TMonitorMessage> : 
+        OLAFApi<Monitor<TDetector, TDetectorMessage, TMonitorMessage>, TMonitorMessage>, IMonitor
+        where TDetector : ActivityDetector<TDetectorMessage>
+        where TDetectorMessage : Message
+        where TMonitorMessage : Message
     {
         #region Abstract methods
         public abstract ApiResult Init();
-        protected abstract void MonitorQueue(CancellationToken token);
+        protected abstract ApiResult ProcessQueue(TDetectorMessage message);
         #endregion
 
         #region Properties
@@ -26,7 +30,7 @@ namespace OLAF
 
         protected List<Thread> Threads { get; set; }
 
-        protected List<ActivityDetector> Detectors { get; set; }
+        protected List<ActivityDetector<TDetectorMessage>> Detectors { get; set; }
 
         #endregion
 
@@ -37,7 +41,7 @@ namespace OLAF
             Threads = new List<Thread>() { QueueMonitorThread };
             QueueMonitorThread.Start();
             int enabled = 0;
-            foreach (ActivityDetector d in Detectors)
+            foreach (TDetector d in Detectors)
             {
                 if (d.Enable() == ApiResult.Success)
                 {
@@ -87,6 +91,31 @@ namespace OLAF
             }
         }
 
+        protected virtual void MonitorQueue(CancellationToken token)
+        {
+            try
+            {
+                while (!shutdownRequested && !token.IsCancellationRequested)
+                {
+                    TDetectorMessage message =
+                        (TDetectorMessage)Global.MessageQueue.Dequeue<TDetector>(cancellationToken);
+                    ProcessQueue(message);
+                }
+                Info("Stopping {0} queue monitor.", type.Name);
+                Status = ApiStatus.Ok;
+                return;
+            }
+            catch (OperationCanceledException)
+            {
+                Info("Stopping {0} queue monitor.", type.Name);
+                Status = ApiStatus.Ok;
+                return;
+            }
+            catch (Exception ex)
+            {
+                Error(ex, "Error occurred during {0} queue monitoring.", type.Name);
+            }
+        }
 
         protected static Process GetProcessById(int id)
         {

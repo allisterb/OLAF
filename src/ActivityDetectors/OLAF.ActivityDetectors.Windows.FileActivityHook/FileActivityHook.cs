@@ -39,7 +39,7 @@ using EasyHook;
 
 namespace OLAF.ActivityDetectors.Windows
 {
-    public class FileActivityHook : ActivityDetector, IEntryPoint
+    public class FileActivityHook : ActivityDetector<FileActivityMessage>, IEntryPoint
     {
         #region Constructors
         /// <summary>

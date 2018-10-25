@@ -8,9 +8,11 @@ using System.Threading;
 
 namespace OLAF
 {
-    public abstract class FileSystemMonitor<TDetector, TMessage> : Monitor
-        where TDetector : ActivityDetector
-        where TMessage : Message
+    public abstract class FileSystemMonitor<TDetector, TDetectorMessage, TMonitorMessage> : 
+        Monitor<TDetector, TDetectorMessage, TMonitorMessage>
+        where TDetector : ActivityDetector<TDetectorMessage>
+        where TDetectorMessage : Message
+        where TMonitorMessage : Message
     {
         #region Constructors
         public FileSystemMonitor(Dictionary<string, string> paths, Profile profile)
@@ -155,40 +157,7 @@ namespace OLAF
         }
         #endregion
 
-        #region Abstract methods
-        protected abstract ApiResult ProcessQueueMessage(TMessage message);
-        #endregion
-
-        #region OVerriden members
-        protected override void MonitorQueue(CancellationToken token)
-        {
-            try
-            {
-                while (!shutdownRequested && !token.IsCancellationRequested)
-                {
-                    TMessage message =
-                        (TMessage)Global.MessageQueue.Dequeue(type, cancellationToken);
-                    ProcessQueueMessage(message);
-                }
-                Info("Stopping {0} queue monitor.", type.Name);
-                Status = ApiStatus.Ok;
-                return;
-            }
-            catch (OperationCanceledException)
-            {
-                Info("Stopping {0} queue monitor.", type.Name);
-                Status = ApiStatus.Ok;
-                return;
-            }
-            catch (Exception ex)
-            {
-                Error(ex, "Error occurred during {0} queue monitoring.", type.Name);
-            }
-        }
-        #endregion
-
         #region Properties
-        
         protected Dictionary<DirectoryInfo, string> Paths;
         #endregion
     }

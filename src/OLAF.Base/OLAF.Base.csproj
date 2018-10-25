@@ -79,8 +79,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActivityDetector\ActivityDetector.cs" />
-    <Compile Include="Classifier.cs" />
+    <Compile Include="ActivityDetector\IActivityDetector.cs" />
+    <Compile Include="Classifier\Classifier.cs" />
     <Compile Include="Monitor\ArtifactMessage.cs" />
+    <Compile Include="Monitor\IMonitor.cs" />
     <Compile Include="Native\WindowsKnownFolders.cs" />
     <Compile Include="Native\Win32.cs" />
     <Compile Include="Api\OLAFApiStatus.cs" />

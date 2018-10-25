@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OLAF
 {
-    public abstract class Profile : OLAFApi<Profile>
+    public abstract class Profile : OLAFApi<Profile, Message>
     {
         #region Constructors
         public Profile(string name)
@@ -34,7 +34,7 @@ namespace OLAF
         public static string[] ImageWildcardExtensions = {"*.bmp", "*.dib", "*.rle", "*.jpg", "*.jpeg", "*.jpe", "*.jfif", "*.gif", "*.tif",
             "*.tiff", "*.png"};
 
-        public List<Monitor> Monitors { get; protected set; }
+        public List<IMonitor> Monitors { get; protected set; }
         
         public DirectoryInfo ArtifactsDirectory { get; }
         #endregion

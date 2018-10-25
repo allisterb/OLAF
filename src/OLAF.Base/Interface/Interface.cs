@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace OLAF
 {
-    public abstract class Interface : OLAFApi<Interface>
+    public abstract class Interface : OLAFApi<Interface, Message>
     {
         public static CancellationToken CancellationToken = Global.CancellationTokenSource.Token;
 

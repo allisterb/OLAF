@@ -27,7 +27,7 @@ namespace OLAF
         public static bool WithLogFile { get; set; } = false;
         public static bool WithoutConsole { get; set; } = false;
         public static bool WithDebugOutput { get; set; } = false;
-        public static List<Monitor> Monitors { get; protected set; }
+        public static List<IMonitor> Monitors { get; protected set; }
         #endregion
 
         #region Methods

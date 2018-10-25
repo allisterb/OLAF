@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace OLAF
 {
-    public abstract class OLAFApi<T>
+    public abstract class OLAFApi<TApi, TMessage>
+        where TMessage : Message
     {
         #region Constructors
         static OLAFApi()
@@ -110,7 +111,7 @@ namespace OLAF
             }
         }
 
-        protected void SetPropFromDict(object o, Dictionary<string, object> p) => SetPropFromDict(typeof(T), o, p);
+        protected void SetPropFromDict(object o, Dictionary<string, object> p) => SetPropFromDict(typeof(TApi), o, p);
         #endregion
 
         #region Fields

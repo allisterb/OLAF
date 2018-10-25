@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace OLAF.ActivityDetectors
 {
-    public class FileSystemActivity : ActivityDetector
+    public class FileSystemActivity : ActivityDetector<FileSystemChangeMessage>
     {
         #region Constructors
         public FileSystemActivity(string path, string filter, Type mt) : base(mt)
@@ -41,8 +41,7 @@ namespace OLAF.ActivityDetectors
         #region Event Handlers
         private void FileSystemActivity_Created(object sender, FileSystemEventArgs e)
         {
-            Global.MessageQueue.Enqueue(monitorType,
-                new FileSystemChangeMessage(Interlocked.Increment(ref messageId), e.FullPath, e.ChangeType));
+            Global.MessageQueue.Enqueue<FileSystemActivity>(new FileSystemChangeMessage(Interlocked.Increment(ref messageId), e.FullPath, e.ChangeType));
         }
         #endregion
     }

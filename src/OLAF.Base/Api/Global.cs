@@ -75,7 +75,7 @@ namespace OLAF
             {
                 if (MessageQueue == null)
                 {
-                    MessageQueue = new MessageQueue(GetSubTypes<Monitor>().Concat(GetSubTypes<ActivityDetector>())
+                    MessageQueue = new MessageQueue(GetTypesImplementing<IMonitor>().Concat(GetTypesImplementing<IActivityDetector>())
                         .ToArray());
                 }
             }
@@ -98,6 +98,24 @@ namespace OLAF
                  .SelectMany(t => t)
                  .Where(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract)?
                  .ToArray();
+        }
+
+        public static Type[] GetTypesImplementing<T>(string assemblyName = "")
+        {
+            IEnumerable<Assembly> assemblies = LoadedAssemblies;
+            if (LoadedAssemblies.Count(a => assemblyName.IsNotEmpty() && a.GetName().Name == assemblyName) > 0)
+            {
+                assemblies = LoadedAssemblies.Where(a => a.FullName.StartsWith(assemblyName));
+            }
+            else if (assemblyName.IsNotEmpty())
+            {
+                return null;
+            }
+            IEnumerable<Type> types =
+                from type in assemblies.SelectMany(a => a.GetTypes())
+                where typeof(T).IsAssignableFrom(type) && type.IsClass && !type.IsAbstract
+                select type;
+            return types.ToArray();
         }
         #endregion
         

@@ -63,6 +63,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ActivityDetectors\OLAF.ActivityDetectors.FileSystem\OLAF.ActivityDetectors.FileSystem.csproj">
+      <Project>{7aa345d8-730f-4dd2-ba79-d63efe3131cd}</Project>
+      <Name>OLAF.ActivityDetectors.FileSystem</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Monitors\OLAF.Monitors.DirectoryChanges\OLAF.Monitors.DirectoryChanges.csproj">
       <Project>{dba4c2fe-6c57-4c11-8446-591da0a594eb}</Project>
       <Name>OLAF.Monitors.DirectoryChanges</Name>

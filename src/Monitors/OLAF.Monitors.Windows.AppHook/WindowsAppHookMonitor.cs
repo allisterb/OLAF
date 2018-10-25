@@ -15,9 +15,11 @@ using OLAF.ActivityDetectors.Windows;
 
 namespace OLAF.Monitors.Windows
 {
-    public class WindowsAppHookMonitor<TDetector, TMessage> : AppMonitor 
-        where TDetector : ActivityDetector
-        where TMessage : Message
+    public class WindowsAppHookMonitor<TDetector, TDetectorMessage, TMonitorMessage> : 
+        AppMonitor<TDetector, TDetectorMessage, TMonitorMessage>, IMonitor
+        where TDetector : ActivityDetector<TDetectorMessage>
+        where TDetectorMessage : Message
+        where TMonitorMessage : Message
     {
         #region Constructors
         public WindowsAppHookMonitor(string processName) : base(processName)
@@ -68,35 +70,9 @@ namespace OLAF.Monitors.Windows
             
         }
 
-        public override ApiResult Shutdown()
+        protected override ApiResult ProcessQueue(TDetectorMessage message)
         {
-            if(!cancellationToken.IsCancellationRequested)
-            {
-                Global.CancellationTokenSource.Cancel();
-            }
-            return ApiResult.Success;
-        }
-
-        protected override void MonitorQueue(CancellationToken token)
-        {
-            while (!token.IsCancellationRequested && !ShutdownRequested)
-            {
-                try
-                {
-                    TMessage msg = (TMessage) Global.MessageQueue.Dequeue<TDetector>(cancellationToken);
-                }
-                catch (OperationCanceledException)
-                {
-                    Info("Stopping queue monitor.");
-                    Status = ApiStatus.Ok;
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    Error(ex, "Exception thrown during queue monitoring.");
-                }
-            }
-            
+            throw new NotImplementedException();
         }
         #endregion
 
@@ -124,7 +100,7 @@ namespace OLAF.Monitors.Windows
                     injectionLibrary,   // 64-bit library to inject (if target is 64-bit)
                     ChannelName,        // IPC chanel name
                     process.Id,
-                    typeof(WindowsAppHookMonitor<TDetector, TMessage>)
+                    typeof(WindowsAppHookMonitor<TDetector, TDetectorMessage, TMonitorMessage>)
                 );
                 Info("Injected {0} assembly into process id {1} ({2}).", HookAssemblyName, process.Id, 
                     process.ProcessName);

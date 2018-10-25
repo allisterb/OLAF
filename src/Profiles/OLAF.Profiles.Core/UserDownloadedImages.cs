@@ -49,7 +49,7 @@ namespace OLAF.Profiles
                 ImageWildcardExtensions.ToArray(), this);
             if (monitor.Init() == ApiResult.Success)
             {
-                Monitors = new List<Monitor>(1) { monitor };
+                Monitors = new List<IMonitor>(1) { monitor };
                 Status = ApiStatus.Initialized;
                 return ApiResult.Success;
             }

@@ -7,7 +7,11 @@ using System.Threading.Tasks;
 
 namespace OLAF
 {
-    public abstract class AppMonitor : Monitor
+    public abstract class AppMonitor<TDetector, TDetectorMessage, TMessage> : 
+        Monitor<TDetector, TDetectorMessage, TMessage>
+        where TDetector : ActivityDetector<TDetectorMessage>
+        where TDetectorMessage : Message
+        where TMessage : Message
     {
         #region Constructors
         public AppMonitor(string processName)

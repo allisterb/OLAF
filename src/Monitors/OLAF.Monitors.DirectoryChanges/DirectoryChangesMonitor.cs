@@ -9,7 +9,7 @@ using OLAF.ActivityDetectors;
 
 namespace OLAF.Monitors
 {
-    public class DirectoryChangesMonitor : FileSystemMonitor<FileSystemActivity, FileSystemChangeMessage>
+    public class DirectoryChangesMonitor : FileSystemMonitor<FileSystemActivity, FileSystemChangeMessage, ArtifactMessage>
     {
         #region Constructors
         public DirectoryChangesMonitor(Dictionary<string, string> paths, Profile profile) : base(paths, profile) {}
@@ -23,7 +23,7 @@ namespace OLAF.Monitors
             if (Status != ApiStatus.Initializing) return ApiResult.Failure;
             try
             {
-                Detectors = new List<ActivityDetector>(Paths.Count);
+                Detectors = new List<ActivityDetector<FileSystemChangeMessage>>(Paths.Count);
                 for (int i = 0; i < Paths.Count; i++)
                 {
                     KeyValuePair<DirectoryInfo, string> path = Paths.ElementAt(i);
@@ -43,7 +43,7 @@ namespace OLAF.Monitors
             }
         }
 
-        protected override ApiResult ProcessQueueMessage(FileSystemChangeMessage message)
+        protected override ApiResult ProcessQueue(FileSystemChangeMessage message)
         {
             string artifactName = string.Format("{0}_{1}", message.Id, Path.GetFileName(message.Path));
             string artifactPath = Profile.GetArtifactsDirectoryPathTo(artifactName);
@@ -51,8 +51,8 @@ namespace OLAF.Monitors
             {
                 Debug("Copied artifact {0} to {1}.", message.Path, artifactPath);
 
-                //Global.MessageQueue.Enqueue<DirectoryChangesMonitor>(
-                //    new ArtifactMessage(message.Id, artifactPath));
+                Global.MessageQueue.Enqueue<DirectoryChangesMonitor>(
+                    new ArtifactMessage(message.Id, artifactPath));
                 return ApiResult.Success;
             }
             else
