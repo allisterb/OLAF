@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OLAF
+namespace OLAF.Services.AzureBlobStorage
 {
-    public class ApiMessage : Message
+    public class Class1
     {
-        public ApiMessage(long id) : base(id) { }
-        
     }
 }

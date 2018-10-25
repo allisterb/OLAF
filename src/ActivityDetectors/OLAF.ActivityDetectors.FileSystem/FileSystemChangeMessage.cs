@@ -11,19 +11,16 @@ namespace OLAF.ActivityDetectors
     public class FileSystemChangeMessage : Message
     {
         #region Constructors
-        public FileSystemChangeMessage(long id, string path, WatcherChangeTypes type) : base(null, null)
+        public FileSystemChangeMessage(long id, string path, WatcherChangeTypes type) : base(id)
         {
-            Id = id;
             Path = path;
             ChangeTypes = type;
         }
         #endregion
 
         #region Properties
-        public long Id { get; }
         public string Path { get; }
         public WatcherChangeTypes ChangeTypes { get; }
         #endregion
-
     }
 }

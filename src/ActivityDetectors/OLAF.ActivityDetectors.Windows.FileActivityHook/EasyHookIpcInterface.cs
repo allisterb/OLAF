@@ -50,13 +50,11 @@ namespace OLAF.ActivityDetectors.Windows
         #region Properties
         public bool IsCancellationRequested() => cancellationToken.IsCancellationRequested;
 
-
         public bool HookShutdownComplete { get; protected set; }
 
         protected static ILogger L => Global.Logger;
 
         protected CancellationToken cancellationToken = Global.CancellationTokenSource.Token;
-
         #endregion
 
         #region Methods
@@ -70,12 +68,14 @@ namespace OLAF.ActivityDetectors.Windows
 
         public void EnqueueFileActivity(int processId, int threadId, FileOp op, string path)
         {
-            Global.MessageQueue.Enqueue<FileActivityHook>(new FileActivityMessage(processId, threadId, op, path));
+            Global.MessageQueue.Enqueue<FileActivityHook>(
+                new FileActivityMessage(Interlocked.Increment(ref messageId),processId, threadId, op, path));
         }
 
         public void EnqueueFileActivity(int processId, FileOp op, string path)
         {
-            Global.MessageQueue.Enqueue<FileActivityHook>(new FileActivityMessage(processId, -1, op, path));
+            Global.MessageQueue.Enqueue<FileActivityHook>(
+                new FileActivityMessage(Interlocked.Increment(ref messageId), processId, -1, op, path));
         }
 
         public void SetHookShutdownComplete() => HookShutdownComplete = true;
@@ -106,7 +106,7 @@ namespace OLAF.ActivityDetectors.Windows
         #endregion
 
         #region Fields
-    
+        public long messageId = 0;
         #endregion
     }
 }

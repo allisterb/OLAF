@@ -38,6 +38,8 @@ namespace OLAF
         {
             Queue[Index.IndexOfValue(type)].Add(message);
         }
+
+        public Message Dequeue(Type type, CancellationToken token) => Queue[Index.IndexOfValue(type)].Take(token);
         #endregion
     }
 }

@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OLAF
+namespace OLAF.Service
 {
-    public class ApiMessage : Message
+    class UploadService
     {
-        public ApiMessage(long id) : base(id) { }
-        
     }
 }

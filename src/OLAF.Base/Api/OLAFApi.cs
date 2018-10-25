@@ -39,6 +39,7 @@ namespace OLAF
 
         public OLAFApi()
         {
+            type = this.GetType();
             if (L == null)
             {
                 throw new InvalidOperationException("A logger is not assigned.");
@@ -113,7 +114,9 @@ namespace OLAF
         #endregion
 
         #region Fields
+        protected Type type;
         protected CancellationToken cancellationToken;
+        protected long messageId = 0;
         #endregion
     }
 }

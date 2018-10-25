@@ -50,6 +50,9 @@ namespace OLAF.Monitors
             if (TryCopyLockedFileToPath(message.Path, artifactPath))
             {
                 Debug("Copied artifact {0} to {1}.", message.Path, artifactPath);
+
+                //Global.MessageQueue.Enqueue<DirectoryChangesMonitor>(
+                //    new ArtifactMessage(message.Id, artifactPath));
                 return ApiResult.Success;
             }
             else

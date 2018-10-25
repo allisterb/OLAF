@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 
 namespace OLAF
 {
-    public class ApiMessage : Message
+    class Classifier
     {
-        public ApiMessage(long id) : base(id) { }
-        
     }
 }

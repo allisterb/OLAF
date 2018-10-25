@@ -9,22 +9,14 @@ namespace OLAF
     public abstract class Message
     {
         #region Constructors
-        public Message()
+        public Message(long id)
         {
-
-        }
-
-        public Message(int? processId, int? threadId)
-        {
-            ProcessId = processId;
-            ThreadId = threadId;
+            Id = id;
         }
         #endregion
 
         #region Properties
-        public int? ProcessId { get; }
-
-        public int? ThreadId { get; }
+        public long Id { get; }
         #endregion
     }
 }

@@ -38,18 +38,10 @@ namespace OLAF.ActivityDetectors
         protected FileSystemWatcher FileSystemWatcher { get; set; }
         #endregion
 
-        #region Methods
-        public ApiResult EnableEvents()
-        {
-            FileSystemWatcher.EnableRaisingEvents = true;
-            return FileSystemWatcher.EnableRaisingEvents ? ApiResult.Success : ApiResult.Failure;
-        }
-        #endregion
-
         #region Event Handlers
         private void FileSystemActivity_Created(object sender, FileSystemEventArgs e)
         {
-            Global.MessageQueue.Enqueue<FileSystemActivity>(
+            Global.MessageQueue.Enqueue(monitorType,
                 new FileSystemChangeMessage(Interlocked.Increment(ref messageId), e.FullPath, e.ChangeType));
         }
         #endregion

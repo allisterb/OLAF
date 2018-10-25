@@ -167,27 +167,28 @@ namespace OLAF
                 while (!shutdownRequested && !token.IsCancellationRequested)
                 {
                     TMessage message =
-                        (TMessage)Global.MessageQueue.Dequeue<TDetector>(cancellationToken);
+                        (TMessage)Global.MessageQueue.Dequeue(type, cancellationToken);
                     ProcessQueueMessage(message);
                 }
-                Info("Stopping {0} queue monitor.", typeof(TDetector).Name);
+                Info("Stopping {0} queue monitor.", type.Name);
                 Status = ApiStatus.Ok;
                 return;
             }
             catch (OperationCanceledException)
             {
-                Info("Stopping {0} queue monitor.", typeof(TDetector).Name);
+                Info("Stopping {0} queue monitor.", type.Name);
                 Status = ApiStatus.Ok;
                 return;
             }
             catch (Exception ex)
             {
-                Error(ex, "Error occurred during {0} queue monitoring.", typeof(TDetector).Name);
+                Error(ex, "Error occurred during {0} queue monitoring.", type.Name);
             }
         }
         #endregion
 
         #region Properties
+        
         protected Dictionary<DirectoryInfo, string> Paths;
         #endregion
     }

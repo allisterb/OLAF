@@ -79,6 +79,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActivityDetector\ActivityDetector.cs" />
+    <Compile Include="Classifier.cs" />
+    <Compile Include="Monitor\ArtifactMessage.cs" />
     <Compile Include="Native\WindowsKnownFolders.cs" />
     <Compile Include="Native\Win32.cs" />
     <Compile Include="Api\OLAFApiStatus.cs" />
@@ -99,6 +101,8 @@
     <Compile Include="Logger\LoggerException.cs" />
     <Compile Include="Profile\Profile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\Service.cs" />
+    <Compile Include="Service\UploadService.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
