@@ -23,7 +23,7 @@ namespace OLAF.Monitors
             if (Status != ApiStatus.Initializing) return ApiResult.Failure;
             try
             {
-                Detectors = new List<ActivityDetector<FileSystemChangeMessage>>(Paths.Count);
+                Detectors = new List<FileSystemActivity>(Paths.Count);
                 for (int i = 0; i < Paths.Count; i++)
                 {
                     KeyValuePair<DirectoryInfo, string> path = Paths.ElementAt(i);
@@ -37,13 +37,13 @@ namespace OLAF.Monitors
             }
             catch (Exception e)
             {
-                Error(e, "Error occurred initializing a watcher.");
+                Error(e, "Error occurred initializing a detector.");
                 Status = ApiStatus.Error;
                 return ApiResult.Failure;
             }
         }
 
-        protected override ApiResult ProcessQueue(FileSystemChangeMessage message)
+        protected override ApiResult ProcessDetectorQueue(FileSystemChangeMessage message)
         {
             string artifactName = string.Format("{0}_{1}", message.Id, Path.GetFileName(message.Path));
             string artifactPath = Profile.GetArtifactsDirectoryPathTo(artifactName);

@@ -2,6 +2,7 @@
 
 using System;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -99,5 +100,8 @@ namespace OLAF
                 return s;
             }
         }
+
+        public static string GetPathFilename(this string s) => Path.GetFileName(s);
+      
     }
 }

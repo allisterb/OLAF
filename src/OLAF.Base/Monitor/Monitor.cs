@@ -16,7 +16,7 @@ namespace OLAF
     {
         #region Abstract methods
         public abstract ApiResult Init();
-        protected abstract ApiResult ProcessQueue(TDetectorMessage message);
+        protected abstract ApiResult ProcessDetectorQueue(TDetectorMessage message);
         #endregion
 
         #region Properties
@@ -30,13 +30,14 @@ namespace OLAF
 
         protected List<Thread> Threads { get; set; }
 
-        protected List<ActivityDetector<TDetectorMessage>> Detectors { get; set; }
+        protected List<TDetector> Detectors { get; set; }
 
         #endregion
 
         #region Methods
         public virtual ApiResult Start()
         {
+            ThrowIfNotInitialized();
             QueueMonitorThread = new Thread(() => MonitorQueue(Global.CancellationTokenSource.Token));
             Threads = new List<Thread>() { QueueMonitorThread };
             QueueMonitorThread.Start();
@@ -66,6 +67,7 @@ namespace OLAF
 
         public virtual ApiResult Shutdown()
         {
+            ThrowIfNotInitialized();
             shutdownRequested = true;
             if (!cancellationToken.IsCancellationRequested)
             {
@@ -99,7 +101,7 @@ namespace OLAF
                 {
                     TDetectorMessage message =
                         (TDetectorMessage)Global.MessageQueue.Dequeue<TDetector>(cancellationToken);
-                    ProcessQueue(message);
+                    ProcessDetectorQueue(message);
                 }
                 Info("Stopping {0} queue monitor.", type.Name);
                 Status = ApiStatus.Ok;
@@ -114,18 +116,6 @@ namespace OLAF
             catch (Exception ex)
             {
                 Error(ex, "Error occurred during {0} queue monitoring.", type.Name);
-            }
-        }
-
-        protected static Process GetProcessById(int id)
-        {
-            try
-            {
-                return Process.GetProcessById(id);
-            }
-            catch (Exception)
-            {
-                return null;
             }
         }
         #endregion

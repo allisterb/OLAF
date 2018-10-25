@@ -38,7 +38,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{C218
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Profiles", "Profiles", "{A8A3B83B-BD00-43E1-8176-850B6F31D0E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Services.AzureBlobStorage", "Services\OLAF.Services.AzureBlobStorage\OLAF.Services.AzureBlobStorage.csproj", "{18FF34D6-91E0-48CA-BA91-156D90825444}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Services.AzureStorage", "Services\OLAF.Services.AzureBlobStorage\OLAF.Services.AzureStorage.csproj", "{18FF34D6-91E0-48CA-BA91-156D90825444}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{6CC3CDC1-0950-47BF-8AE8-02EEA465AEBE}"
 EndProject
@@ -150,8 +150,8 @@ Global
 		{8186BC60-7CC7-4FCD-8C2F-6EB7B92E955F}.Release|x86.Build.0 = Release|Any CPU
 		{18FF34D6-91E0-48CA-BA91-156D90825444}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{18FF34D6-91E0-48CA-BA91-156D90825444}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{18FF34D6-91E0-48CA-BA91-156D90825444}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{18FF34D6-91E0-48CA-BA91-156D90825444}.Debug|x64.Build.0 = Debug|Any CPU
+		{18FF34D6-91E0-48CA-BA91-156D90825444}.Debug|x64.ActiveCfg = Debug|x64
+		{18FF34D6-91E0-48CA-BA91-156D90825444}.Debug|x64.Build.0 = Debug|x64
 		{18FF34D6-91E0-48CA-BA91-156D90825444}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{18FF34D6-91E0-48CA-BA91-156D90825444}.Debug|x86.Build.0 = Debug|Any CPU
 		{18FF34D6-91E0-48CA-BA91-156D90825444}.Release|Any CPU.ActiveCfg = Release|Any CPU

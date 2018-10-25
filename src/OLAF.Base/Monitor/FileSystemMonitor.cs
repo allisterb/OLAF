@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
+using OLAF.Win32;
 namespace OLAF
 {
     public abstract class FileSystemMonitor<TDetector, TDetectorMessage, TMonitorMessage> : 
@@ -36,9 +37,9 @@ namespace OLAF
                     {
                         DirectoryInfo dir = new DirectoryInfo(kv.Key);
                         string searchPattern = Path.Combine(dir.FullName, kv.Value);
-                        var findFileData = new Win32.WIN32_FIND_DATA();
-                        IntPtr hFindFile = Win32.FindFirstFile(searchPattern, ref findFileData);
-                        if (hFindFile != Win32.INVALID_HANDLE_VALUE)
+                        var findFileData = new UnsafeNativeMethods.WIN32_FIND_DATA();
+                        IntPtr hFindFile = UnsafeNativeMethods.FindFirstFile(searchPattern, ref findFileData);
+                        if (hFindFile != UnsafeNativeMethods.INVALID_HANDLE_VALUE)
                         {
                             Debug("Adding {0} {1} to monitored paths.", dir.FullName, kv.Value);
                             Paths.Add(dir, kv.Value);
@@ -108,9 +109,9 @@ namespace OLAF
                             try
                             {
                                 string searchPattern = Path.Combine(dir.FullName, ext);
-                                var findFileData = new Win32.WIN32_FIND_DATA();
-                                IntPtr hFindFile = Win32.FindFirstFile(searchPattern, ref findFileData);
-                                if (hFindFile != Win32.INVALID_HANDLE_VALUE)
+                                var findFileData = new UnsafeNativeMethods.WIN32_FIND_DATA();
+                                IntPtr hFindFile = UnsafeNativeMethods.FindFirstFile(searchPattern, ref findFileData);
+                                if (hFindFile != UnsafeNativeMethods.INVALID_HANDLE_VALUE)
                                 {
                                     Debug("Adding {0} {1} to monitored paths.", dir.FullName, ext);
                                     Paths.Add(dir, ext);

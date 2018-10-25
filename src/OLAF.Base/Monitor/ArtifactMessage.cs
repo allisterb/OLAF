@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace OLAF
@@ -15,6 +14,7 @@ namespace OLAF
 
         #region Properties
         public string ArtifactPath { get; }
+        public string ArtifactName => ArtifactPath?.GetPathFilename();
         #endregion
     }
 }

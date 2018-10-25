@@ -34,9 +34,11 @@ namespace OLAF
         public static string[] ImageWildcardExtensions = {"*.bmp", "*.dib", "*.rle", "*.jpg", "*.jpeg", "*.jpe", "*.jfif", "*.gif", "*.tif",
             "*.tiff", "*.png"};
 
-        public List<IMonitor> Monitors { get; protected set; }
-        
         public DirectoryInfo ArtifactsDirectory { get; }
+
+        public List<IMonitor> Monitors { get; protected set; }
+
+        public List<IService> Services { get; protected set; }
         #endregion
 
         #region Methods

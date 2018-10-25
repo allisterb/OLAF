@@ -28,5 +28,8 @@ namespace OLAF
             => Console.WriteLine(messageTemplate, propertyValues);
 
         public void Close() {}
+
+        public IOperationContext Begin(string messageTemplate, params object[] args)
+            => new Loggers.SimpleOperation(this).Begin(messageTemplate, args);
     }
 }

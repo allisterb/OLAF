@@ -81,10 +81,12 @@
     <Compile Include="ActivityDetector\ActivityDetector.cs" />
     <Compile Include="ActivityDetector\IActivityDetector.cs" />
     <Compile Include="Classifier\Classifier.cs" />
+    <Compile Include="Logger\IOperationContext.cs" />
+    <Compile Include="Logger\SimpleOperation.cs" />
     <Compile Include="Monitor\ArtifactMessage.cs" />
     <Compile Include="Monitor\IMonitor.cs" />
     <Compile Include="Native\WindowsKnownFolders.cs" />
-    <Compile Include="Native\Win32.cs" />
+    <Compile Include="Native\UnsafeNativeMethods.cs" />
     <Compile Include="Api\OLAFApiStatus.cs" />
     <Compile Include="Api\OLAFApi.cs" />
     <Compile Include="Api\Global.cs" />
@@ -103,8 +105,8 @@
     <Compile Include="Logger\LoggerException.cs" />
     <Compile Include="Profile\Profile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\IService.cs" />
     <Compile Include="Service\Service.cs" />
-    <Compile Include="Service\UploadService.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

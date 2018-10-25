@@ -19,6 +19,8 @@ namespace OLAF
 
         void Warn(string messageTemplate, params object[] propertyValues);
 
+        IOperationContext Begin(string messageTemplate, params object[] args);
+
         void Close();
     }
 }

@@ -37,5 +37,19 @@ namespace OLAF
 
         public Process[] Processes { get; protected set; }
         #endregion
+
+        #region Methods
+        protected static Process GetProcessById(int id)
+        {
+            try
+            {
+                return Process.GetProcessById(id);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+        #endregion
     }
 }

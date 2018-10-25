@@ -112,6 +112,16 @@ namespace OLAF
         }
 
         protected void SetPropFromDict(object o, Dictionary<string, object> p) => SetPropFromDict(typeof(TApi), o, p);
+
+        protected void ThrowIfNotInitializing()
+        {
+            if (Status != ApiStatus.Initializing) throw new Exception("Could not construct this object.");
+        }
+
+        protected void ThrowIfNotInitialized()
+        {
+            if (Status != ApiStatus.Initialized) throw new Exception("This object is not initialized.");
+        }
         #endregion
 
         #region Fields

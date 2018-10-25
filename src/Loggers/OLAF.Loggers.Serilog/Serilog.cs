@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 using Serilog;
 using Serilog.Sinks;
+using SerilogTimings;
+using SerilogTimings.Extensions;
 
 namespace OLAF.Loggers
 {
@@ -97,5 +99,8 @@ namespace OLAF.Loggers
             => L.Warning(messageTemplate, propertyValues);
 
         public void Close() => Log.CloseAndFlush();
+
+        public IOperationContext Begin(string messageTemplate, params object[] args)
+            => new SerilogOperation(L.BeginOperation(messageTemplate, args));
     }
 }

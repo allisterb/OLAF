@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OLAF
+namespace OLAF.Win32
 {
-    public class Win32
+    public class UnsafeNativeMethods
     {
         public static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
         public const int FILE_ATTRIBUTE_DIRECTORY = 16;
