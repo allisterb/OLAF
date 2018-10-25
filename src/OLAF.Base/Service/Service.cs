@@ -64,12 +64,13 @@ namespace OLAF
                 observeThread.Start();
                 Threads.Add(observeThread);
             }
+            Status = ApiStatus.Ok;
             return ApiResult.Success;
         }
 
         public virtual ApiResult Shutdown()
         {
-            ThrowIfNotInitialized();
+            ThrowIfNotOk();
             shutdownRequested = true;
             if (!cancellationToken.IsCancellationRequested)
             {
@@ -105,19 +106,19 @@ namespace OLAF
                         (TClientMessage)Global.MessageQueue.Dequeue(client, cancellationToken);
                     ProcessClientQueue(message);
                 }
-                Info("Stopping client {0} queue monitor.", type.Name);
+                Info("Stopping client queue {0} observer in service {1}.", client.Name, type.Name);
                 Status = ApiStatus.Ok;
                 return;
             }
             catch (OperationCanceledException)
             {
-                Info("Stopping client {0} queue monitor.", type.Name);
+                Info("Stopping client queue {0} observer in service {1}.", client.Name, type.Name);
                 Status = ApiStatus.Ok;
                 return;
             }
             catch (Exception ex)
             {
-                Error(ex, "Error occurred during {0} queue monitoring.", type.Name);
+                Error(ex, "Error occurred in client queue {0} observer in service.", client.Name, type.Name);
             }
         }
         #endregion

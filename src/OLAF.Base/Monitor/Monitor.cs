@@ -23,7 +23,7 @@ namespace OLAF
         #region Properties
         public Type QueueMessageType { get; } = typeof(TMonitorMessage);
 
-        public Thread QueueMonitorThread { get; protected set; }
+        public Thread QueueObserverThread { get; protected set; }
         
         public Profile Profile { get; protected set; }
 
@@ -41,9 +41,9 @@ namespace OLAF
         public virtual ApiResult Start()
         {
             ThrowIfNotInitialized();
-            QueueMonitorThread = new Thread(() => MonitorQueue(Global.CancellationTokenSource.Token));
-            Threads = new List<Thread>() { QueueMonitorThread };
-            QueueMonitorThread.Start();
+            QueueObserverThread = new Thread(() => ObserveQueue(Global.CancellationTokenSource.Token));
+            Threads = new List<Thread>() { QueueObserverThread };
+            QueueObserverThread.Start();
             int enabled = 0;
             foreach (TDetector d in Detectors)
             {
@@ -70,7 +70,7 @@ namespace OLAF
 
         public virtual ApiResult Shutdown()
         {
-            ThrowIfNotInitialized();
+            ThrowIfNotOk();
             shutdownRequested = true;
             if (!cancellationToken.IsCancellationRequested)
             {
@@ -96,7 +96,7 @@ namespace OLAF
             }
         }
 
-        protected virtual void MonitorQueue(CancellationToken token)
+        protected virtual void ObserveQueue(CancellationToken token)
         {
             try
             {
@@ -106,19 +106,20 @@ namespace OLAF
                         (TDetectorMessage)Global.MessageQueue.Dequeue<TDetector>(cancellationToken);
                     ProcessDetectorQueue(message);
                 }
-                Info("Stopping {0} queue monitor.", type.Name);
+                Info("Stopping {1} detector queue observer in monitor {0}.", type.Name, typeof(TDetector).Name);
                 Status = ApiStatus.Ok;
                 return;
             }
             catch (OperationCanceledException)
             {
-                Info("Stopping {0} queue monitor.", type.Name);
+                Info("Stopping {1} detector queue observer in monitor {0}.", type.Name, typeof(TDetector).Name);
                 Status = ApiStatus.Ok;
                 return;
             }
             catch (Exception ex)
             {
-                Error(ex, "Error occurred during {0} queue monitoring.", type.Name);
+                Error(ex, "Error occurred during {0} detector queue monitoring in {1}.", type.Name, 
+                    typeof(TDetector).Name);
             }
         }
         #endregion

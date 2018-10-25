@@ -122,6 +122,11 @@ namespace OLAF
         {
             if (Status != ApiStatus.Initialized) throw new Exception("This object is not initialized.");
         }
+
+        protected void ThrowIfNotOk()
+        {
+            if (Status != ApiStatus.Ok) throw new Exception("This object is not initialized.");
+        }
         #endregion
 
         #region Fields

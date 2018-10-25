@@ -54,9 +54,9 @@ namespace OLAF.Services
 
         protected override ApiResult ProcessClientQueue(ArtifactMessage message)
         {
-            ThrowIfNotInitialized();
+            ThrowIfNotOk();
             CloudBlockBlob blob = null;
-            string containerName = GetAzureResourceName(Profile.Name);
+            string containerName = GetAzureResourceName(Profile.Name).ToLower();
             string blobName = GetAzureResourceName(message.ArtifactPath.GetPathFilename());
             try
             {

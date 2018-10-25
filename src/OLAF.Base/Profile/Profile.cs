@@ -44,6 +44,7 @@ namespace OLAF
         #region Methods
         public virtual ApiResult Shutdown()
         {
+            ThrowIfNotOk();
             if (Status != ApiStatus.Ok)
             {
                 throw new InvalidOperationException("This monitor is not started.");
