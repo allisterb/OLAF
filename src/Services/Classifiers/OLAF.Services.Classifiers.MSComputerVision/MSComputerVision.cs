@@ -4,6 +4,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
@@ -53,7 +54,6 @@ namespace OLAF.Services.Classifiers
                 Status = ApiStatus.RemoteApiClientError;
                 return ApiResult.Failure;
             }
-            
         }
 
         protected override ApiResult ProcessClientQueue(ArtifactMessage message)
@@ -63,8 +63,9 @@ namespace OLAF.Services.Classifiers
             {
                 using (FileStream stream = new FileStream(message.ArtifactPath, FileMode.Open))
                 {
-                    Task<ImageAnalysis> t = Client.AnalyzeImageInStreamAsync(stream, null, null, null, cancellationToken);
-                    analysis = t.Result;
+                    Task<ImageAnalysis> t1 = Client.AnalyzeImageInStreamAsync(stream, null, null, null, cancellationToken);
+                    //var c = Client.
+                    analysis = t1.Result;
                 }
             }
             catch(Exception e)
@@ -80,7 +81,5 @@ namespace OLAF.Services.Classifiers
         #region Properties
         public ComputerVisionClient Client { get; protected set; }
         #endregion
-
-        
     }
 }

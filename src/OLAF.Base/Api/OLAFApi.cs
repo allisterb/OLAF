@@ -100,6 +100,10 @@ namespace OLAF
         protected static void Verbose(string messageTemplate, params object[] propertyValues) =>
             L.Verbose(messageTemplate, propertyValues);
 
+        [DebuggerStepThrough]
+        protected static IOperationContext Begin(string messageTemplate, params object[] propertyValues) =>
+            L.Begin(messageTemplate, propertyValues);
+
         protected static void SetPropFromDict(Type t, object o, Dictionary<string, object> p)
         {
             foreach (var prop in t.GetProperties())

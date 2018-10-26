@@ -60,11 +60,12 @@ namespace OLAF.Profiles
                 Monitors.Add(monitor);
             }
             Services = new List<IService>();
-            /*
-            AzureStorageBlobUpload service = new AzureStorageBlobUpload(this, typeof(DirectoryChangesMonitor));
-            
-            */
-            MSComputerVision service = new MSComputerVision(this, typeof(DirectoryChangesMonitor));
+
+            //AzureStorageBlobUpload service = new AzureStorageBlobUpload(this, typeof(DirectoryChangesMonitor));
+
+            //MSComputerVision service = new MSComputerVision(this, typeof(DirectoryChangesMonitor));
+
+            ViolaJonesFaceDetector service = new ViolaJonesFaceDetector(this, typeof(DirectoryChangesMonitor));
             if (service.Init() != ApiResult.Success)
             {
                 Status = ApiStatus.Error;

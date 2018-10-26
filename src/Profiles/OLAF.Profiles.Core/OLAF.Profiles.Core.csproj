@@ -75,6 +75,10 @@
       <Project>{8d448b26-d206-48c8-b17f-a31133c25665}</Project>
       <Name>OLAF.Base</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Services\Classifiers\OLAF.Services.Classifiers.AccordNet\OLAF.Services.Classifiers.AccordNet.csproj">
+      <Project>{042b15ec-2936-4502-8b11-535bb1721516}</Project>
+      <Name>OLAF.Services.Classifiers.AccordNet</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Services\Classifiers\OLAF.Services.Classifiers.MSComputerVision\OLAF.Services.Classifiers.MSComputerVision.csproj">
       <Project>{040fce51-aa78-40b9-9639-9b8c7f469827}</Project>
       <Name>OLAF.Services.Classifiers.MSComputerVision</Name>
@@ -85,7 +89,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
