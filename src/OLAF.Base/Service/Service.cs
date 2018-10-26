@@ -85,13 +85,12 @@ namespace OLAF
             if (Threads.All(t => !t.IsAlive))
             {
                 shutdownCompleted = true;
-                Info("{0} shutdown complete.", this.GetType().Name);
+                Info("{0} shutdown complete.", Name);
                 return ApiResult.Success;
             }
             else
             {
-                Info("{0} threads in {1} did not shutdown.", Threads.Count(t => t.IsAlive),
-                    this.GetType().Name);
+                Info("{0} threads in {1} did not shutdown.", Threads.Count(t => t.IsAlive), Name);
                 return ApiResult.Failure;
             }
         }

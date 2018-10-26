@@ -50,6 +50,8 @@ namespace OLAF
         #endregion
 
         #region Properties
+        public string Name => type.Name;
+
         public ApiStatus Status { get; protected set; } = ApiStatus.Unknown;
 
         protected static DirectoryInfo AssemblyDirectory { get; } = new FileInfo(Assembly.GetExecutingAssembly().Location).Directory;

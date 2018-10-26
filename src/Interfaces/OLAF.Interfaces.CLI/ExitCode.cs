@@ -12,5 +12,7 @@ namespace OLAF
         UnhandledException = 1,
         InvalidOptions = 2,
         FileOrDirectoryNotFound = 3,
+        InitError = 4,
+        StartError = 5
     }
 }

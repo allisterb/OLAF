@@ -8,10 +8,12 @@ namespace OLAF
 {
     public interface IMonitor
     {
+        string Name { get; }
         ApiResult Init();
         ApiResult Start();
         ApiResult Shutdown();
         ApiStatus Status { get; }
+        Type Type { get; }
         bool ShutdownRequested { get; }
         bool ShutdownCompleted { get; }
     }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace OLAF.Services.Classifiers
 {
-    public class ViolaJonesFaceDetector : Service<ArtifactMessage, Message>
+    public class ViolaJonesFaceDetector : Service<ImageArtifact, Message>
     {
         #region Constructors
         public ViolaJonesFaceDetector(Profile profile, params Type[] clients) : base(profile, clients)
@@ -33,12 +33,13 @@ namespace OLAF.Services.Classifiers
             return ApiResult.Success;
         }
 
-        protected override ApiResult ProcessClientQueue(ArtifactMessage message)
+        protected override ApiResult ProcessClientQueue(ImageArtifact message)
         {
+            Bitmap image = message.Image;
             using (var op = Begin("Viola-Jones face detection"))
             {
-                Image = Accord.Imaging.Image.FromFile(message.ArtifactPath);
-                Rectangle[] objects = Detector.ProcessFrame(Image);
+                
+                Rectangle[] objects = Detector.ProcessFrame(image);
                 op.Complete();
             }
             return ApiResult.Success;
@@ -48,7 +49,6 @@ namespace OLAF.Services.Classifiers
         #region Properties
         HaarCascade Cascade { get; }
         HaarObjectDetector Detector { get; }
-        Bitmap Image { get; set; }
         #endregion'
     }
 }

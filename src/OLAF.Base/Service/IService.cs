@@ -8,6 +8,7 @@ namespace OLAF
 {
     public interface IService
     {
+        string Name { get; }
         ApiResult Init();
         ApiResult Start();
         ApiResult Shutdown();

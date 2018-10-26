@@ -20,6 +20,10 @@ namespace OLAF
         protected abstract ApiResult ProcessDetectorQueue(TDetectorMessage message);
         #endregion
 
+        #region Overridden members
+        public Type Type => type;
+        #endregion
+
         #region Properties
         public Type QueueMessageType { get; } = typeof(TMonitorMessage);
 
@@ -106,13 +110,13 @@ namespace OLAF
                         (TDetectorMessage)Global.MessageQueue.Dequeue<TDetector>(cancellationToken);
                     ProcessDetectorQueue(message);
                 }
-                Info("Stopping {1} detector queue observer in monitor {0}.", type.Name, typeof(TDetector).Name);
+                Info("Stopping detector queue {1}  observer in monitor {0}.", type.Name, typeof(TDetector).Name);
                 Status = ApiStatus.Ok;
                 return;
             }
             catch (OperationCanceledException)
             {
-                Info("Stopping {1} detector queue observer in monitor {0}.", type.Name, typeof(TDetector).Name);
+                Info("Stopping detector queue {1} observer in monitor {0}.", type.Name, typeof(TDetector).Name);
                 Status = ApiStatus.Ok;
                 return;
             }

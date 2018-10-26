@@ -14,7 +14,7 @@ using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json.Linq;
 
-namespace OLAF.Services
+namespace OLAF.Services.Storage
 {
     public class AzureStorageBlobUpload : 
         Service<ArtifactMessage, AzureStorageBlobUploadedMessage>
@@ -39,7 +39,7 @@ namespace OLAF.Services
         #region Overridden members
         public override ApiResult Init()
         {
-            ThrowIfNotInitializing();
+            if (Status != ApiStatus.Initializing) return ApiResult.Failure;
             Storage = new AzureStorageApi(ApiConnectionString);
             if (Storage.Initialised)
             {

@@ -105,14 +105,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Monitors\OLAF.Monitors.DirectoryChanges\OLAF.Monitors.DirectoryChanges.csproj">
-      <Project>{dba4c2fe-6c57-4c11-8446-591da0a594eb}</Project>
-      <Name>OLAF.Monitors.DirectoryChanges</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Monitors\OLAF.Monitors.Windows.AppHook\OLAF.Monitors.Windows.AppHook.csproj">
-      <Project>{1539ecc4-464c-4b5c-86dc-1039ef4f9547}</Project>
-      <Name>OLAF.Monitors.Windows.AppHook</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\OLAF.Base\OLAF.Base.csproj">
       <Project>{8d448b26-d206-48c8-b17f-a31133c25665}</Project>
       <Name>OLAF.Base</Name>

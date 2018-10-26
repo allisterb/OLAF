@@ -32,14 +32,12 @@ namespace OLAF.Monitors
                 }
                 Info("Monitoring {0} paths for files with extension(s) {1}.", Paths.Count,
                     Paths.Values.Distinct());
-                Status = ApiStatus.Initialized;
-                return ApiResult.Success;
+                return SetInitializedStatusAndReturnSucces();
             }
             catch (Exception e)
             {
                 Error(e, "Error occurred initializing a detector.");
-                Status = ApiStatus.Error;
-                return ApiResult.Failure;
+                return SetErrorStatusAndReturnFailure();
             }
         }
 
@@ -58,7 +56,7 @@ namespace OLAF.Monitors
             else
             {
                 Error("Could not copy artifact {0} to {1}.", message.Path, artifactPath);
-                return ApiResult.Success;
+                return ApiResult.Failure;
             }
             
         }

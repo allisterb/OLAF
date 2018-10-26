@@ -7,8 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 using OLAF.Loggers;
-using OLAF.Monitors;
-using OLAF.Monitors.Windows;
 using OLAF.Profiles;
 
 namespace OLAF
@@ -71,45 +69,25 @@ namespace OLAF
 
             Global.SetupMessageQueue();
 
-            UserDownloadedImages m = new UserDownloadedImages();
+             UserDownloadedImages profile = new UserDownloadedImages();
 
-            if (m.Status != ApiStatus.Initializing)
+            if (profile.Init() != ApiResult.Success)
             {
-                Error("Could not load m {0}.", typeof(DirectoryChangesMonitor).Name);
-                Exit(ExitCode.UnhandledException);
+                Error("Could not initialize profile {0}.", profile.Name);
+                Exit(ExitCode.InitError);
             }
-            m.Init();
-            if (m.Status != ApiStatus.Initialized)
+            
+            if (profile.Start() != ApiResult.Success)
             {
-                Error("Could not initialize monitor {0}.", typeof(DirectoryChangesMonitor).Name);
-                Exit(ExitCode.UnhandledException);
+                Error("Could not start profile {0}.", profile.Name);
+                Exit(ExitCode.StartError);
             }
-            m.Start();
+            Info("Profile {0} started. Press any key to exit.", profile.Name);
+
             ConsoleKeyInfo key = Console.ReadKey();
-            m.Shutdown();
-            /*
-            Monitor m = new ExplorerMonitor();
-            
-            
-            Dictionary<string, string> paths = new Dictionary<string, string>()
-            {
-                {@"D:\Downloads", "*.txt" }
-            };
-            Monitor m = new DirectoryChangesMonitor(paths);
-            if (m.Status != ApiStatus.Ok)
-            {
-                Error("Could not load monitor {0}.", typeof(DirectoryChangesMonitor).Name);
-                Exit(ExitCode.UnhandledException);
-            }
-            m.Init();
-            if (m.Status != ApiStatus.Initialized)
-            {
-                Error("Could not initialize monitor {0}.", typeof(DirectoryChangesMonitor).Name);
-                Exit(ExitCode.UnhandledException);
-            }
-            m.Start();
-            Info("Monitor(s) started. Press any key to stop..."); */
 
+            profile.Shutdown();
+            Exit(ExitCode.Success);
         }
 
         static void Exit(ExitCode result)

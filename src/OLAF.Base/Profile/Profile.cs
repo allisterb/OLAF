@@ -11,24 +11,18 @@ namespace OLAF
     public abstract class Profile : OLAFApi<Profile, Message>
     {
         #region Constructors
-        public Profile(string name)
+        public Profile()
         {
-            Name = name;
             string artifactsdirName = GetCurrentDirectoryPathTo("data", "artifacts", GetArtifactsDirectoryName());
             if (!Directory.Exists(artifactsdirName))
             {
                 ArtifactsDirectory = Directory.CreateDirectory(artifactsdirName);
             }
             else ArtifactsDirectory = new DirectoryInfo(artifactsdirName);
-            Info("Using {0} profile.", type.Name);
+       
+            Monitors = new List<IMonitor>();
             Status = ApiStatus.Initializing;
         }
-        #endregion
-
-        #region Abstract members
-        public string Name { get; }
-        public abstract ApiResult Init();
-        public abstract ApiResult Start();
         #endregion
 
         #region Properties
@@ -37,12 +31,62 @@ namespace OLAF
 
         public DirectoryInfo ArtifactsDirectory { get; }
 
-        public List<IMonitor> Monitors { get; protected set; }
+        public Pipeline Pipeline { get; protected set; }
 
-        public List<IService> Services { get; protected set; }
+        public List<IMonitor> Monitors { get; protected set; }
         #endregion
 
         #region Methods
+        public virtual ApiResult Init()
+        {
+            if (Status != ApiStatus.Initializing) return ApiResult.Failure;
+
+            if (Monitors == null || Monitors.Count == 0)
+            {
+                throw new InvalidOperationException("No monitors were created.");
+            }
+
+            foreach (IMonitor monitor in Monitors)
+            {
+                if (monitor.Init() != ApiResult.Success)
+                {
+                    Error("Monitor {0} did not initialize.", monitor.Name);
+                    return SetErrorStatusAndReturnFailure();
+                }
+            }
+
+            if (Pipeline.Init() != ApiResult.Success)
+            {
+                Error("Pipeline {0} did not initialize.", Pipeline.Name);
+                return SetErrorStatusAndReturnFailure();
+            }
+            else
+            {
+                return SetInitializedStatusAndReturnSucces();
+            }
+        }
+
+        public virtual ApiResult Start()
+        {
+            foreach (IMonitor monitor in Monitors)
+            {
+                if (monitor.Start() != ApiResult.Success)
+                {
+                    Error("Monitor {0} did not start.", monitor.Name);
+                    return SetErrorStatusAndReturnFailure();
+                }
+            }
+
+            if (Pipeline.Start() != ApiResult.Success)
+            {
+                Error("Pipeline {0} did not initialize.", Pipeline.Name);
+                return SetErrorStatusAndReturnFailure();
+            }
+            else
+            {
+                return SetOkStatusAndReturnSucces();
+            }
+        }
         public virtual ApiResult Shutdown()
         {
             ThrowIfNotOk();

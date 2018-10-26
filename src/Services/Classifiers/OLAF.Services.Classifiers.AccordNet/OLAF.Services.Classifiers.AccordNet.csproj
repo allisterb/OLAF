@@ -7,7 +7,7 @@
     <ProjectGuid>{042B15EC-2936-4502-8B11-535BB1721516}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OLAF.Services.Classifiers.AccordNet</RootNamespace>
+    <RootNamespace>OLAF.Services.Classifiers</RootNamespace>
     <AssemblyName>OLAF.Services.Classifiers.AccordNet</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

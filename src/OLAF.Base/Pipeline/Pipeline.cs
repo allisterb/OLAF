@@ -11,28 +11,30 @@ namespace OLAF
         #region Constructors
         public Pipeline(Profile profile)
         {
-            Profile = profile;
+            Profile = profile ?? throw new ArgumentNullException(nameof(profile));
+            Services = new SortedList<int, IService>();
+            Status = ApiStatus.Initializing;
         }
         #endregion
 
         #region Properties
-        public abstract string Name { get; }
         public abstract string Description { get; }
 
-        public Profile Profile { get; } 
-        public List<IMonitor> Monitors { get; }
+        public Profile Profile { get; }
+        public List<IMonitor> Monitors => Profile.Monitors;
+        public Type[] MonitorClients => Monitors?.Select(m => m.Type).ToArray();
         public SortedList<int, IService> Services { get; }
         #endregion
 
         #region Methods
         public virtual ApiResult Init()
         {
-            ThrowIfNotInitializing();
-            if (!Monitors.All(m => m.Init() == ApiResult.Success))
+            if (Status != ApiStatus.Initializing) return ApiResult.Failure;
+            if (!Monitors.All(m => m.Status == ApiStatus.Initialized))
             {
-                foreach(IMonitor m in Monitors.Where(m => m.Status != ApiStatus.Initialized))
+                foreach(IMonitor m in Monitors.Where(m => m.Status != ApiStatus.Ok))
                 {
-                    Error("Monitor {0} did not initialize.", m.GetType().Name);
+                    Error("Monitor {0} has errors. Not initializing pipeline {1}.", m.GetType().Name, type.Name);
                 }
                 return SetErrorStatusAndReturnFailure();
             }
@@ -52,11 +54,11 @@ namespace OLAF
         public virtual ApiResult Start()
         {
             ThrowIfNotInitialized();
-            if (!Monitors.All(m => m.Start() == ApiResult.Success))
+            if (!Monitors.All(m => m.Status == ApiStatus.Ok))
             {
                 foreach (IMonitor m in Monitors.Where(m => m.Status != ApiStatus.Ok))
                 {
-                    Error("Monitor {0} did not start.", m.GetType().Name);
+                    Error("Monitor {0} has errors. Not initializing pipeline {1}.", m.GetType().Name, type.Name);
                 }
                 return SetErrorStatusAndReturnFailure();
             }
@@ -75,14 +77,6 @@ namespace OLAF
         public virtual ApiResult Shutdown()
         {
             ThrowIfNotOk();
-            if (!Monitors.All(m => m.Shutdown() == ApiResult.Success))
-            {
-                foreach (IMonitor m in Monitors.Where(m => m.Status != ApiStatus.Ok))
-                {
-                    Error("Monitor {0} did not shutdown.", m.GetType().Name);
-                }
-            }
-
             for (int i = 0; i < Services.Count; i++)
             {
                 if (Services[i].Shutdown() != ApiResult.Success)
@@ -97,6 +91,7 @@ namespace OLAF
             }
             else
             {
+                Error("Error(s) occurred during pipeline {0} shutdown.", type.Name);
                 return SetErrorStatusAndReturnFailure();
             }
         }

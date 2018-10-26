@@ -6,27 +6,16 @@ using System.Text;
 using System.Threading.Tasks;
 
 using OLAF.Monitors;
-using OLAF.Services;
-using OLAF.Services.Classifiers;
+using OLAF.Pipelines;
+
 
 namespace OLAF.Profiles
 {
     public class UserDownloadedImages : Profile
     {
         #region Constructors
-        public UserDownloadedImages() : base("UserDownloadedImages") {}
-        #endregion
-
-        #region Properties
-        public List<string> UserKnownFolders { get; protected set; }
-
-        public Dictionary<string, string> Paths { get; protected set; }
-        #endregion
-
-        #region Overridden members
-        public override ApiResult Init()
+        public UserDownloadedImages()
         {
-            if (Status != ApiStatus.Initializing) return ApiResult.Failure;
             UserKnownFolders = new List<string>()
             {
                 WindowsKnownFolders.GetPath(KnownFolder.Downloads),
@@ -44,70 +33,28 @@ namespace OLAF.Profiles
             {
                 Error("No directories to monitor.");
                 Status = ApiStatus.FileNotFound;
-                return ApiResult.Failure;
+                return;
             }
-
-            Monitors = new List<IMonitor>();
-            DirectoryChangesMonitor monitor = new DirectoryChangesMonitor(UserKnownFolders.ToArray(), 
+            DirectoryChangesMonitor monitor = new DirectoryChangesMonitor(UserKnownFolders.ToArray(),
                 ImageWildcardExtensions.ToArray(), this);
-            if (monitor.Init() != ApiResult.Success)
+            if (monitor.Status != ApiStatus.Initializing)
             {
                 Status = ApiStatus.Error;
-                return ApiResult.Failure;
             }
-            else
-            {
-                Monitors.Add(monitor);
-            }
-            Services = new List<IService>();
-
-            //AzureStorageBlobUpload service = new AzureStorageBlobUpload(this, typeof(DirectoryChangesMonitor));
-
-            //MSComputerVision service = new MSComputerVision(this, typeof(DirectoryChangesMonitor));
-
-            ViolaJonesFaceDetector service = new ViolaJonesFaceDetector(this, typeof(DirectoryChangesMonitor));
-            if (service.Init() != ApiResult.Success)
-            {
-                Status = ApiStatus.Error;
-                return ApiResult.Failure;
-            }
-            else
-            {
-                Services.Add(service);
-            }
-            Status = ApiStatus.Initialized;
-            return ApiResult.Success;
-        }
-
-        public override ApiResult Start()
-        {
-            if (Status != ApiStatus.Initialized)
-            {
-                throw new InvalidOperationException("This monitor is not initialized");
-            }
-            if (Monitors.All(m => m.Start() == ApiResult.Success))
-            {
-                Status = ApiStatus.Ok;
-            }
-            else
-            {
-                Error("One or more of the monitors did not start.");
-                Status = ApiStatus.Error;
-                return ApiResult.Failure;
-            }
-
-            if (Services.All(m => m.Start() == ApiResult.Success))
-            {
-                Status = ApiStatus.Ok;
-                return ApiResult.Success;
-            }
-            else
-            {
-                Error("One or more of the services did not start.");
-                Status = ApiStatus.Error;
-                return ApiResult.Failure;
-            }
+            Monitors.Add(monitor);
+            Pipeline = new Pipeline1(this);
+            Status = Pipeline.Status;
         }
         #endregion
+
+        
+
+        #region Properties
+        public List<string> UserKnownFolders { get; protected set; }
+
+        public Dictionary<string, string> Paths { get; protected set; }
+        #endregion
+
+        
     }
 }
