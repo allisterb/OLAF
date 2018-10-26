@@ -20,6 +20,7 @@ namespace OLAF
                 ArtifactsDirectory = Directory.CreateDirectory(artifactsdirName);
             }
             else ArtifactsDirectory = new DirectoryInfo(artifactsdirName);
+            Info("Using {0} profile.", type.Name);
             Status = ApiStatus.Initializing;
         }
         #endregion

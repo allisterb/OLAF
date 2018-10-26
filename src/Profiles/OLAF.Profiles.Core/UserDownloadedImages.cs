@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using OLAF.Monitors;
 using OLAF.Services;
+using OLAF.Services.Classifiers;
 
 namespace OLAF.Profiles
 {
@@ -59,7 +60,11 @@ namespace OLAF.Profiles
                 Monitors.Add(monitor);
             }
             Services = new List<IService>();
+            /*
             AzureStorageBlobUpload service = new AzureStorageBlobUpload(this, typeof(DirectoryChangesMonitor));
+            
+            */
+            MSComputerVision service = new MSComputerVision(this, typeof(DirectoryChangesMonitor));
             if (service.Init() != ApiResult.Success)
             {
                 Status = ApiStatus.Error;

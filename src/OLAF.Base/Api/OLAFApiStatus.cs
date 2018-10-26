@@ -6,9 +6,11 @@ namespace OLAF
         Unknown = -1,
         Ok = 0,
         Error = 1,
-        Initializing = 2,
-        Initialized = 3,
-        FileNotFound = 4,
-        ProcessNotFound = 5
+        RemoteApiClientError,
+        Initializing,
+        Initialized,
+        FileNotFound,
+        ProcessNotFound,
+        ConfigurationError
     }
 }

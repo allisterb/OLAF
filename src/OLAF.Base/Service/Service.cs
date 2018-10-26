@@ -48,7 +48,7 @@ namespace OLAF
 
         public string ApiConnectionString { get; protected set; }
 
-        public Uri EndpointUrl { get; protected set; }
+        public string ApiEndpointUrl { get; protected set; }
 
         public Profile Profile { get; }
         #endregion

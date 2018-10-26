@@ -10,12 +10,7 @@ namespace OLAF.Loggers
 {
     public class SerilogLogger : ILogger
     {
-        public static LoggerConfiguration LoggerConfiguration { get; protected set; }
-
-        public static bool LoggerConfigured { get; protected set; }
-
-        protected Serilog.ILogger L { get; set; }
-
+        #region Constructors
         internal SerilogLogger()
         {
             if (!LoggerConfigured)
@@ -24,7 +19,17 @@ namespace OLAF.Loggers
             }
             L = Log.Logger;
         }
+        #endregion
 
+        #region Properties
+        public static LoggerConfiguration LoggerConfiguration { get; protected set; }
+
+        public static bool LoggerConfigured { get; protected set; }
+
+        protected Serilog.ILogger L { get; set; }
+        #endregion
+
+        #region Methods
         public static SerilogLogger CreateDefaultLogger(string logFilename = "OLAF.log")
         {
             if (!LoggerConfigured)
@@ -101,6 +106,10 @@ namespace OLAF.Loggers
         public void Close() => Log.CloseAndFlush();
 
         public IOperationContext Begin(string messageTemplate, params object[] args)
-            => new SerilogOperation(L.BeginOperation(messageTemplate, args));
+        {
+            Info(messageTemplate + " starting...", args);
+            return new SerilogOperation(L.BeginOperation(messageTemplate, args));
+        }
+        #endregion
     }
 }

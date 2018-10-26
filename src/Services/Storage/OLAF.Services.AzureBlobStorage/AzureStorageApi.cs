@@ -129,7 +129,7 @@ namespace OLAF.Services
                     }
                     else
                     {
-                        L.Error(se, "A storage error occurred getting Azure Storage blob {bn} in container {cn}.", blobName, containerName);
+                        L.Error(se, "A storage error occurred getting/creating Azure Storage blob {bn} in container {cn}.", blobName, containerName);
                         return null;
                     }
                 }

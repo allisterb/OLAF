@@ -10,13 +10,14 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json.Linq;
 
 namespace OLAF.Services
 {
     public class AzureStorageBlobUpload : 
-        Service<ArtifactMessage, AzureStorageBlobUploadedMessage>, IService
+        Service<ArtifactMessage, AzureStorageBlobUploadedMessage>
     {
         #region Constructors
         public AzureStorageBlobUpload(Profile profile, params Type[] clients) : base(profile, clients)
@@ -25,7 +26,7 @@ namespace OLAF.Services
             {
                 UseEmulator = true;
                 ApiConnectionString = "UseDevelopmentStorage=true";
-                Info("Using Azure Storage Emulator.");
+                Info("{0} service using Azure Storage Emulator.", typeof(AzureStorageBlobUpload).Name);
             }
             else
             {
@@ -42,6 +43,8 @@ namespace OLAF.Services
             Storage = new AzureStorageApi(ApiConnectionString);
             if (Storage.Initialised)
             {
+                ApiAccountName = Storage.StorageAccount.Credentials.AccountName;
+                Info("{0} service initialized using Azure Blob Storage account {1}.", type.Name, ApiAccountName);
                 Status = ApiStatus.Initialized;
                 return ApiResult.Success;
             }
@@ -56,7 +59,7 @@ namespace OLAF.Services
         {
             ThrowIfNotOk();
             CloudBlockBlob blob = null;
-            string containerName = GetAzureResourceName(Profile.Name).ToLower();
+            string containerName = GetAzureResourceName(Profile.ArtifactsDirectory.Name).ToLower();
             string blobName = GetAzureResourceName(message.ArtifactPath.GetPathFilename());
             try
             {
