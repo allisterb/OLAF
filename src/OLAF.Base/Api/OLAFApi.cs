@@ -131,6 +131,36 @@ namespace OLAF
         {
             if (Status != ApiStatus.Ok) throw new Exception("This object is not initialized.");
         }
+
+        protected ApiResult SetStatusAndReturnSuccess(ApiStatus apiStatus)
+        {
+            Status = apiStatus;
+            return ApiResult.Success;
+        }
+
+        protected ApiResult SetInitializedStatusAndReturnSucces()
+        {
+            Status = ApiStatus.Initialized;
+            return ApiResult.Success;
+        }
+
+        protected ApiResult SetOkStatusAndReturnSucces()
+        {
+            Status = ApiStatus.Ok;
+            return ApiResult.Success;
+        }
+
+        protected ApiResult SetStatusAndReturnFailure(ApiStatus apiStatus)
+        {
+            Status = apiStatus;
+            return ApiResult.Failure;
+        }
+
+        protected ApiResult SetErrorStatusAndReturnFailure()
+        {
+            Status = ApiStatus.Error; ;
+            return ApiResult.Failure;
+        }
         #endregion
 
         #region Fields

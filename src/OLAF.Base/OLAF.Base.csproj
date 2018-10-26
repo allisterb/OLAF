@@ -87,6 +87,7 @@
     <Compile Include="Logger\SimpleOperation.cs" />
     <Compile Include="Monitor\ArtifactMessage.cs" />
     <Compile Include="Monitor\IMonitor.cs" />
+    <Compile Include="Pipeline\Pipeline.cs" />
     <Compile Include="Profile\WindowsKnownFolders.cs" />
     <Compile Include="Native\UnsafeNativeMethods.cs" />
     <Compile Include="Api\OLAFApiStatus.cs" />

@@ -46,10 +46,6 @@ namespace OLAF
         public virtual ApiResult Shutdown()
         {
             ThrowIfNotOk();
-            if (Status != ApiStatus.Ok)
-            {
-                throw new InvalidOperationException("This monitor is not started.");
-            }
             Parallel.ForEach(Monitors, m => m.Shutdown());
             if (Monitors.All(m => m.ShutdownCompleted))
             {

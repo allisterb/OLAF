@@ -11,6 +11,7 @@ namespace OLAF
         ApiResult Init();
         ApiResult Start();
         ApiResult Shutdown();
+        ApiStatus Status { get; }
         bool ShutdownRequested { get; }
         bool ShutdownCompleted { get; }
     }
