@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace OLAF
 {
-    public class ImageArtifact : ClassifierMessage
+    public class ImageArtifact : ClassifierInput
     {
         #region Constructors
-        public ImageArtifact(ArtifactMessage artifactMessage, Bitmap image) : base(artifactMessage)
+        public ImageArtifact(Artifact artifactMessage, Bitmap image) : base(artifactMessage)
         {
             Image = image;
         }
@@ -18,6 +18,14 @@ namespace OLAF
 
         #region Properties
         public Bitmap Image { get; }
+
+        public Dictionary<ImageObjectKinds, List<Rectangle>> DetectedObjects { get; }
+            = new Dictionary<ImageObjectKinds, List<Rectangle>>();
+        #endregion
+
+        #region Methods
+        public bool HasDetectedObjects(ImageObjectKinds kind) => this.DetectedObjects.ContainsKey(kind)
+            && this.DetectedObjects[kind].Count > 0;
         #endregion
     }
 }

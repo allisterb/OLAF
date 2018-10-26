@@ -9,7 +9,7 @@ using OLAF.ActivityDetectors;
 
 namespace OLAF.Monitors
 {
-    public class DirectoryChangesMonitor : FileSystemMonitor<FileSystemActivity, FileSystemChangeMessage, ArtifactMessage>
+    public class DirectoryChangesMonitor : FileSystemMonitor<FileSystemActivity, FileSystemChangeMessage, Artifact>
     {
         #region Constructors
         public DirectoryChangesMonitor(Dictionary<string, string> paths, Profile profile) : base(paths, profile) {}
@@ -50,7 +50,7 @@ namespace OLAF.Monitors
                 Debug("Copied artifact {0} to {1}.", message.Path, artifactPath);
 
                 Global.MessageQueue.Enqueue<DirectoryChangesMonitor>(
-                    new ArtifactMessage(message.Id, artifactPath));
+                    new Artifact(message.Id, artifactPath));
                 return ApiResult.Success;
             }
             else

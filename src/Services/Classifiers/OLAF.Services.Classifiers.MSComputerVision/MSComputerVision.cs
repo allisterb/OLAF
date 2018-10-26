@@ -12,7 +12,7 @@ using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 
 namespace OLAF.Services.Classifiers
 {
-    public class MSComputerVision : Service<ArtifactMessage, MSComputerVisionMessage>
+    public class MSComputerVision : Service<ImageArtifact, ImageArtifact>
     {
         #region Constructors
         public MSComputerVision(Profile profile, params Type[] clients) : base(profile, clients)
@@ -56,24 +56,32 @@ namespace OLAF.Services.Classifiers
             }
         }
 
-        protected override ApiResult ProcessClientQueue(ArtifactMessage message)
+        protected override ApiResult ProcessClientQueue(ImageArtifact artifact)
         {
-            ImageAnalysis analysis = null;
-            try
+            if (!artifact.HasDetectedObjects(ImageObjectKinds.Face))
             {
-                using (FileStream stream = new FileStream(message.ArtifactPath, FileMode.Open))
+                Global.MessageQueue.Enqueue<MSComputerVision>(artifact);
+                return ApiResult.Success;
+            }
+            else
+            {
+                Info("Artifact has faces detected; analyzing using MS Computer Vision API.");
+                ImageAnalysis analysis = null;
+                try
                 {
-                    Task<ImageAnalysis> t1 = Client.AnalyzeImageInStreamAsync(stream, null, null, null, cancellationToken);
-                    //var c = Client.
-                    analysis = t1.Result;
+                    using (FileStream stream = new FileStream(artifact.Artifact.Path, FileMode.Open))
+                    {
+                        Task<ImageAnalysis> t1 = Client.AnalyzeImageInStreamAsync(stream, null, null, null, cancellationToken);
+                        analysis = t1.Result;
+                    }
                 }
+                catch (Exception e)
+                {
+                    Error(e, "An error occurred during image analysis using the Microsoft Computer Vision API.");
+                    return ApiResult.Failure;
+                }
+                return ApiResult.Success;
             }
-            catch(Exception e)
-            {
-                Error(e, "An error occurred during image analysis using the Microsoft Computer Vision API.");
-                return ApiResult.Failure;
-            }
-            return ApiResult.Success;
             
         }
         #endregion

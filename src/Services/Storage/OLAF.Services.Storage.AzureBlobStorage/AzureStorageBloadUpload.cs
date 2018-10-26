@@ -17,7 +17,7 @@ using Newtonsoft.Json.Linq;
 namespace OLAF.Services.Storage
 {
     public class AzureStorageBlobUpload : 
-        Service<ArtifactMessage, AzureStorageBlobUploadedMessage>
+        Service<Artifact, AzureStorageBlobUploadedMessage>
     {
         #region Constructors
         public AzureStorageBlobUpload(Profile profile, params Type[] clients) : base(profile, clients)
@@ -55,12 +55,12 @@ namespace OLAF.Services.Storage
             }
         }
 
-        protected override ApiResult ProcessClientQueue(ArtifactMessage message)
+        protected override ApiResult ProcessClientQueue(Artifact message)
         {
             ThrowIfNotOk();
             CloudBlockBlob blob = null;
             string containerName = GetAzureResourceName(Profile.ArtifactsDirectory.Name).ToLower();
-            string blobName = GetAzureResourceName(message.ArtifactPath.GetPathFilename());
+            string blobName = GetAzureResourceName(message.Path.GetPathFilename());
             try
             {
                 Task<CloudBlob> t = Storage.GetorCreateCloudBlobAsync(containerName, blobName,
@@ -74,7 +74,7 @@ namespace OLAF.Services.Storage
             catch (Exception e)
             {
                 Error(e, "Error occurred attempting to upload artifact {0} to container {1}",
-                    message.ArtifactName, Profile.Name);
+                    message.Name, Profile.Name);
                 return ApiResult.Failure;
             }
         }

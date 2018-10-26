@@ -86,11 +86,12 @@
     <Compile Include="ActivityDetector\IActivityDetector.cs" />
     <Compile Include="Api\IQueueConsumer.cs" />
     <Compile Include="Api\IQueueProducer.cs" />
-    <Compile Include="Classifier\ClassifierMessage.cs" />
+    <Compile Include="Classifier\ClassifierInput.cs" />
     <Compile Include="Classifier\ImageArtifact.cs" />
+    <Compile Include="Classifier\ImageObjectKinds.cs" />
     <Compile Include="Logger\IOperationContext.cs" />
     <Compile Include="Logger\SimpleOperation.cs" />
-    <Compile Include="Monitor\ArtifactMessage.cs" />
+    <Compile Include="Monitor\Artifact.cs" />
     <Compile Include="Monitor\IMonitor.cs" />
     <Compile Include="Pipeline\Pipeline.cs" />
     <Compile Include="Profile\WindowsKnownFolders.cs" />

@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 
 namespace OLAF
 {
-    public abstract class ClassifierMessage : Message
+    public abstract class ClassifierInput : Message
     {
         #region Constructors
-        public ClassifierMessage(ArtifactMessage artifact) : base(artifact.Id)
+        public ClassifierInput(Artifact artifact) : base(artifact.Id)
         {
             Artifact = artifact;
         }
         #endregion
 
         #region Properties
-        public ArtifactMessage Artifact;
+        public Artifact Artifact;
         #endregion
     }
 }

@@ -14,6 +14,7 @@ namespace OLAF.Pipelines
         {
             Services.Add(0, new Images(profile, MonitorClients));
             Services.Add(1, new ViolaJonesFaceDetector(profile, typeof(Images)));
+            Services.Add(2, new MSComputerVision(profile, typeof(ViolaJonesFaceDetector)));
             if (Services.All(s => s.Value.Status == ApiStatus.Initializing))
             {
                 this.Status = ApiStatus.Initializing;

@@ -61,6 +61,10 @@ namespace OLAF
             {
                 if (!loggerIsSetup)
                 {
+                    if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "logs")))
+                    {
+                        Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "logs"));
+                    }
                     Logger = logger();
                     loggerIsSetup = true;
                 }

@@ -53,7 +53,7 @@ namespace OLAF.Loggers
                 if (enabledOptions.Contains("WithLogFile"))
                 {
                     LoggerConfiguration = LoggerConfiguration
-                    .WriteTo.RollingFile("OLAF.log",
+                    .WriteTo.RollingFile("logs\\OLAF.log",
                         outputTemplate: "{Timestamp:HH:mm:ss}<{ThreadId:d2}> [{Level:u3}] {Message}{NewLine}{Exception}");
                 }
 
@@ -75,7 +75,7 @@ namespace OLAF.Loggers
                 }
                 if (enabledOptions.Contains("WithLogFile"))
                 {
-                   Log.Logger.Information("Log file is OLAF-{0:D4}{1:D2}{2:D2}.log", 
+                   Log.Logger.Information("Log file is logs\\OLAF-{0:D4}{1:D2}{2:D2}.log", 
                        DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day);
                 }
                 if (enabledOptions.Contains("WithoutConsole"))

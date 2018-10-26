@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OLAF.Services.Classifiers.AccordNet
+namespace OLAF
 {
-    public class Class1
+    public enum ImageObjectKinds
     {
+        Face
     }
 }

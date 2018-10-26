@@ -32,7 +32,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
+    <OutputPath>..\..\..\bin\x64\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -78,10 +78,6 @@
     <ProjectReference Include="..\..\Services\Extractors\OLAF.Services.Extractors.ImageArtifact\OLAF.Services.Extractors.Images.csproj">
       <Project>{28ba3392-f4c4-4e51-810f-5d456843fd3a}</Project>
       <Name>OLAF.Services.Extractors.Images</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Services\Storage\OLAF.Services.AzureBlobStorage\OLAF.Services.Storage.AzureStorage.csproj">
-      <Project>{18ff34d6-91e0-48ca-ba91-156d90825444}</Project>
-      <Name>OLAF.Services.Storage.AzureStorage</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

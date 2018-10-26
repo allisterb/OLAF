@@ -47,8 +47,6 @@ namespace OLAF.Profiles
         }
         #endregion
 
-        
-
         #region Properties
         public List<string> UserKnownFolders { get; protected set; }
 
