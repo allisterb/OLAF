@@ -86,6 +86,7 @@
     <Compile Include="ActivityDetector\IActivityDetector.cs" />
     <Compile Include="Api\IQueueConsumer.cs" />
     <Compile Include="Api\IQueueProducer.cs" />
+    <Compile Include="Classifier\ArtifactCategory.cs" />
     <Compile Include="Classifier\ClassifierInput.cs" />
     <Compile Include="Classifier\ImageArtifact.cs" />
     <Compile Include="Classifier\ImageObjectKinds.cs" />

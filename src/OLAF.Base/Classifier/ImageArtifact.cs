@@ -21,6 +21,16 @@ namespace OLAF
 
         public Dictionary<ImageObjectKinds, List<Rectangle>> DetectedObjects { get; }
             = new Dictionary<ImageObjectKinds, List<Rectangle>>();
+
+        public List<ArtifactCategory> Catgegories { get; } = new List<ArtifactCategory>();
+
+        public bool IsAdultContent { get; set; }
+
+        public double AdultContentScore { get; set; }
+
+        public bool IsRacy { get; set; }
+
+        public double RacyContentScore { get; set; }
         #endregion
 
         #region Methods

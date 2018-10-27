@@ -85,7 +85,7 @@ namespace OLAF
             if (Threads.All(t => !t.IsAlive))
             {
                 shutdownCompleted = true;
-                Info("{0} service shutdown complete.", Name);
+                Info("{0} service shutdown completed successfully.", Name);
                 return ApiResult.Success;
             }
             else

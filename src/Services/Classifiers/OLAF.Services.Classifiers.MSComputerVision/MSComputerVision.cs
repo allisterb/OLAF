@@ -67,19 +67,43 @@ namespace OLAF.Services.Classifiers
             {
                 Info("Artifact has faces detected; analyzing using MS Computer Vision API.");
                 ImageAnalysis analysis = null;
-                try
+                using (var op = Begin("Analyze image using MS Computer Vision API."))
                 {
-                    using (FileStream stream = new FileStream(artifact.Artifact.Path, FileMode.Open))
+                    try
                     {
-                        Task<ImageAnalysis> t1 = Client.AnalyzeImageInStreamAsync(stream, null, null, null, cancellationToken);
-                        analysis = t1.Result;
+                        using (FileStream stream = new FileStream(artifact.Artifact.Path, FileMode.Open))
+                        {
+                            Task<ImageAnalysis> t1 = Client.AnalyzeImageInStreamAsync(stream,
+                                VisualFeatures, null, null, cancellationToken);
+                            analysis = t1.Result;
+                            op.Complete();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Error(e, "An error occurred during image analysis using the Microsoft Computer Vision API.");
+                        return ApiResult.Failure;
                     }
                 }
-                catch (Exception e)
+                if (analysis.Categories != null)
                 {
-                    Error(e, "An error occurred during image analysis using the Microsoft Computer Vision API.");
-                    return ApiResult.Failure;
+                    Info("Image categories: {0}", analysis.Categories.Select(c => c.Name + "/" + c.Score.ToString()));
+                    foreach (Category c in analysis.Categories)
+                    {
+
+                        artifact.Catgegories.Add(new ArtifactCategory(c.Name, null, c.Score));
+                    }
                 }
+                Info("Image properties: Adult: {0}/{1} Racy: {2}/{3} Description:{4}",
+                    analysis.Adult.IsAdultContent, analysis.Adult.AdultScore, analysis.Adult.IsRacyContent,
+                    analysis.Adult.RacyScore, analysis.Description.Tags);
+                artifact.IsAdultContent = analysis.Adult.IsAdultContent;
+                artifact.AdultContentScore = analysis.Adult.AdultScore;
+                artifact.IsRacy = analysis.Adult.IsRacyContent;
+                artifact.RacyContentScore = analysis.Adult.RacyScore;
+                analysis.Description = analysis.Description;
+
+                Global.MessageQueue.Enqueue<MSComputerVision>(artifact);
                 return ApiResult.Success;
             }
             
@@ -88,6 +112,13 @@ namespace OLAF.Services.Classifiers
 
         #region Properties
         public ComputerVisionClient Client { get; protected set; }
+        public List<VisualFeatureTypes> VisualFeatures { get; } = new List<VisualFeatureTypes>()
+        {
+            VisualFeatureTypes.Categories,
+            VisualFeatureTypes.Description,
+            VisualFeatureTypes.Adult
+        };
+        
         #endregion
     }
 }
