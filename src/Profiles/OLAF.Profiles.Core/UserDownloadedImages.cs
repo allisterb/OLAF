@@ -36,7 +36,7 @@ namespace OLAF.Profiles
                 return;
             }
             DirectoryChangesMonitor monitor = new DirectoryChangesMonitor(UserKnownFolders.ToArray(),
-                ImageWildcardExtensions.ToArray(), this);
+                BasicImageWildcardExtensions.ToArray(), this);
             if (monitor.Status != ApiStatus.Initializing)
             {
                 Status = ApiStatus.Error;

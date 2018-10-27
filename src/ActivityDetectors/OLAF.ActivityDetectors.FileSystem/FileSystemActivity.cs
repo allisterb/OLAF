@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace OLAF.ActivityDetectors
 {
-    public class FileSystemActivity : ActivityDetector<FileSystemChangeMessage>
+    public class FileSystemActivity : ActivityDetector<FileSystemChangeMessage>, IDisposable
     {
         #region Constructors
         public FileSystemActivity(string path, string filter, Type mt) : base(mt)
@@ -38,11 +38,79 @@ namespace OLAF.ActivityDetectors
         protected FileSystemWatcher FileSystemWatcher { get; set; }
         #endregion
 
+        #region Disposer and Finalizer
+        /// /// </remarks>         
+        public void Dispose()
+        {
+            Dispose(true); 
+            // This object will be cleaned up by the Dispose method. 
+            // Therefore, you should call GC.SupressFinalize to 
+            // take this object off the finalization queue 
+            // and prevent finalization code for this object 
+            // from executing a second time. 
+            // Always use SuppressFinalize() in case a subclass 
+            // of this type implements a finalizer. GC.SuppressFinalize(this); }
+        }
+
+        protected void Dispose(bool isDisposing)
+        {
+            try
+            {
+                if (!this.IsDisposed)
+                {
+                    // Explicitly set root references to null to expressly tell the GarbageCollector 
+                    // that the resources have been disposed of and its ok to release the memory 
+                    // allocated for them.
+
+                    if (isDisposing)
+                    {
+                        // Release all managed resources here 
+                        // Need to unregister/detach yourself from the events. Always make sure 
+                        // the object is not null first before trying to unregister/detach them! 
+                        // Failure to unregister can be a BIG source of memory leaks 
+                        //if (someDisposableObjectWithAnEventHandler != null)
+                        //{ someDisposableObjectWithAnEventHandler.SomeEvent -= someDelegate; 
+                        //someDisposableObjectWithAnEventHandler.Dispose(); 
+                        //someDisposableObjectWithAnEventHandler = null; } 
+                        // If this is a WinForm/UI control, uncomment this code 
+                        //if (components != null) //{ // components.Dispose(); //} } 
+                        if (!ReferenceEquals(this.FileSystemWatcher, null))
+                        {
+                            this.FileSystemWatcher.Created -= FileSystemActivity_Created;
+                            this.FileSystemWatcher.Dispose();
+                            this.FileSystemWatcher = null;
+                        }
+                    }
+                    // Release all unmanaged resources here 
+                    // (example) if (someComObject != null && Marshal.IsComObject(someComObject)) { Marshal.FinalReleaseComObject(someComObject); someComObject = null; 
+                }
+            }
+            catch (Exception e)
+            {
+                Error(e, "Exception thrown during disposal of Ssh audit environment.");
+            }
+            finally
+            {
+                this.IsDisposed = true;
+            }
+            
+        }
+
+        ~FileSystemActivity()
+        {
+            this.Dispose(false);
+        }
+        #endregion
+
         #region Event Handlers
         private void FileSystemActivity_Created(object sender, FileSystemEventArgs e)
         {
             Global.MessageQueue.Enqueue<FileSystemActivity>(new FileSystemChangeMessage(Interlocked.Increment(ref messageId), e.FullPath, e.ChangeType));
         }
+        #endregion
+
+        #region Fields
+        private bool IsDisposed = false;
         #endregion
     }
 }

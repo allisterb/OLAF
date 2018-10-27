@@ -26,6 +26,8 @@ namespace OLAF
         #endregion
 
         #region Properties
+        public static string[] BasicImageWildcardExtensions = {"*.bmp", "*.jpg", "*.jpeg", "*.gif", "*.tif", "*.tiff", "*.png"};
+
         public static string[] ImageWildcardExtensions = {"*.bmp", "*.dib", "*.rle", "*.jpg", "*.jpeg", "*.jpe", "*.jfif", "*.gif", "*.tif",
             "*.tiff", "*.png"};
 

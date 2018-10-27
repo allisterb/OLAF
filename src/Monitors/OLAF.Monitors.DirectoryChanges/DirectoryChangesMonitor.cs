@@ -41,6 +41,17 @@ namespace OLAF.Monitors
             }
         }
 
+        public override ApiResult Shutdown()
+        {
+            if(base.Shutdown() != ApiResult.Success) return ApiResult.Failure;
+            Debug("Disposing of {0} FileSystemWatchers.", Detectors.Count);
+            foreach (FileSystemActivity fsa in Detectors)
+            {
+                fsa.Dispose();
+            }
+            return ApiResult.Success;
+        }
+
         protected override ApiResult ProcessDetectorQueue(FileSystemChangeMessage message)
         {
             string artifactName = string.Format("{0}_{1}", message.Id, Path.GetFileName(message.Path));
