@@ -5,7 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 using CO = Colorful.Console;
 using Figgle;
@@ -68,8 +68,9 @@ namespace OLAF
                 enabledLogOptions.Add("WithoutConsole");
             }
 
-            CO.WriteLine(FiggleFonts.Rectangles.Render("OnLine Automated Forensics"));
+            CO.WriteLine(FiggleFonts.Rectangles.Render("O.L.A.F"));
             CO.WriteLine("v{0}", AssemblyVersion.ToString(3));
+
             Global.SetupLogger(() => SerilogLogger.CreateLogger(enabledLogOptions));
 
             Global.SetupMessageQueue();
@@ -106,30 +107,76 @@ namespace OLAF
         static void Program_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Exception cancelException = null;
+            Exception stopException = null;
+            Exception abortException = null;
+
             try
             {
                 if (Global.CancellationTokenSource != null && !Global.CancellationTokenSource.IsCancellationRequested)
                 { 
                     Global.CancellationTokenSource.Cancel();  
                 }
+
+            }
+            catch(Exception ce)
+            {
+                cancelException = ce;
+            }
+
+            try
+            {
                 if (Profile == null)
                 {
                     if (Profile.Monitors != null)
                     {
                         foreach (IMonitor monitor in Profile.Monitors)
                         {
-                            monitor.Shutdown();
+                            if (monitor.Status == ApiStatus.Ok && !monitor.ShutdownCompleted)
+                            {
+                                monitor.Shutdown();
+                            }
                         }
                     }
-                    if (Profile.Pipeline != null)
+                    if (Profile.Pipeline != null && Profile.Pipeline.Status == ApiStatus.Ok)
                     {
                         Profile.Pipeline.Shutdown();
                     }
                 }
             }
-            catch(Exception ee)
+            catch (Exception se)
             {
-                cancelException = ee;
+                stopException = se;
+            }
+
+            try
+            {
+                if (Profile == null)
+                {
+                    if (Profile.Monitors != null)
+                    {
+                        foreach (Thread t in Profile.Monitors.SelectMany(m => m.Threads))
+                        {
+                            if (t.IsAlive)
+                            {
+                                t.Abort();
+                            }
+                        }
+                    }
+                    if (Profile.Pipeline != null && Profile.Pipeline.Services != null)
+                    {
+                        foreach (Thread t in Profile.Pipeline.Services.Values.SelectMany(s => s.Threads))
+                        {
+                            if (t.IsAlive)
+                            {
+                                t.Abort();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ae)
+            {
+                abortException = ae;
             }
 
             try
@@ -137,20 +184,44 @@ namespace OLAF
                 Error(e.ExceptionObject as Exception, "An unhandled runtime exception occurred. OLAF CLI will terminate.");
                 if (cancelException != null)
                 {
-                    Error(cancelException, "Additionally an exception was thrown attempting to stop all running threads.");
+                    Error(cancelException, "Additionally an exception was thrown attempting to cancel all running service and monitors.");
                 }
+
+                if (stopException != null)
+                {
+                    Error(stopException, "Additionally an exception was thrown attempting to stop all running monitors and services.");
+                }
+
+                if (abortException != null)
+                {
+                    Error(abortException, "Additionally an exception was thrown attempting to abort all running threads.");
+                }
+
                 Global.Logger.Close();
             }
-            catch (Exception exc)
+
+            catch (Exception logException)
             {
                 Console.WriteLine("An unhandled runtime exception occurred. Additionally an exception was thrown logging this event: {0}\n{1}\n OLAF CLI will terminate.", 
-                    exc.Message, exc.StackTrace);
+                    logException.Message, logException.StackTrace);
+
+                if (cancelException != null)
+                {
+                    Console.WriteLine("Additionally an exception was thrown attempting to cancel all running service and monitors: {0}.", cancelException);
+                }
+
+                if (stopException != null)
+                {
+                    Console.WriteLine("Additionally an exception was thrown attempting to stop all running service and monitors: {0}.", stopException);
+                }
+
+                if (abortException != null)
+                {
+                    Console.WriteLine("Additionally an exception was thrown attempting to abort all running threads: {0}.", abortException);
+                }
             }
-            
-            if (e.IsTerminating)
-            {
-                Environment.Exit((int) ExitCode.UnhandledException);
-            }
+
+            Environment.Exit((int)ExitCode.UnhandledException);
         }
 
         static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)

@@ -15,6 +15,8 @@ namespace OLAF
         #region Properties
         public string Path { get; }
         public string Name => Path?.GetPathFilename();
+        public bool FileLocked { get; set; } = false;
+        public int FileExtractAttempts { get; set; }
         #endregion
     }
 }

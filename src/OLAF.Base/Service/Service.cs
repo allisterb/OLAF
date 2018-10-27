@@ -40,7 +40,7 @@ namespace OLAF
 
         public bool ShutdownCompleted => shutdownCompleted;
 
-        protected List<Thread> Threads { get; set; }
+        public List<Thread> Threads { get; protected set; }
 
         public string ApiAccountName { get; protected set; }
 
@@ -85,13 +85,27 @@ namespace OLAF
             if (Threads.All(t => !t.IsAlive))
             {
                 shutdownCompleted = true;
-                Info("{0} service shutdown completed successfully.", Name);
+                Info("All threads stopped. {0} service shutdown completed successfully.", Name);
                 return ApiResult.Success;
             }
             else
             {
-                Info("{0} threads in {1} service did not shutdown.", Threads.Count(t => t.IsAlive), Name);
-                return ApiResult.Failure;
+                Info("{0} threads in {1} did not stop. Aborting {0} threads", Threads.Count(t => t.IsAlive),
+                    this.GetType().Name);
+                foreach (Thread thread in Threads.Where(t => t.IsAlive))
+                {
+                    thread.Abort();
+                }
+                if (Threads.All(t => !t.IsAlive))
+                {
+                    shutdownCompleted = true;
+                    Info("All threads stopped. {0} service shutdown completed successfully.", Name);
+                    return ApiResult.Success;
+                }
+                else
+                {
+                    return ApiResult.Failure;
+                }
             }
         }
 
@@ -105,19 +119,20 @@ namespace OLAF
                         (TClientMessage)Global.MessageQueue.Dequeue(client, cancellationToken);
                     ProcessClientQueue(message);
                 }
-                Info("Stopping client queue {0} observer in service {1}.", client.Name, type.Name);
+                Info("Stopping {0} client queue observer in service {1}.", client.Name, type.Name);
                 Status = ApiStatus.Ok;
                 return;
             }
             catch (OperationCanceledException)
             {
-                Info("Stopping client queue {0} observer in service {1}.", client.Name, type.Name);
+                Info("Stopping {0} client queue observer in service {1}.", client.Name, type.Name);
                 Status = ApiStatus.Ok;
                 return;
             }
             catch (Exception ex)
             {
-                Error(ex, "Error occurred in client queue {0} observer in service.", client.Name, type.Name);
+                Error(ex, "Error occurred during {0} client queue observng in service {1}. Resuming", client.Name, Name);
+                ObserveClientQueue(client, token);
             }
         }
         #endregion

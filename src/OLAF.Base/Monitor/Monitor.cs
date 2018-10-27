@@ -35,7 +35,7 @@ namespace OLAF
 
         public bool ShutdownCompleted => shutdownCompleted;
 
-        protected List<Thread> Threads { get; set; }
+        public List<Thread> Threads { get; protected set; }
 
         protected List<TDetector> Detectors { get; set; }
 
@@ -89,12 +89,12 @@ namespace OLAF
             if (Threads.All(t => !t.IsAlive))
             {
                 shutdownCompleted = true;
-                Info("{0} monitor shutdown completed successfully.", this.GetType().Name);
+                Info("All threads stopped. {0} monitor shutdown completed successfully.", Name);
                 return ApiResult.Success;
             }
             else
             {
-                Info("{0} threads in {1} did not shutdown. Aborting {0} threads", Threads.Count(t => t.IsAlive),
+                Info("{0} threads in {1} did not stop. Aborting {0} threads", Threads.Count(t => t.IsAlive),
                     this.GetType().Name);
                 foreach(Thread thread in Threads.Where(t => t.IsAlive))
                 {
@@ -103,7 +103,7 @@ namespace OLAF
                 if (Threads.All(t => !t.IsAlive))
                 {
                     shutdownCompleted = true;
-                    Info("{0} monitor shutdown completed successfully.", this.GetType().Name);
+                    Info("All threads stopped. {0} monitor shutdown completed successfully.", Name);
                     return ApiResult.Success;
                 }
                 else
@@ -123,20 +123,20 @@ namespace OLAF
                         (TDetectorMessage)Global.MessageQueue.Dequeue<TDetector>(cancellationToken);
                     ProcessDetectorQueue(message);
                 }
-                Info("Stopping detector queue {1} observer in monitor {0}.", type.Name, typeof(TDetector).Name);
+                Info("Stopping {0} detector queue observer in monitor {1}.", typeof(TDetector).Name, Name);
                 Status = ApiStatus.Ok;
                 return;
             }
             catch (OperationCanceledException)
             {
-                Info("Stopping detector queue {1} observer in monitor {0}.", type.Name, typeof(TDetector).Name);
+                Info("Stopping {0} detector queue observer in monitor {1}.", typeof(TDetector).Name, Name);
                 Status = ApiStatus.Ok;
                 return;
             }
             catch (Exception ex)
             {
-                Error(ex, "Error occurred during {0} detector queue monitoring in {1}.", type.Name, 
-                    typeof(TDetector).Name);
+                Error(ex, "Error occurred during {0} detector queue observing in {1}. Resuming.", typeof(TDetector).Name, Name);
+                ObserveQueue(token);
             }
         }
         #endregion

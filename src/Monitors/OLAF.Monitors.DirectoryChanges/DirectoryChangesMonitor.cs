@@ -72,7 +72,7 @@ namespace OLAF.Monitors
             
         }
 
-        protected bool TryCopyLockedFileToPath(string oldPath, string newPath, int maxTries = 60)
+        protected bool TryCopyLockedFileToPath(string oldPath, string newPath, int maxTries = 100)
         {
             int tries = 0;
             while (tries < maxTries)
@@ -84,8 +84,13 @@ namespace OLAF.Monitors
                 }
                 catch (IOException)
                 {
+                    Debug("{0} file locked. Pausing a bit and then retrying copy ({1})...", oldPath, ++tries);
                     Thread.Sleep(50);
-                    tries++;
+                }
+                catch (Exception e)
+                {
+                    Error(e, "Unknown error attempting to copy {0}. Aborting.", oldPath);
+                    return false;
                 }
             }
             return false;

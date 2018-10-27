@@ -70,6 +70,7 @@ namespace OLAF
 
         public virtual ApiResult Start()
         {
+            ThrowIfNotInitialized();
             foreach (IMonitor monitor in Monitors)
             {
                 if (monitor.Start() != ApiResult.Success)
@@ -89,6 +90,7 @@ namespace OLAF
                 return SetOkStatusAndReturnSucces();
             }
         }
+
         public virtual ApiResult Shutdown()
         {
             ThrowIfNotOk();
