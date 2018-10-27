@@ -17,6 +17,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Monitors.DirectoryChanges", "Monitors\OLAF.Monitors.DirectoryChanges\OLAF.Monitors.DirectoryChanges.csproj", "{DBA4C2FE-6C57-4C11-8446-591DA0A594EB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Services.Storage.AzureStorage", "Services\Storage\OLAF.Services.Storage.AzureBlobStorage\OLAF.Services.Storage.AzureStorage.csproj", "{18FF34D6-91E0-48CA-BA91-156D90825444}"
+	ProjectSection(ProjectDependencies) = postProject
+		{040FCE51-AA78-40B9-9639-9B8C7F469827} = {040FCE51-AA78-40B9-9639-9B8C7F469827}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Services.Classifiers.MSComputerVision", "Services\Classifiers\OLAF.Services.Classifiers.MSComputerVision\OLAF.Services.Classifiers.MSComputerVision.csproj", "{040FCE51-AA78-40B9-9639-9B8C7F469827}"
 EndProject

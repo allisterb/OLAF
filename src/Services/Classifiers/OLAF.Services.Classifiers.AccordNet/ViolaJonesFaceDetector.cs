@@ -32,7 +32,7 @@ namespace OLAF.Services.Classifiers
             Detector.UseParallelProcessing = true;
             Detector.Suppression = 2;
             Status = ApiStatus.Initialized;
-            Info("Accord.NET Viola-Jones face detector service initialized.");
+            Info("Accord.NET Viola-Jones face detector classifier initialized.");
             return ApiResult.Success;
         }
 
@@ -41,7 +41,6 @@ namespace OLAF.Services.Classifiers
             Bitmap image = artifact.Image;
             using (var op = Begin("Viola-Jones face detection"))
             {
-                
                 Rectangle[] objects = Detector.ProcessFrame(image);
                 if (objects.Length > 0)
                 {

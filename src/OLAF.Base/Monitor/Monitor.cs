@@ -89,14 +89,27 @@ namespace OLAF
             if (Threads.All(t => !t.IsAlive))
             {
                 shutdownCompleted = true;
-                Info("{0} shutdown complete.", this.GetType().Name);
+                Info("{0} monitor shutdown completed successfully.", this.GetType().Name);
                 return ApiResult.Success;
             }
             else
             {
-                Info("{0} threads in {1} did not shutdown.", Threads.Count(t => t.IsAlive),
+                Info("{0} threads in {1} did not shutdown. Aborting {0} threads", Threads.Count(t => t.IsAlive),
                     this.GetType().Name);
-                return ApiResult.Failure;
+                foreach(Thread thread in Threads.Where(t => t.IsAlive))
+                {
+                    thread.Abort();
+                }
+                if (Threads.All(t => !t.IsAlive))
+                {
+                    shutdownCompleted = true;
+                    Info("{0} monitor shutdown completed successfully.", this.GetType().Name);
+                    return ApiResult.Success;
+                }
+                else
+                {
+                    return ApiResult.Failure;
+                }
             }
         }
 
@@ -110,7 +123,7 @@ namespace OLAF
                         (TDetectorMessage)Global.MessageQueue.Dequeue<TDetector>(cancellationToken);
                     ProcessDetectorQueue(message);
                 }
-                Info("Stopping detector queue {1}  observer in monitor {0}.", type.Name, typeof(TDetector).Name);
+                Info("Stopping detector queue {1} observer in monitor {0}.", type.Name, typeof(TDetector).Name);
                 Status = ApiStatus.Ok;
                 return;
             }

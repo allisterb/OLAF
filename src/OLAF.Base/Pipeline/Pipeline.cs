@@ -87,6 +87,7 @@ namespace OLAF
 
             if (Monitors.All(m => m.Status == ApiStatus.Ok) && Services.All(s => s.Value.Status == ApiStatus.Ok))
             {
+                Info("{0} pipeline shutdown completed successfully.", Name);
                 return SetOkStatusAndReturnSucces();
             }
             else

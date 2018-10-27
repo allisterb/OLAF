@@ -90,16 +90,28 @@ namespace OLAF
         public virtual ApiResult Shutdown()
         {
             ThrowIfNotOk();
-            Parallel.ForEach(Monitors, m => m.Shutdown());
+            foreach (IMonitor m in Monitors)
+            {
+                m.Shutdown();
+            }
+
             if (Monitors.All(m => m.ShutdownCompleted))
             {
-                Status = ApiStatus.Ok;
+                Info("All monitors in {0} profile shutdown successfully.", Name);
+            }
+            else
+            {
+                Error("{0} monitors did not shutdown");
+            }
+
+            if (Pipeline.Shutdown() == ApiResult.Success)
+            {
+                Info("{0} profile shutdown completed successfully.", Name);
                 return ApiResult.Success;
             }
             else
             {
-                Error("One or more of the monitors did not shutdown.");
-                Status = ApiStatus.Error;
+                Error("{0} profile did not complete shutdown.", Name);
                 return ApiResult.Failure;
             }
         }

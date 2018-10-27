@@ -25,7 +25,7 @@ namespace OLAF
         public static bool WithLogFile { get; set; } = false;
         public static bool WithoutConsole { get; set; } = false;
         public static bool WithDebugOutput { get; set; } = false;
-        public static List<IMonitor> Monitors { get; protected set; }
+        public static Profile Profile { get; protected set; }
         #endregion
 
         #region Methods
@@ -69,25 +69,25 @@ namespace OLAF
 
             Global.SetupMessageQueue();
 
-             UserDownloadedImages profile = new UserDownloadedImages();
+             Profile = new UserDownloadedImages();
 
-            if (profile.Init() != ApiResult.Success)
+            if (Profile.Init() != ApiResult.Success)
             {
-                Error("Could not initialize profile {0}.", profile.Name);
+                Error("Could not initialize profile {0}.", Profile.Name);
                 Exit(ExitCode.InitError);
             }
             
-            if (profile.Start() != ApiResult.Success)
+            if (Profile.Start() != ApiResult.Success)
             {
-                Error("Could not start profile {0}.", profile.Name);
+                Error("Could not start profile {0}.", Profile.Name);
                 Exit(ExitCode.StartError);
             }
-            Info("Profile {0} started. Press any key to exit.", profile.Name);
+            Info("Profile {0} started. Press any key to exit.", Profile.Name);
 
             ConsoleKeyInfo key = Console.ReadKey();
 
-            profile.Shutdown();
-            Exit(ExitCode.Success);
+            var s = Profile.Shutdown();
+            Exit(s == ApiResult.Success ? ExitCode.Success : ExitCode.ShutdownError);
         }
 
         static void Exit(ExitCode result)
@@ -106,6 +106,20 @@ namespace OLAF
                 if (Global.CancellationTokenSource != null && !Global.CancellationTokenSource.IsCancellationRequested)
                 { 
                     Global.CancellationTokenSource.Cancel();  
+                }
+                if (Profile == null)
+                {
+                    if (Profile.Monitors != null)
+                    {
+                        foreach (IMonitor monitor in Profile.Monitors)
+                        {
+                            monitor.Shutdown();
+                        }
+                    }
+                    if (Profile.Pipeline != null)
+                    {
+                        Profile.Pipeline.Shutdown();
+                    }
                 }
             }
             catch(Exception ee)

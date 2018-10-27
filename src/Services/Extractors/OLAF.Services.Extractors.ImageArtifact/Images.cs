@@ -23,8 +23,8 @@ namespace OLAF.Services.Extractors
                     Bitmap image = Accord.Imaging.Image.FromFile(message.Path);
                     Debug("Extracted image from file {0} with dimensions {1}x{2}.", message.Name, image.Width,
                         image.Height);
-                    Global.MessageQueue.Enqueue<Images>(new ImageArtifact(message, image));
                     op.Complete();
+                    Global.MessageQueue.Enqueue<Images>(new ImageArtifact(message, image));
                 }
                 return ApiResult.Success;
             }
