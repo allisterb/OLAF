@@ -68,7 +68,7 @@ namespace OLAF
                 enabledLogOptions.Add("WithoutConsole");
             }
 
-            CO.WriteLine(FiggleFonts.Rectangles.Render("O.L.A.F"));
+            CO.Write(FiggleFonts.Rectangles.Render("O.L.A.F"));
             CO.WriteLine("v{0}", AssemblyVersion.ToString(3));
 
             Global.SetupLogger(() => SerilogLogger.CreateLogger(enabledLogOptions));
@@ -220,18 +220,102 @@ namespace OLAF
                     Console.WriteLine("Additionally an exception was thrown attempting to abort all running threads: {0}.", abortException);
                 }
             }
-
             Environment.Exit((int)ExitCode.UnhandledException);
         }
 
         static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
-            if (!Global.CancellationTokenSource.IsCancellationRequested)
+            Info("Cancel key pressed. Stopping...");
+            Exception cancelException = null;
+            Exception stopException = null;
+            Exception abortException = null;
+
+            try
             {
-                Global.CancellationTokenSource.Cancel();
+                if (Global.CancellationTokenSource != null && !Global.CancellationTokenSource.IsCancellationRequested)
+                {
+                    Global.CancellationTokenSource.Cancel();
+                }
+
             }
-            
-            Exit(ExitCode.Success);
+            catch (Exception ce)
+            {
+                cancelException = ce;
+            }
+
+            try
+            {
+                if (Profile == null)
+                {
+                    if (Profile.Monitors != null)
+                    {
+                        foreach (IMonitor monitor in Profile.Monitors)
+                        {
+                            if (monitor.Status == ApiStatus.Ok && !monitor.ShutdownCompleted)
+                            {
+                                monitor.Shutdown();
+                            }
+                        }
+                    }
+                    if (Profile.Pipeline != null && Profile.Pipeline.Status == ApiStatus.Ok)
+                    {
+                        Profile.Pipeline.Shutdown();
+                    }
+                }
+            }
+            catch (Exception se)
+            {
+                stopException = se;
+            }
+
+            try
+            {
+                if (Profile == null)
+                {
+                    if (Profile.Monitors != null)
+                    {
+                        foreach (Thread t in Profile.Monitors.SelectMany(m => m.Threads))
+                        {
+                            if (t.IsAlive)
+                            {
+                                t.Abort();
+                            }
+                        }
+                    }
+                    if (Profile.Pipeline != null && Profile.Pipeline.Services != null)
+                    {
+                        foreach (Thread t in Profile.Pipeline.Services.Values.SelectMany(s => s.Threads))
+                        {
+                            if (t.IsAlive)
+                            {
+                                t.Abort();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ae)
+            {
+                abortException = ae;
+            }
+
+            if (cancelException != null)
+            {
+                Error(cancelException, "An exception was thrown attempting to cancel all running service and monitors.");
+            }
+
+            if (stopException != null)
+            {
+                Error(stopException, "An exception was thrown attempting to stop all running monitors and services.");
+            }
+
+            if (abortException != null)
+            {
+                Error(abortException, "An exception was thrown attempting to abort all running threads.");
+            }
+
+            Global.Logger.Close();
+            Exit(ExitCode.CtrlC);
         }
         #endregion
     }

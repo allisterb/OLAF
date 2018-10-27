@@ -70,7 +70,7 @@ namespace OLAF.Monitors.Windows
             
         }
 
-        protected override ApiResult ProcessDetectorQueue(TDetectorMessage message)
+        protected override ApiResult ProcessDetectorQueueMessage(TDetectorMessage message)
         {
             throw new NotImplementedException();
         }

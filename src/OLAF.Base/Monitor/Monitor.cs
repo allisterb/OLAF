@@ -17,7 +17,7 @@ namespace OLAF
     {
         #region Abstract methods
         public abstract ApiResult Init();
-        protected abstract ApiResult ProcessDetectorQueue(TDetectorMessage message);
+        protected abstract ApiResult ProcessDetectorQueueMessage(TDetectorMessage message);
         #endregion
 
         #region Overridden members
@@ -45,7 +45,7 @@ namespace OLAF
         public virtual ApiResult Start()
         {
             ThrowIfNotInitialized();
-            QueueObserverThread = new Thread(() => ObserveQueue(Global.CancellationTokenSource.Token));
+            QueueObserverThread = new Thread(() => ObserveDetectorQueue(Global.CancellationTokenSource.Token));
             Threads = new List<Thread>() { QueueObserverThread };
             QueueObserverThread.Start();
             int enabled = 0;
@@ -113,7 +113,7 @@ namespace OLAF
             }
         }
 
-        protected virtual void ObserveQueue(CancellationToken token)
+        protected virtual void ObserveDetectorQueue(CancellationToken token)
         {
             try
             {
@@ -121,7 +121,7 @@ namespace OLAF
                 {
                     TDetectorMessage message =
                         (TDetectorMessage)Global.MessageQueue.Dequeue<TDetector>(cancellationToken);
-                    ProcessDetectorQueue(message);
+                    ProcessDetectorQueueMessage(message);
                 }
                 Info("Stopping {0} detector queue observer in monitor {1}.", typeof(TDetector).Name, Name);
                 Status = ApiStatus.Ok;
@@ -136,7 +136,7 @@ namespace OLAF
             catch (Exception ex)
             {
                 Error(ex, "Error occurred during {0} detector queue observing in {1}. Resuming.", typeof(TDetector).Name, Name);
-                ObserveQueue(token);
+                ObserveDetectorQueue(token);
             }
         }
         #endregion

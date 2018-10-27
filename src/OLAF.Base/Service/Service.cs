@@ -28,7 +28,7 @@ namespace OLAF
 
         #region Abstract members
         public abstract ApiResult Init();
-        protected abstract ApiResult ProcessClientQueue(TClientMessage message);
+        protected abstract ApiResult ProcessClientQueueMessage(TClientMessage message);
         #endregion
 
         #region Properties
@@ -117,7 +117,7 @@ namespace OLAF
                 {
                     TClientMessage message =
                         (TClientMessage)Global.MessageQueue.Dequeue(client, cancellationToken);
-                    ProcessClientQueue(message);
+                    ProcessClientQueueMessage(message);
                 }
                 Info("Stopping {0} client queue observer in service {1}.", client.Name, type.Name);
                 Status = ApiStatus.Ok;

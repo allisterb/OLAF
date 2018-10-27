@@ -55,7 +55,7 @@ namespace OLAF.Services.Storage
             }
         }
 
-        protected override ApiResult ProcessClientQueue(Artifact message)
+        protected override ApiResult ProcessClientQueueMessage(Artifact message)
         {
             ThrowIfNotOk();
             CloudBlockBlob blob = null;

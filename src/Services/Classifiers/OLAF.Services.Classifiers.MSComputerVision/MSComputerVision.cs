@@ -56,7 +56,7 @@ namespace OLAF.Services.Classifiers
             }
         }
 
-        protected override ApiResult ProcessClientQueue(ImageArtifact artifact)
+        protected override ApiResult ProcessClientQueueMessage(ImageArtifact artifact)
         {
             if (!artifact.HasDetectedObjects(ImageObjectKinds.Face))
             {

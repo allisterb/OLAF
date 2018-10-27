@@ -14,6 +14,7 @@ namespace OLAF
         FileOrDirectoryNotFound = 3,
         InitError = 4,
         StartError = 5,
-        ShutdownError = 6
+        ShutdownError = 6,
+        CtrlC = 7
     }
 }

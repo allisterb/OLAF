@@ -36,7 +36,7 @@ namespace OLAF.Services.Classifiers
             return ApiResult.Success;
         }
 
-        protected override ApiResult ProcessClientQueue(ImageArtifact artifact)
+        protected override ApiResult ProcessClientQueueMessage(ImageArtifact artifact)
         {
             Bitmap image = artifact.Image;
             using (var op = Begin("Viola-Jones face detection"))

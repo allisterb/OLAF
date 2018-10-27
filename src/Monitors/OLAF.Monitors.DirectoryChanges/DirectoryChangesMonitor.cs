@@ -52,27 +52,55 @@ namespace OLAF.Monitors
             return ApiResult.Success;
         }
 
-        protected override ApiResult ProcessDetectorQueue(FileSystemChangeMessage message)
+        protected override ApiResult ProcessDetectorQueueMessage(FileSystemChangeMessage message)
         {
             string artifactName = string.Format("{0}_{1}", message.Id, Path.GetFileName(message.Path));
             string artifactPath = Profile.GetArtifactsDirectoryPathTo(artifactName);
-            if (TryCopyLockedFileToPath(message.Path, artifactPath))
-            {
-                Debug("Copied artifact {0} to {1}.", message.Path, artifactPath);
 
-                Global.MessageQueue.Enqueue<DirectoryChangesMonitor>(
-                    new Artifact(message.Id, artifactPath));
-                return ApiResult.Success;
+            if (TryOpenFile(message.Path, out FileInfo f))
+            {
+                if (f.Length < 1024 * 1024 * 500)
+                {
+                    if (TryReadFile(message.Path, out byte[] data))
+                    {
+                        Debug("Read {0} bytes from {1}.", data.Length, message.Path);
+                        File.WriteAllBytes(artifactPath, data);
+                        Debug("Wrote {0} bytes to {1}.", data.Length, artifactPath);
+                        Global.MessageQueue.Enqueue<DirectoryChangesMonitor>(
+                            new Artifact(message.Id, artifactPath, data));
+                        return ApiResult.Success;
+                    }
+                    else
+                    {
+                        Error("Could not read artifact data from {0}.", message.Path);
+                        return ApiResult.Failure;
+                    }
+                }
+                else
+                {
+                    if (TryCopyFile(message.Path, artifactPath))
+                    {
+                        Debug("Copied artifact {0} to {1}.", message.Path, artifactPath);
+                        Global.MessageQueue.Enqueue<DirectoryChangesMonitor>(
+                            new Artifact(message.Id, artifactPath));
+                        return ApiResult.Success;
+                    }
+                    else
+                    {
+                        Error("Could not copy artifact {0} to {1}.", message.Path, artifactPath);
+                        return ApiResult.Failure;
+                    }
+                }
             }
             else
             {
-                Error("Could not copy artifact {0} to {1}.", message.Path, artifactPath);
+                Error("Could not open {0}.", message.Path);
                 return ApiResult.Failure;
             }
             
         }
 
-        protected bool TryCopyLockedFileToPath(string oldPath, string newPath, int maxTries = 100)
+        protected bool TryCopyFile(string oldPath, string newPath, int maxTries = 100)
         {
             int tries = 0;
             while (tries < maxTries)
@@ -90,6 +118,60 @@ namespace OLAF.Monitors
                 catch (Exception e)
                 {
                     Error(e, "Unknown error attempting to copy {0}. Aborting.", oldPath);
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        protected bool TryReadFile(string path, out byte[] data, int maxLength = 1024 * 1024 * 500, int maxTries = 100)
+        {
+            int tries = 0;
+            data = null;
+            while (tries < maxTries)
+            {
+                try
+                {
+                    data = File.ReadAllBytes(path);
+                    return true;
+                }
+                catch (IOException)
+                {
+                    Debug("{0} file locked. Pausing a bit and then retrying read ({1})...", path, ++tries);
+                    Thread.Sleep(50);
+                }
+                catch (Exception e)
+                {
+                    data = null;
+                    Error(e, "Unknown error attempting to read {0}. Aborting.", path);
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        protected bool TryOpenFile(string path, out FileInfo file, int maxTries = 100)
+        {
+            file = null;
+            int tries = 0;
+            while (tries < maxTries)
+            {
+                try
+                {
+                    file = new FileInfo(path);
+                    if (file.Exists)
+                    {
+                        return true;
+                    }
+                }
+                catch (IOException)
+                {
+                    Debug("{0} file locked. Pausing a bit and then retrying open ({1})...", path, ++tries);
+                    Thread.Sleep(50);
+                }
+                catch (Exception e)
+                {
+                    Error(e, "Unknown error attempting to read {0}. Aborting.", path);
                     return false;
                 }
             }
