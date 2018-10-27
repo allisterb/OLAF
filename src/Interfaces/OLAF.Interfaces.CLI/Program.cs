@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using CO = Colorful.Console;
+using Figgle;
 using OLAF.Loggers;
 using OLAF.Profiles;
 
@@ -65,6 +68,8 @@ namespace OLAF
                 enabledLogOptions.Add("WithoutConsole");
             }
 
+            CO.WriteLine(FiggleFonts.Rectangles.Render("OnLine Automated Forensics"));
+            CO.WriteLine("v{0}", AssemblyVersion.ToString(3));
             Global.SetupLogger(() => SerilogLogger.CreateLogger(enabledLogOptions));
 
             Global.SetupMessageQueue();
