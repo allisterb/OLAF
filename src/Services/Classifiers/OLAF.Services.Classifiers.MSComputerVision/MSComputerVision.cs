@@ -58,7 +58,7 @@ namespace OLAF.Services.Classifiers
 
         protected override ApiResult ProcessClientQueueMessage(ImageArtifact artifact)
         {
-            if (!artifact.HasDetectedObjects(ImageObjectKinds.Face))
+            if (!artifact.HasDetectedObjects(ImageObjectKinds.FaceCandidate))
             {
                 Global.MessageQueue.Enqueue<MSComputerVision>(artifact);
                 return ApiResult.Success;

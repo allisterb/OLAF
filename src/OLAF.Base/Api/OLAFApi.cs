@@ -50,6 +50,8 @@ namespace OLAF
         #endregion
 
         #region Properties
+        public Type Type => type;
+
         public string Name => type.Name;
 
         public ApiStatus Status { get; protected set; } = ApiStatus.Unknown;

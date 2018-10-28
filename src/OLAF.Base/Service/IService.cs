@@ -8,6 +8,8 @@ namespace OLAF
 {
     public interface IService
     {
+        Type Type { get; }
+
         string Name { get; }
 
         ApiResult Init();
@@ -15,6 +17,10 @@ namespace OLAF
         ApiResult Start();
 
         ApiResult Shutdown();
+
+        void AddClient(Type c);
+
+        void AddClients(IEnumerable<Type> clients);
 
         ApiStatus Status { get; }
 

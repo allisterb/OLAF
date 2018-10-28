@@ -12,16 +12,11 @@ namespace OLAF
         where TServiceMessage : Message
     {
         #region Constructors
+       
         public Service(Profile profile, params Type[] clients) : base()
         {
             Profile = profile ?? throw new ArgumentNullException(nameof(profile));
-
-            Clients = clients?.ToList() ?? throw new ArgumentNullException(nameof(clients));
-            if (Clients.Count == 0)
-            {
-                throw new ArgumentException("At least one client must be specified.", nameof(clients));
-            }
-
+            Clients = clients.ToList();
             Status = ApiStatus.Initializing;
         }
         #endregion
@@ -106,6 +101,30 @@ namespace OLAF
                 {
                     return ApiResult.Failure;
                 }
+            }
+        }
+
+        public void AddClient(Type c)
+        {
+            if (!c.Implements<IService>() && !c.Implements<IMonitor>())
+            {
+                throw new InvalidOperationException($"{c.Name} is not a service or monitor.");
+            }
+            else if (Clients.Contains(c))
+            {
+                throw new InvalidOperationException($"{c} was already added as a client.");
+            }
+            else
+            {
+                Clients.Add(c);
+            }
+        }
+
+        public void AddClients(IEnumerable<Type> clients)
+        {
+            foreach(Type t in clients)
+            {
+                AddClient(t);
             }
         }
 

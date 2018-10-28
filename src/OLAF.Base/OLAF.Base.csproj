@@ -90,6 +90,7 @@
     <Compile Include="Classifier\ClassifierInput.cs" />
     <Compile Include="Classifier\ImageArtifact.cs" />
     <Compile Include="Classifier\ImageObjectKinds.cs" />
+    <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="Logger\IOperationContext.cs" />
     <Compile Include="Logger\SimpleOperation.cs" />
     <Compile Include="Monitor\Artifact.cs" />

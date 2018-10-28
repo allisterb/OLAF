@@ -1,23 +1,26 @@
-﻿using Leptonica;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using Leptonica;
 using Tesseract;
 
 namespace OLAF.Services.OCR
 {
-    public class TesseractOCR : Service<ImageArtifact, Message>
+    public class TesseractOCR : Service<ImageArtifact, ImageArtifact>
     {
         #region Constructors
         public TesseractOCR(Profile profile, params Type[] clients) :base(profile, clients)
         {
             try
             {
-                TessBaseAPI = new TessBaseAPI();
-                Info("Tesseract library version {0}.", TessBaseAPI.GetVersion());
+                TesseractImage = new TessBaseAPI();
+                Info("Tesseract library version is {0}.", TesseractImage.GetVersion());
                 Status = ApiStatus.Initializing;
             }
             catch (Exception e)
@@ -35,19 +38,20 @@ namespace OLAF.Services.OCR
 
             if (!Directory.Exists(GetDataDirectoryPathTo("tessdata")))
             {
-                Error("Tesseract data directory tessdata not found.");
+                Error("Tesseract data directory not found.");
                 Status = ApiStatus.FileNotFound;
                 return ApiResult.Failure;
             }
 
-            if(!TessBaseAPI.Init(GetDataDirectoryPathTo("tessdata"), "eng", OcrEngineMode.DEFAULT))
+            if(!TesseractImage.Init(GetDataDirectoryPathTo("tessdata"), "eng", OcrEngineMode.DEFAULT, 
+                new[] { "logfile" }))
             {
-                Error("Could not initialize tesseract.net API.");
+                Error("Could not initialize tesseract.net.");
                 Status = ApiStatus.Error;
                 return ApiResult.Failure;
             }
 
-            TessBaseAPI.SetPageSegMode(PageSegmentationMode.AUTO_OSD);
+            TesseractImage.SetPageSegMode(PageSegmentationMode.AUTO_OSD);
             Status = ApiStatus.Initialized;
             Info("Tesseract OCR initialized.");
             return ApiResult.Success;
@@ -55,13 +59,40 @@ namespace OLAF.Services.OCR
 
         protected override ApiResult ProcessClientQueueMessage(ImageArtifact message)
         {
-            throw new NotImplementedException();
+            BitmapData bData = message.Image.LockBits(
+                new Rectangle(0, 0, message.Image.Width, message.Image.Height), ImageLockMode.ReadOnly, message.Image.PixelFormat);
+            int w = bData.Width, h = bData.Height, bpp = Image.GetPixelFormatSize(bData.PixelFormat) / 8;
+            unsafe
+            {
+                TesseractImage.SetImage(new UIntPtr(bData.Scan0.ToPointer()), w, h, bpp, bData.Stride);
+            }
+            Pix = TesseractImage.GetInputImage();
+            
+            Debug("Pix has width: {0} height: {1} depth: {2} xres: {3} yres: {4}.", Pix.Width, Pix.Height, Pix.Depth, 
+                Pix.XRes, Pix.YRes);
+            using (var op = Begin("Tesseract OCR (fast)"))
+            {
+                TesseractImage.Recognize();
+                ResultIterator resultIterator = TesseractImage.GetIterator();
+                StringBuilder stringBuilder = new StringBuilder();
+                PageIteratorLevel pageIteratorLevel = PageIteratorLevel.RIL_PARA;
+                do
+                {
+                    stringBuilder.Append(resultIterator.GetUTF8Text(pageIteratorLevel));
+                }
+                while (resultIterator.Next(pageIteratorLevel));
+                Info("OCR Text: {0}", stringBuilder.ToString());
+                op.Complete();
+            }
+            message.Image.UnlockBits(bData);
+            return ApiResult.Success;
+            
         }
         #endregion
 
         #region Properties
-        public TessBaseAPI TessBaseAPI { get; }
+        public TessBaseAPI TesseractImage { get; }
+        public Pix Pix { get; protected set; }
         #endregion
-
     }
 }

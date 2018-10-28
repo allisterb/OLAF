@@ -8,6 +8,7 @@ namespace OLAF
 {
     public enum ImageObjectKinds
     {
-        Face
+        FaceCandidate,
+        Text
     }
 }

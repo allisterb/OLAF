@@ -107,7 +107,7 @@ namespace OLAF.Loggers
 
         public IOperationContext Begin(string messageTemplate, params object[] args)
         {
-            Info(messageTemplate + " starting...", args);
+            Info(messageTemplate + " started...", args);
             return new SerilogOperation(L.BeginOperation(messageTemplate, args));
         }
         #endregion

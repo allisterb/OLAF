@@ -42,7 +42,7 @@ namespace OLAF.Profiles
                 Status = ApiStatus.Error;
             }
             Monitors.Add(monitor);
-            Pipeline = new Pipeline1(this);
+            Pipeline = new ImagePipeline(this);
             Status = Pipeline.Status;
         }
         #endregion

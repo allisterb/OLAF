@@ -20,10 +20,6 @@ namespace OLAF
         protected abstract ApiResult ProcessDetectorQueueMessage(TDetectorMessage message);
         #endregion
 
-        #region Overridden members
-        public Type Type => type;
-        #endregion
-
         #region Properties
         public Type QueueMessageType { get; } = typeof(TMonitorMessage);
 

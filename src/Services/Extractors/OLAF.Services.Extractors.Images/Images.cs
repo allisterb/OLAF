@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -10,7 +11,7 @@ namespace OLAF.Services.Extractors
 {
     public class Images : Service<Artifact, ImageArtifact>
     {
-        public Images(Profile profile, Type[] clients) : base(profile, clients) {}
+        public Images(Profile profile, params Type[] clients) : base(profile, clients) {}
 
         public override ApiResult Init() => SetInitializedStatusAndReturnSucces();
 
@@ -24,8 +25,9 @@ namespace OLAF.Services.Extractors
                     using (var op = Begin("Extracting image from artifact {0}", artifact.Id))
                     {
                         Bitmap image = Accord.Imaging.Image.FromFile(artifact.Path);
-                        Debug("Extracted image from file {0} with dimensions {1}x{2}.", artifact.Name, image.Width,
-                            image.Height);
+                        Debug("Extracted image from file {0} with dimensions: {1}x{2} pixel format: {3} hres: {4} yres: {5}.",
+                            artifact.Name, image.Width, image.Height, image.PixelFormat, image.HorizontalResolution,
+                            image.VerticalResolution);
                         op.Complete();
                         Global.MessageQueue.Enqueue<Images>(new ImageArtifact(artifact, image));
                     }
@@ -73,14 +75,16 @@ namespace OLAF.Services.Extractors
                 using (var op = Begin("Extracting image from artifact {0}", artifact.Id))
                 {
                     Bitmap image = (Bitmap) Image.FromStream(new MemoryStream(artifact.Data));
-                 
-                    Debug("Extracted image from artifact data with dimensions {0}x{1}.", image.Width,
-                        image.Height);
+                    Debug("Extracted image from file {0} with dimensions: {1}x{2} pixel format: {3} hres: {4} yres: {5}.",
+                           artifact.Name, image.Width, image.Height, image.PixelFormat, image.HorizontalResolution,
+                           image.VerticalResolution);
                     op.Complete();
                     Global.MessageQueue.Enqueue<Images>(new ImageArtifact(artifact, image));
                 }
                 return ApiResult.Success;
             }
         }
+
+       
     }
 }

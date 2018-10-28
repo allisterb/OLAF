@@ -9,7 +9,7 @@ namespace OLAF
     public abstract class Pipeline : OLAFApi<Pipeline, Message>
     {
         #region Constructors
-        public Pipeline(Profile profile)
+        protected Pipeline(Profile profile)
         {
             Profile = profile ?? throw new ArgumentNullException(nameof(profile));
             Services = new SortedList<int, IService>();
@@ -94,6 +94,39 @@ namespace OLAF
             {
                 Error("Error(s) occurred during pipeline {0} shutdown.", type.Name);
                 return SetErrorStatusAndReturnFailure();
+            }
+        }
+
+        protected int AddService(IService service)
+        {
+            int i = Services.Count;
+            if (i == 0)
+            {
+                service.AddClients(MonitorClients);
+                Services.Add(0, service);
+            }
+            else
+            {
+                service.AddClient(Services.Last().Value.Type);
+                Services.Add(i, service);
+            }
+            return i;
+        }
+
+        protected void AddService<T>() where T : IService => 
+            AddService((IService)Activator.CreateInstance(typeof(T), Profile));
+
+        protected void SetPipelineInitializingStatus()
+        {
+            if (Services.All(s => s.Value.Status == ApiStatus.Initializing))
+            {
+                this.Status = ApiStatus.Initializing;
+            }
+            else
+            {
+                var u = Services.Where(s => s.Value.Status != ApiStatus.Initializing);
+                Error("The following services could not be constructed: {0}", u.Select(s => s.Value.Name));
+                this.Status = ApiStatus.Error;
             }
         }
         #endregion

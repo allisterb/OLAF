@@ -4,11 +4,8 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Accord.Imaging;
-using Accord.Imaging.Filters;
 using Accord.Vision.Detection;
 using Accord.Vision.Detection.Cascades;
-
 
 namespace OLAF.Services.Classifiers
 {
@@ -44,16 +41,16 @@ namespace OLAF.Services.Classifiers
                 Rectangle[] objects = Detector.ProcessFrame(image);
                 if (objects.Length > 0)
                 {
-                    if (!artifact.DetectedObjects.ContainsKey(ImageObjectKinds.Face))
+                    if (!artifact.DetectedObjects.ContainsKey(ImageObjectKinds.FaceCandidate))
                     {
-                        artifact.DetectedObjects.Add(ImageObjectKinds.Face, objects.ToList());
+                        artifact.DetectedObjects.Add(ImageObjectKinds.FaceCandidate, objects.ToList());
                     }
                     else
                     {
-                        artifact.DetectedObjects[ImageObjectKinds.Face].AddRange(objects); 
+                        artifact.DetectedObjects[ImageObjectKinds.FaceCandidate].AddRange(objects); 
                     }
                 }
-                Info("Found {0} objects.", objects.Length);
+                Info("Found {0} candidate objects.", objects.Length);
                 Global.MessageQueue.Enqueue<ViolaJonesFaceDetector>(artifact);
                 op.Complete();
                 

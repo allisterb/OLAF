@@ -59,7 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Pipeline1.cs" />
+    <Compile Include="ImagePipeline.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -75,9 +75,13 @@
       <Project>{040fce51-aa78-40b9-9639-9b8c7f469827}</Project>
       <Name>OLAF.Services.Classifiers.MSComputerVision</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Services\Extractors\OLAF.Services.Extractors.ImageArtifact\OLAF.Services.Extractors.Images.csproj">
+    <ProjectReference Include="..\..\Services\Extractors\OLAF.Services.Extractors.Images\OLAF.Services.Extractors.Images.csproj">
       <Project>{28ba3392-f4c4-4e51-810f-5d456843fd3a}</Project>
       <Name>OLAF.Services.Extractors.Images</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Services\OCR\OLAF.Services.OCR.Tesseract\OLAF.Services.OCR.Tesseract.csproj">
+      <Project>{914dd06f-c2ea-49c6-b9d4-0399bfc3fc1c}</Project>
+      <Name>OLAF.Services.OCR.Tesseract</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
