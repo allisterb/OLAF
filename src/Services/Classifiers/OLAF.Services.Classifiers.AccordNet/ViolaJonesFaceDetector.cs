@@ -32,7 +32,7 @@ namespace OLAF.Services.Classifiers
             Detector.UseParallelProcessing = true;
             Detector.Suppression = 2;
             Status = ApiStatus.Initialized;
-            Info("Accord.NET Viola-Jones face detector classifier initialized.");
+            Info("Accord.NET Viola-Jones face detector initialized.");
             return ApiResult.Success;
         }
 

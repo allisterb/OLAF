@@ -11,6 +11,7 @@ namespace OLAF
         Initialized,
         FileNotFound,
         ProcessNotFound,
+        LibraryError,
         ConfigurationError
     }
 }

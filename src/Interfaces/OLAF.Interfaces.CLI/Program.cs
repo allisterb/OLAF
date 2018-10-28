@@ -125,7 +125,7 @@ namespace OLAF
 
             try
             {
-                if (Profile == null)
+                if (Profile != null)
                 {
                     if (Profile.Monitors != null)
                     {
@@ -150,11 +150,12 @@ namespace OLAF
 
             try
             {
-                if (Profile == null)
+                if (Profile != null)
                 {
                     if (Profile.Monitors != null)
                     {
-                        foreach (Thread t in Profile.Monitors.SelectMany(m => m.Threads))
+                        foreach (Thread t in Profile.Monitors.Where(m => m.Threads != null)
+                            .SelectMany(m => m.Threads))
                         {
                             if (t.IsAlive)
                             {
@@ -164,7 +165,9 @@ namespace OLAF
                     }
                     if (Profile.Pipeline != null && Profile.Pipeline.Services != null)
                     {
-                        foreach (Thread t in Profile.Pipeline.Services.Values.SelectMany(s => s.Threads))
+                        foreach (Thread t in Profile.Pipeline.Services.Values
+                            .Where(s => s.Threads != null)
+                            .SelectMany(s => s.Threads))
                         {
                             if (t.IsAlive)
                             {
@@ -181,7 +184,7 @@ namespace OLAF
 
             try
             {
-                Error(e.ExceptionObject as Exception, "An unhandled runtime exception occurred. OLAF CLI will terminate.");
+                Error(e.ExceptionObject as Exception, "An unhandled runtime exception occurred. OLAF will shutdown.");
                 if (cancelException != null)
                 {
                     Error(cancelException, "Additionally an exception was thrown attempting to cancel all running service and monitors.");
@@ -245,7 +248,7 @@ namespace OLAF
 
             try
             {
-                if (Profile == null)
+                if (Profile != null)
                 {
                     if (Profile.Monitors != null)
                     {
@@ -270,7 +273,7 @@ namespace OLAF
 
             try
             {
-                if (Profile == null)
+                if (Profile != null)
                 {
                     if (Profile.Monitors != null)
                     {

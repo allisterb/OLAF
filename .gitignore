@@ -259,3 +259,13 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/pvt.cppan.demo.xz_utils.lzma-5.2.3.dll
+/pvt.cppan.demo.webp-0.6.0.dll
+/pvt.cppan.demo.tiff-4.0.9.dll
+/pvt.cppan.demo.png-1.6.33.dll
+/pvt.cppan.demo.openjpeg.openjp2-2.3.0.dll
+/pvt.cppan.demo.madler.zlib-1.2.11.dll
+/pvt.cppan.demo.jpeg-9.2.0.dll
+/pvt.cppan.demo.google.tesseract.libtesseract400.dll
+/pvt.cppan.demo.danbloomberg.leptonica-1.75.0.dll
+/data/tessdata

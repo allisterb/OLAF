@@ -79,6 +79,10 @@ namespace OLAF
             Path.Combine(CurrentDirectory.FullName, Path.Combine(paths));
 
         [DebuggerStepThrough]
+        protected static string GetDataDirectoryPathTo(params string[] paths) =>
+            Path.Combine(DataDirectory.FullName, Path.Combine(paths));
+
+        [DebuggerStepThrough]
         protected static void Info(string messageTemplate, params object[] propertyValues) =>
             L.Info(messageTemplate, propertyValues);
 

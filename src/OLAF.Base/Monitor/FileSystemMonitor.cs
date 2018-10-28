@@ -113,14 +113,14 @@ namespace OLAF
                                 IntPtr hFindFile = UnsafeNativeMethods.FindFirstFile(searchPattern, ref findFileData);
                                 if (hFindFile != UnsafeNativeMethods.INVALID_HANDLE_VALUE)
                                 {
-                                    //Debug("Adding {0} {1} to monitored paths.", dir.FullName, ext);
+                                    Verbose("Adding {0} {1} to monitored paths.", dir.FullName, ext);
                                     Paths.Add(dir, ext);
 
                                 }
                                 else
                                 {
-                                    //Warn("Path {0} currently has no files matching pattern {1}.", dir.FullName, ext);
-                                    //Debug("Adding {0} {1} to monitored paths.", dir.FullName, ext);
+                                    Verbose("Path {0} currently has no files matching pattern {1}.", dir.FullName, ext);
+                                    Verbose("Adding {0} {1} to monitored paths.", dir.FullName, ext);
                                     Paths.Add(dir, ext);
                                 }
                             }

@@ -61,6 +61,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{C218
 		..\olafd.cmd = ..\olafd.cmd
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Services.OCR.Tesseract", "Services\OCR\OLAF.Services.OCR.Tesseract\OLAF.Services.OCR.Tesseract.csproj", "{914DD06F-C2EA-49C6-B9D4-0399BFC3FC1C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -227,6 +229,18 @@ Global
 		{7A00A2F0-D9DA-49F4-B361-8741586E6127}.Release|x64.Build.0 = Release|Any CPU
 		{7A00A2F0-D9DA-49F4-B361-8741586E6127}.Release|x86.ActiveCfg = Release|Any CPU
 		{7A00A2F0-D9DA-49F4-B361-8741586E6127}.Release|x86.Build.0 = Release|Any CPU
+		{914DD06F-C2EA-49C6-B9D4-0399BFC3FC1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{914DD06F-C2EA-49C6-B9D4-0399BFC3FC1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{914DD06F-C2EA-49C6-B9D4-0399BFC3FC1C}.Debug|x64.ActiveCfg = Debug|x64
+		{914DD06F-C2EA-49C6-B9D4-0399BFC3FC1C}.Debug|x64.Build.0 = Debug|x64
+		{914DD06F-C2EA-49C6-B9D4-0399BFC3FC1C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{914DD06F-C2EA-49C6-B9D4-0399BFC3FC1C}.Debug|x86.Build.0 = Debug|Any CPU
+		{914DD06F-C2EA-49C6-B9D4-0399BFC3FC1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{914DD06F-C2EA-49C6-B9D4-0399BFC3FC1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{914DD06F-C2EA-49C6-B9D4-0399BFC3FC1C}.Release|x64.ActiveCfg = Release|Any CPU
+		{914DD06F-C2EA-49C6-B9D4-0399BFC3FC1C}.Release|x64.Build.0 = Release|Any CPU
+		{914DD06F-C2EA-49C6-B9D4-0399BFC3FC1C}.Release|x86.ActiveCfg = Release|Any CPU
+		{914DD06F-C2EA-49C6-B9D4-0399BFC3FC1C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -247,6 +261,7 @@ Global
 		{4FA0FC5B-9828-454F-ABE7-E9DC9BABD585} = {6CC3CDC1-0950-47BF-8AE8-02EEA465AEBE}
 		{8211B459-7538-4DB3-A97D-E514D3CD4CD2} = {6CC3CDC1-0950-47BF-8AE8-02EEA465AEBE}
 		{8B1DAEC3-7AD1-4244-85C4-BBDDFF8E75FD} = {6CC3CDC1-0950-47BF-8AE8-02EEA465AEBE}
+		{914DD06F-C2EA-49C6-B9D4-0399BFC3FC1C} = {8B1DAEC3-7AD1-4244-85C4-BBDDFF8E75FD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6AF7C0FB-8348-44E7-A1BF-AB0846441F39}

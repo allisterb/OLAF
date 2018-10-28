@@ -45,7 +45,7 @@ namespace OLAF.Services.Classifiers
                 Client = new ComputerVisionClient(c);
                 Client.Endpoint = ApiEndpointUrl;
                 Status = ApiStatus.Initialized;
-                Info("Microsoft Computer Vision API classifier initialized.");
+                Info("Microsoft Computer Vision API initialized.");
                 return ApiResult.Success;
             }
             catch(Exception e)
