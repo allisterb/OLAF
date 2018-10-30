@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -7,8 +7,8 @@
     <ProjectGuid>{F623FD8C-A3F4-4999-86E2-57288F20E7B9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OLAF.Monitors.Windows.D3DCapture</RootNamespace>
-    <AssemblyName>OLAF.Monitors.Windows.D3DCapture</AssemblyName>
+    <RootNamespace>OLAF.Monitors.Windows</RootNamespace>
+    <AssemblyName>OLAF.Monitors.Windows.AppWindow</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -32,7 +32,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\bin\x64\Debug\</OutputPath>
+    <OutputPath>..\..\..\bin\x64\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -81,11 +81,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Direct3DCapture.cs" />
+    <Compile Include="AppWindow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ActivityDetectors\OLAF.ActivityDetectors.Windows.D3DCapture\OLAF.ActivityDetectors.Windows.AppWindow.csproj">
+      <Project>{a9208b2c-532a-4c40-925d-4efcea272e07}</Project>
+      <Name>OLAF.ActivityDetectors.Windows.AppWindow</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\OLAF.Base\OLAF.Base.csproj">
+      <Project>{8d448b26-d206-48c8-b17f-a31133c25665}</Project>
+      <Name>OLAF.Base</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

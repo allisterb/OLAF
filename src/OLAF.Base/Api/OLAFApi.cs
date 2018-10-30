@@ -174,7 +174,6 @@ namespace OLAF
         #region Fields
         protected Type type;
         protected CancellationToken cancellationToken;
-        protected static long messageId = 0;
         #endregion
     }
 }

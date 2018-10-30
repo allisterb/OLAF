@@ -9,13 +9,13 @@ using System.Threading;
 
 namespace OLAF.Services.Extractors
 {
-    public class Images : Service<Artifact, ImageArtifact>
+    public class Images : Service<FileArtifact, ImageArtifact>
     {
         public Images(Profile profile, params Type[] clients) : base(profile, clients) {}
 
         public override ApiResult Init() => SetInitializedStatusAndReturnSucces();
 
-        protected override ApiResult ProcessClientQueueMessage(Artifact artifact)
+        protected override ApiResult ProcessClientQueueMessage(FileArtifact artifact)
         {
             if (!artifact.HasData)
             {

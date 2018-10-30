@@ -27,8 +27,13 @@ namespace OLAF
         public abstract ApiResult Enable();
         #endregion
 
+        #region Properties
+        public long CurrentArtifactId => currentArtifactId;
+        #endregion
+
         #region Fields
         protected Type monitorType;
+        protected long currentArtifactId = 0;
         protected int processId;
         #endregion
     }

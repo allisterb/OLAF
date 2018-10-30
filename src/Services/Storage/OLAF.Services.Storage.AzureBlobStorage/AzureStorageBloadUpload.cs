@@ -17,7 +17,7 @@ using Newtonsoft.Json.Linq;
 namespace OLAF.Services.Storage
 {
     public class AzureStorageBlobUpload : 
-        Service<Artifact, AzureStorageBlobUploadedMessage>
+        Service<FileArtifact, AzureStorageBlobUploadedMessage>
     {
         #region Constructors
         public AzureStorageBlobUpload(Profile profile, params Type[] clients) : base(profile, clients)
@@ -55,7 +55,7 @@ namespace OLAF.Services.Storage
             }
         }
 
-        protected override ApiResult ProcessClientQueueMessage(Artifact message)
+        protected override ApiResult ProcessClientQueueMessage(FileArtifact message)
         {
             ThrowIfNotOk();
             CloudBlockBlob blob = null;

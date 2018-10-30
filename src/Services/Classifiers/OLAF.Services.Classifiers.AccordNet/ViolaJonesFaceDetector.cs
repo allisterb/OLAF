@@ -35,6 +35,12 @@ namespace OLAF.Services.Classifiers
 
         protected override ApiResult ProcessClientQueueMessage(ImageArtifact artifact)
         {
+            if (artifact.HasOCRText)
+            {
+                Info("Not using face detector on text-rich image.");
+                Global.MessageQueue.Enqueue<ViolaJonesFaceDetector>(artifact);
+                return ApiResult.Success;
+            }
             Bitmap image = artifact.Image;
             using (var op = Begin("Viola-Jones face detection"))
             {
@@ -50,7 +56,7 @@ namespace OLAF.Services.Classifiers
                         artifact.DetectedObjects[ImageObjectKinds.FaceCandidate].AddRange(objects); 
                     }
                 }
-                Info("Found {0} candidate objects.", objects.Length);
+                Info("Found {0} candidate face objects.", objects.Length);
                 Global.MessageQueue.Enqueue<ViolaJonesFaceDetector>(artifact);
                 op.Complete();
                 

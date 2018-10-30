@@ -27,14 +27,13 @@ namespace OLAF
         
         public Profile Profile { get; protected set; }
 
+        protected List<TDetector> Detectors { get; set; } = new List<TDetector>();
+
         public bool ShutdownRequested => shutdownRequested;
 
         public bool ShutdownCompleted => shutdownCompleted;
 
         public List<Thread> Threads { get; protected set; }
-
-        protected List<TDetector> Detectors { get; set; }
-
         #endregion
 
         #region Methods
@@ -138,6 +137,7 @@ namespace OLAF
         #endregion
 
         #region Fields
+        
         protected bool shutdownRequested = false;
         protected bool shutdownCompleted = false;
         #endregion

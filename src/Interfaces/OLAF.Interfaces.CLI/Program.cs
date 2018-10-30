@@ -75,7 +75,7 @@ namespace OLAF
 
             Global.SetupMessageQueue();
 
-             Profile = new UserDownloadedImages();
+             Profile = new Browsers();
 
             if (Profile.Init() != ApiResult.Success)
             {

@@ -9,7 +9,7 @@ using OLAF.ActivityDetectors;
 
 namespace OLAF.Monitors
 {
-    public class DirectoryChangesMonitor : FileSystemMonitor<FileSystemActivity, FileSystemChangeMessage, Artifact>
+    public class DirectoryChangesMonitor : FileSystemMonitor<FileSystemActivity, FileSystemChangeMessage, FileArtifact>
     {
         #region Constructors
         public DirectoryChangesMonitor(Dictionary<string, string> paths, Profile profile) : base(paths, profile) {}
@@ -23,7 +23,7 @@ namespace OLAF.Monitors
             if (Status != ApiStatus.Initializing) return ApiResult.Failure;
             try
             {
-                Detectors = new List<FileSystemActivity>(Paths.Count);
+                
                 for (int i = 0; i < Paths.Count; i++)
                 {
                     KeyValuePair<DirectoryInfo, string> path = Paths.ElementAt(i);
@@ -56,7 +56,8 @@ namespace OLAF.Monitors
         {
             string artifactName = string.Format("{0}_{1}", message.Id, Path.GetFileName(message.Path));
             string artifactPath = Profile.GetArtifactsDirectoryPathTo(artifactName);
-
+            Debug("Waiting a bit for file to complete write...");
+            Thread.Sleep(300);
             if (TryOpenFile(message.Path, out FileInfo f))
             {
                 if (f.Length < 1024 * 1024 * 500)
@@ -67,7 +68,7 @@ namespace OLAF.Monitors
                         File.WriteAllBytes(artifactPath, data);
                         Debug("Wrote {0} bytes to {1}.", data.Length, artifactPath);
                         Global.MessageQueue.Enqueue<DirectoryChangesMonitor>(
-                            new Artifact(message.Id, artifactPath, data));
+                            new FileArtifact(message.Id, artifactPath, data));
                         return ApiResult.Success;
                     }
                     else
@@ -82,7 +83,7 @@ namespace OLAF.Monitors
                     {
                         Debug("Copied artifact {0} to {1}.", message.Path, artifactPath);
                         Global.MessageQueue.Enqueue<DirectoryChangesMonitor>(
-                            new Artifact(message.Id, artifactPath));
+                            new FileArtifact(message.Id, artifactPath));
                         return ApiResult.Success;
                     }
                     else
@@ -124,7 +125,7 @@ namespace OLAF.Monitors
             return false;
         }
 
-        protected bool TryReadFile(string path, out byte[] data, int maxLength = 1024 * 1024 * 500, int maxTries = 100)
+        protected bool TryReadFile(string path, out byte[] data, int maxTries = 100)
         {
             int tries = 0;
             data = null;
@@ -138,7 +139,7 @@ namespace OLAF.Monitors
                 catch (IOException)
                 {
                     Debug("{0} file locked. Pausing a bit and then retrying read ({1})...", path, ++tries);
-                    Thread.Sleep(50);
+                    Thread.Sleep(200);
                 }
                 catch (Exception e)
                 {

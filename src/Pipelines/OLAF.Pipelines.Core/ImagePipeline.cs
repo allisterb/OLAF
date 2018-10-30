@@ -17,6 +17,7 @@ namespace OLAF.Pipelines
             AddService<Images>();
             AddService<TesseractOCR>();
             AddService<ViolaJonesFaceDetector>();
+            AddService<MSComputerVision>();
             SetPipelineInitializingStatus();   
         }
 

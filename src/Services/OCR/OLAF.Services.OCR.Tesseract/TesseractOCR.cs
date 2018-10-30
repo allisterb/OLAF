@@ -78,15 +78,25 @@ namespace OLAF.Services.OCR
                 PageIteratorLevel pageIteratorLevel = PageIteratorLevel.RIL_PARA;
                 do
                 {
-                    stringBuilder.Append(resultIterator.GetUTF8Text(pageIteratorLevel));
+                    stringBuilder.Append(resultIterator.GetUTF8Text(pageIteratorLevel).Trim());
                 }
                 while (resultIterator.Next(pageIteratorLevel));
-                Info("OCR Text: {0}", stringBuilder.ToString());
+
+                string text = stringBuilder.ToString();
+                if (string.IsNullOrEmpty(text) || text.Length < 20)
+                {
+                    Info("{0} is likely a photo or non-text image.", message.FileArtifact.Name);
+                }
+                else
+                {
+                    message.OCRText = text;
+                    Info("OCR Text: {0}", message.OCRText);
+                }
                 op.Complete();
             }
             message.Image.UnlockBits(bData);
+            Global.MessageQueue.Enqueue<TesseractOCR>(message);
             return ApiResult.Success;
-            
         }
         #endregion
 

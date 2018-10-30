@@ -58,20 +58,21 @@ namespace OLAF.Services.Classifiers
 
         protected override ApiResult ProcessClientQueueMessage(ImageArtifact artifact)
         {
-            if (!artifact.HasDetectedObjects(ImageObjectKinds.FaceCandidate))
+            if (!artifact.HasDetectedObjects(ImageObjectKinds.FaceCandidate) || artifact.HasOCRText)
             {
                 Global.MessageQueue.Enqueue<MSComputerVision>(artifact);
                 return ApiResult.Success;
             }
             else
             {
-                Info("Artifact has faces detected; analyzing using MS Computer Vision API.");
+                Info("Artifact is likely a photo with faces detected; analyzing using MS Computer Vision API.");
                 ImageAnalysis analysis = null;
                 using (var op = Begin("Analyze image using MS Computer Vision API."))
                 {
                     try
                     {
-                        using (FileStream stream = new FileStream(artifact.Artifact.Path, FileMode.Open))
+                        using (Stream stream = artifact.FileArtifact.HasData ? (Stream) new MemoryStream(artifact.FileArtifact.Data)
+                            : new FileStream(artifact.FileArtifact.Path, FileMode.Open))
                         {
                             Task<ImageAnalysis> t1 = Client.AnalyzeImageInStreamAsync(stream,
                                 VisualFeatures, null, null, cancellationToken);
