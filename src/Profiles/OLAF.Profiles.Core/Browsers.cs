@@ -16,7 +16,7 @@ namespace OLAF.Profiles
         #region Constructors
         public Browsers()
         {
-            AppWindowMonitor monitor = new AppWindowMonitor("explorer");
+            AppWindowMonitor monitor = new AppWindowMonitor("chrome");
             if (monitor.Status != ApiStatus.Initializing)
             {
                 Status = ApiStatus.Error;

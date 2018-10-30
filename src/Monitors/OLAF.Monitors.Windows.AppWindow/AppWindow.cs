@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using OLAF.ActivityDetectors;
+
 using OLAF.ActivityDetectors.Windows;
 
 namespace OLAF.Monitors.Windows
 {
-    public class AppWindowMonitor : Monitor<AppWindowActivity, AppWindowActivityMessage, AppWindowActivityMessage>
+    public class AppWindowMonitor : Monitor<AppWindowActivity, AppWindowActivityMessage, AppWindowArtifact>
     {
         public AppWindowMonitor(string processName) : base()
         {
             ProcessName = processName;
-            AppWindowActivity = new AppWindowActivity(Type, processName, TimeSpan.FromMilliseconds(500));
+            AppWindowActivity = new AppWindowActivity(Type, processName, TimeSpan.FromMilliseconds(1000));
             if (AppWindowActivity.Status == ApiStatus.Ok)
             {
                 Detectors.Add(AppWindowActivity);
@@ -44,11 +45,14 @@ namespace OLAF.Monitors.Windows
 
         protected override ApiResult ProcessDetectorQueueMessage(AppWindowActivityMessage message)
         {
-            //Global.MessageQueue.Enqueue<AppWindowMonitor>(message);
+            message.Window.Save(GetLogDirectoryPathTo("{0}_bitmap{1}.bmp".F(ProcessName, message.Id)));
+            EnqueueMessage(new AppWindowArtifact(message.Id, null,
+                message.Window));
             return ApiResult.Success;
         }
 
         public string ProcessName { get; }
+
         public AppWindowActivity AppWindowActivity { get; }
     }
 }

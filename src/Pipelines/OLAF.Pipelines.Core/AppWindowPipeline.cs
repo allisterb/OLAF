@@ -13,7 +13,7 @@ namespace OLAF.Pipelines
     {
         public AppWindowPipeline(Profile profile) : base(profile)
         {
-            AddService<ShapeDetector>();
+            AddService<BlobDetector>();
             SetPipelineInitializingStatus();   
         }
 

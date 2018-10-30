@@ -12,6 +12,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.ActivityDetectors.Wind
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.ActivityDetectors.FileSystem", "ActivityDetectors\OLAF.ActivityDetectors.FileSystem\OLAF.ActivityDetectors.FileSystem.csproj", "{7AA345D8-730F-4DD2-BA79-D63EFE3131CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Monitors.Windows.AppWindow", "Monitors\OLAF.Monitors.Windows.AppWindow\OLAF.Monitors.Windows.AppWindow.csproj", "{F623FD8C-A3F4-4999-86E2-57288F20E7B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.ActivityDetectors.Windows.AppWindow", "ActivityDetectors\OLAF.ActivityDetectors.Windows.AppWindow\OLAF.ActivityDetectors.Windows.AppWindow.csproj", "{A9208B2C-532A-4C40-925D-4EFCEA272E07}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Monitors.Windows.AppHook", "Monitors\OLAF.Monitors.Windows.AppHook\OLAF.Monitors.Windows.AppHook.csproj", "{1539ECC4-464C-4B5C-86DC-1039EF4F9547}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Monitors.DirectoryChanges", "Monitors\OLAF.Monitors.DirectoryChanges\OLAF.Monitors.DirectoryChanges.csproj", "{DBA4C2FE-6C57-4C11-8446-591DA0A594EB}"
@@ -27,10 +31,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Services.Classifiers.A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Services.Extractors.Images", "Services\Extractors\OLAF.Services.Extractors.Images\OLAF.Services.Extractors.Images.csproj", "{28BA3392-F4C4-4E51-810F-5D456843FD3A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Services.OCR.Tesseract", "Services\OCR\OLAF.Services.OCR.Tesseract\OLAF.Services.OCR.Tesseract.csproj", "{914DD06F-C2EA-49C6-B9D4-0399BFC3FC1C}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Profiles.Core", "Profiles\OLAF.Profiles.Core\OLAF.Profiles.Core.csproj", "{8186BC60-7CC7-4FCD-8C2F-6EB7B92E955F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Pipelines.Core", "Pipelines\OLAF.Pipelines.Core\OLAF.Pipelines.Core.csproj", "{7A00A2F0-D9DA-49F4-B361-8741586E6127}"
 EndProject
+
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ActivityDetectors", "ActivityDetectors", "{D5613E65-04C8-40E1-8A61-E531895E0B00}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Interfaces", "Interfaces", "{06C5F404-B60C-488C-BCDD-7AE145E28E5F}"
@@ -61,12 +68,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{C218
 		..\olafd.cmd = ..\olafd.cmd
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Services.OCR.Tesseract", "Services\OCR\OLAF.Services.OCR.Tesseract\OLAF.Services.OCR.Tesseract.csproj", "{914DD06F-C2EA-49C6-B9D4-0399BFC3FC1C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Monitors.AppWindow", "Monitors\OLAF.Monitors.Windows.AppWindow\OLAF.Monitors.AppWindow.csproj", "{F623FD8C-A3F4-4999-86E2-57288F20E7B9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.ActivityDetectors.Windows.AppWindow", "ActivityDetectors\OLAF.ActivityDetectors.Windows.D3DCapture\OLAF.ActivityDetectors.Windows.AppWindow.csproj", "{A9208B2C-532A-4C40-925D-4EFCEA272E07}"
-EndProject
+
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -12,7 +12,7 @@ using OLAF.Win32;
 
 namespace OLAF.ActivityDetectors.Windows
 {
-    public class D3D9CaptureDevice
+    public class D3D9Capture
     {
         #region Methods
         /// &lt;summary&gt;

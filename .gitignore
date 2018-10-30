@@ -269,3 +269,4 @@ __pycache__/
 /pvt.cppan.demo.google.tesseract.libtesseract400.dll
 /pvt.cppan.demo.danbloomberg.leptonica-1.75.0.dll
 /data/tessdata
+/logs

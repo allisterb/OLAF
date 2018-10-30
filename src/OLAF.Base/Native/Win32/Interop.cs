@@ -22,7 +22,7 @@ namespace OLAF.Win32
         public static Rectangle GetClientRect(IntPtr hwnd)
         {
             RECT rect = new RECT();
-            UnsafeNativeMethods.GetClientRect(hwnd, out rect);
+            UnsafeNativeMethods.GetClientRect(hwnd, ref rect);
             return rect.AsRectangle;
         }
 
@@ -34,7 +34,7 @@ namespace OLAF.Win32
         public static Rectangle GetWindowRect(IntPtr hwnd)
         {
             RECT rect = new RECT();
-            UnsafeNativeMethods.GetWindowRect(hwnd, out rect);
+            UnsafeNativeMethods.GetWindowRect(hwnd, ref rect);
             return rect.AsRectangle;
         }
 
@@ -57,6 +57,13 @@ namespace OLAF.Win32
                 UnsafeNativeMethods.EnumWindows(EnumWinTitles, 1);
             }
             return ActiveWindowsList;
+        }
+
+        public static string GetWindowTitle(IntPtr hwnd)
+        {
+            StringBuilder title = new StringBuilder(GetWindowTextLength(hwnd) + 1);
+            GetWindowText(hwnd, title, title.Capacity);
+            return title.ToString();
         }
 
         private static bool EnumWinTitles(IntPtr hwnd, Int32 lParam)

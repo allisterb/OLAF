@@ -68,7 +68,7 @@
       <Project>{7aa345d8-730f-4dd2-ba79-d63efe3131cd}</Project>
       <Name>OLAF.ActivityDetectors.FileSystem</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\ActivityDetectors\OLAF.ActivityDetectors.Windows.D3DCapture\OLAF.ActivityDetectors.Windows.AppWindow.csproj">
+    <ProjectReference Include="..\..\ActivityDetectors\OLAF.ActivityDetectors.Windows.AppWindow\OLAF.ActivityDetectors.Windows.AppWindow.csproj">
       <Project>{a9208b2c-532a-4c40-925d-4efcea272e07}</Project>
       <Name>OLAF.ActivityDetectors.Windows.AppWindow</Name>
     </ProjectReference>
@@ -76,9 +76,9 @@
       <Project>{dba4c2fe-6c57-4c11-8446-591da0a594eb}</Project>
       <Name>OLAF.Monitors.DirectoryChanges</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Monitors\OLAF.Monitors.Windows.AppWindow\OLAF.Monitors.AppWindow.csproj">
+    <ProjectReference Include="..\..\Monitors\OLAF.Monitors.Windows.AppWindow\OLAF.Monitors.Windows.AppWindow.csproj">
       <Project>{f623fd8c-a3f4-4999-86e2-57288f20e7b9}</Project>
-      <Name>OLAF.Monitors.AppWindow</Name>
+      <Name>OLAF.Monitors.Windows.AppWindow</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\OLAF.Base\OLAF.Base.csproj">
       <Project>{8d448b26-d206-48c8-b17f-a31133c25665}</Project>

@@ -25,6 +25,15 @@ namespace OLAF
                 DataDirectory = new DirectoryInfo(GetCurrentDirectoryPathTo("data"));
             }
 
+            if (!Directory.Exists(GetCurrentDirectoryPathTo("logs")))
+            {
+                LogDirectory = CurrentDirectory.CreateSubdirectory("logs");
+            }
+            else
+            {
+                LogDirectory = new DirectoryInfo(GetCurrentDirectoryPathTo("logs"));
+            }
+
             if (!Directory.Exists(GetCurrentDirectoryPathTo("data", "artifacts")))
             {
                 BaseArtifactsDirectory = DataDirectory.CreateSubdirectory("artifacts");
@@ -64,6 +73,8 @@ namespace OLAF
 
         protected static DirectoryInfo DataDirectory { get; }
 
+        protected static DirectoryInfo LogDirectory { get; }
+
         protected static DirectoryInfo BaseArtifactsDirectory { get; }
 
         protected static DirectoryInfo BaseDictionariesDirectory { get; }
@@ -79,6 +90,10 @@ namespace OLAF
         [DebuggerStepThrough]
         protected static string GetCurrentDirectoryPathTo(params string[] paths) =>
             Path.Combine(CurrentDirectory.FullName, Path.Combine(paths));
+
+        [DebuggerStepThrough]
+        protected static string GetLogDirectoryPathTo(params string[] paths) =>
+            Path.Combine(LogDirectory.FullName, Path.Combine(paths));
 
         [DebuggerStepThrough]
         protected static string GetDataDirectoryPathTo(params string[] paths) =>
