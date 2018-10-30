@@ -112,7 +112,7 @@ namespace OLAF
             }
             else if (Clients.Contains(c))
             {
-                throw new InvalidOperationException($"{c} was already added as a client.");
+                return;
             }
             else
             {
@@ -134,9 +134,17 @@ namespace OLAF
             {
                 while (!shutdownRequested && !token.IsCancellationRequested)
                 {
-                    TClientMessage message =
-                        (TClientMessage)Global.MessageQueue.Dequeue(client, cancellationToken);
-                    ProcessClientQueueMessage(message);
+                    Message message =
+                        Global.MessageQueue.Dequeue(client, cancellationToken);
+                    if (message is TClientMessage)
+                    {
+                        ProcessClientQueueMessage(message as TClientMessage);
+                    }
+                    else
+                    {
+                        EnqueueMessage(message);
+                    }
+                    
                 }
                 Info("Stopping {0} client queue observer in service {1}.", client.Name, type.Name);
                 Status = ApiStatus.Ok;
@@ -154,6 +162,8 @@ namespace OLAF
                 ObserveClientQueue(client, token);
             }
         }
+
+        
         #endregion
 
         #region Fields

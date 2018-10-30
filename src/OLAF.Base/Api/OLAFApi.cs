@@ -145,40 +145,50 @@ namespace OLAF
             if (Status != ApiStatus.Initializing) throw new Exception("Could not construct this object.");
         }
 
+        [DebuggerStepThrough]
+        protected virtual void EnqueueMessage(Message message) => Global.MessageQueue.Enqueue(type, message);
+
+        [DebuggerStepThrough]
         protected void ThrowIfNotInitialized()
         {
             if (Status != ApiStatus.Initialized) throw new Exception("This object is not initialized.");
         }
 
+        [DebuggerStepThrough]
         protected void ThrowIfNotOk()
         {
             if (Status != ApiStatus.Ok) throw new Exception("This object is not initialized.");
         }
 
+        [DebuggerStepThrough]
         protected ApiResult SetStatusAndReturnSuccess(ApiStatus apiStatus)
         {
             Status = apiStatus;
             return ApiResult.Success;
         }
 
+        [DebuggerStepThrough]
         protected ApiResult SetInitializedStatusAndReturnSucces()
         {
             Status = ApiStatus.Initialized;
             return ApiResult.Success;
         }
 
+        [DebuggerStepThrough]
         protected ApiResult SetOkStatusAndReturnSucces()
         {
             Status = ApiStatus.Ok;
             return ApiResult.Success;
         }
 
+        [DebuggerStepThrough]
         protected ApiResult SetStatusAndReturnFailure(ApiStatus apiStatus)
         {
             Status = apiStatus;
             return ApiResult.Failure;
         }
 
+        [DebuggerStepThrough]
         protected ApiResult SetErrorStatusAndReturnFailure()
         {
             Status = ApiStatus.Error; ;

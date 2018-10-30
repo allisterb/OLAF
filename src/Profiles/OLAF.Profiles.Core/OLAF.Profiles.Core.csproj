@@ -59,8 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Browsers.cs" />
-    <Compile Include="UserDownloadedImages.cs" />
+    <Compile Include="UserBrowserActivity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

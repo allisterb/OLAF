@@ -6,15 +6,16 @@ using System.Text;
 using System.Threading.Tasks;
 
 using OLAF.Monitors;
+using OLAF.Monitors.Windows;
 using OLAF.Pipelines;
 
 
 namespace OLAF.Profiles
 {
-    public class UserDownloadedImages : Profile
+    public class UserBrowserActivity : Profile
     {
         #region Constructors
-        public UserDownloadedImages()
+        public UserBrowserActivity()
         {
             UserKnownFolders = new List<string>()
             {
@@ -35,13 +36,19 @@ namespace OLAF.Profiles
                 Status = ApiStatus.FileNotFound;
                 return;
             }
-            DirectoryChangesMonitor monitor = new DirectoryChangesMonitor(UserKnownFolders.ToArray(),
-                BasicImageWildcardExtensions.ToArray(), this);
-            if (monitor.Status != ApiStatus.Initializing)
+            Monitors.Add (new DirectoryChangesMonitor(UserKnownFolders.ToArray(),
+                BasicImageWildcardExtensions.ToArray(), this));
+            
+            List<IMonitor> browserWindowMonitors = new List<IMonitor>()
             {
-                Status = ApiStatus.Error;
-            }
-            Monitors.Add(monitor);
+                new AppWindowMonitor("chrome"),
+                new AppWindowMonitor("firefox"),
+                new AppWindowMonitor("MicrosoftEdgeCP"),
+                
+
+            };
+            Monitors.AddRange(browserWindowMonitors);
+
             Pipeline = new ImagePipeline(this);
             Status = Pipeline.Status;
         }

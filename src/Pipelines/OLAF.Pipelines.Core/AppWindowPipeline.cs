@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-using OLAF.Services.Classifiers;
+using OLAF.Services.OCR;
 
 namespace OLAF.Pipelines
 {
@@ -13,7 +13,7 @@ namespace OLAF.Pipelines
     {
         public AppWindowPipeline(Profile profile) : base(profile)
         {
-            AddService<BlobDetector>();
+            AddService<Tesseract>();
             SetPipelineInitializingStatus();   
         }
 

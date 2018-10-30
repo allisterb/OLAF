@@ -14,10 +14,12 @@ namespace OLAF.ActivityDetectors.Windows
         {
             IntPtr desktopHwnd = UnsafeNativeMethods.GetDesktopWindow();
             IntPtr desktopDC = UnsafeNativeMethods.GetWindowDC(desktopHwnd);
-            IntPtr wDC = UnsafeNativeMethods.GetWindowDC(hwnd);
-            Rectangle windowRegion = Interop.GetAbsoluteClientRect(hwnd);
+            IntPtr windowDC = UnsafeNativeMethods.GetWindowDC(hwnd);
+            Rectangle windowRegion = Interop.AdjustWindowRectangeToDesktopBounds(Interop.GetAbsoluteClientRect(hwnd));
+
             IntPtr memoryDC = UnsafeNativeMethods.CreateCompatibleDC(desktopDC);
-            IntPtr hBitmap = UnsafeNativeMethods.CreateCompatibleBitmap(desktopDC, windowRegion.Width, windowRegion.Height);
+            IntPtr hBitmap = UnsafeNativeMethods.CreateCompatibleBitmap(desktopDC, windowRegion.Width, 
+                windowRegion.Height);
             IntPtr holdBitmap = UnsafeNativeMethods.SelectObject(memoryDC, hBitmap);
             Bitmap b = null;
             
@@ -42,9 +44,7 @@ namespace OLAF.ActivityDetectors.Windows
 
             UnsafeNativeMethods.DeleteDC(memoryDC);
             UnsafeNativeMethods.ReleaseDC(desktopHwnd, desktopDC);
-            UnsafeNativeMethods.ReleaseDC(hwnd, wDC);
-            //UnsafeNativeMethods.Re
-
+            UnsafeNativeMethods.ReleaseDC(hwnd, windowDC);
             return b;
         }
     }

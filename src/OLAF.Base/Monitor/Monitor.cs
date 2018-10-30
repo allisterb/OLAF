@@ -134,9 +134,6 @@ namespace OLAF
                 ObserveDetectorQueue(token);
             }
         }
-
-        protected virtual void EnqueueMessage(TMonitorMessage message) => Global.MessageQueue.Enqueue(Type, message);
-
         #endregion
 
         #region Fields

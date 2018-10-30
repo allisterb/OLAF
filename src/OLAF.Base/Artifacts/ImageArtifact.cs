@@ -45,9 +45,9 @@ namespace OLAF
 
         public double RacyContentScore { get; set; }
         
-        public string OCRText { get; set; }
+        public List<string> OCRText { get; set; }
 
-        public bool HasOCRText => !string.IsNullOrEmpty(OCRText);
+        public bool HasOCRText => OCRText != null;
         #endregion
 
         #region Methods

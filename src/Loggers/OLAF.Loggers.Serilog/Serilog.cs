@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 using Serilog;
 using Serilog.Sinks;
@@ -75,8 +76,9 @@ namespace OLAF.Loggers
                 }
                 if (enabledOptions.Contains("WithLogFile"))
                 {
-                   Log.Logger.Information("Log file is logs\\OLAF-{0:D4}{1:D2}{2:D2}.log", 
-                       DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day);
+                   Log.Logger.Information("Log file is {3}\\logs\\OLAF-{0:D4}{1:D2}{2:D2}.log", 
+                       DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day, 
+                       Directory.GetCurrentDirectory());
                 }
                 if (enabledOptions.Contains("WithoutConsole"))
                 {

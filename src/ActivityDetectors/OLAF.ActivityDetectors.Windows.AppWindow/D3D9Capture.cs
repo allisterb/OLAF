@@ -15,22 +15,23 @@ namespace OLAF.ActivityDetectors.Windows
     public class D3D9Capture
     {
         #region Methods
-        /// &lt;summary&gt;
+        /// <summary>
         /// Capture the entire client area of a window
-        /// &lt;/summary&gt;
-        /// &lt;param name=&quot;hWnd&quot;&gt;&lt;/param&gt;
-        /// &lt;returns&gt;&lt;/returns&gt;
+        /// </summary>
+        /// <param name=&quot;hWnd&quot;></param>
+        /// <returns></returns>
         public Bitmap CaptureWindow(IntPtr hWnd)
         {
-            return CaptureRegionDirect3D(hWnd, Interop.GetAbsoluteClientRect(hWnd));
+            return CaptureRegionDirect3D(hWnd, 
+                Interop.AdjustWindowRectangeToDesktopBounds(Interop.GetAbsoluteClientRect(hWnd)));
         }
 
-        /// &lt;summary&gt;
+        /// <summary>
         /// Capture a region of the screen using Direct3D
-        /// &lt;/summary&gt;
-        /// &lt;param name=&quot;handle&quot;&gt;The handle of a window&lt;/param&gt;
-        /// &lt;param name=&quot;region&quot;&gt;The region to capture (in screen coordinates)&lt;/param&gt;
-        /// &lt;returns&gt;A bitmap containing the captured region, this should be disposed of appropriately when finished with it&lt;/returns&gt;
+        /// </summary>
+        /// <param name=&quot;handle&quot;>The handle of a window</param>
+        /// <param name=&quot;region&quot;>The region to capture (in screen coordinates)</param>
+        /// <returns>A bitmap containing the captured region, this should be disposed of appropriately when finished with it</returns>
         public Bitmap CaptureRegionDirect3D(IntPtr handle, Rectangle region)
         {
             IntPtr hWnd = handle;
@@ -68,6 +69,7 @@ namespace OLAF.ActivityDetectors.Windows
             #endregion
 
             // Capture the screen and copy the region into a Bitmap
+            
             using (SlimDX.Direct3D9.Surface surface = SlimDX.Direct3D9.Surface.CreateOffscreenPlain(device, adapterInfo.CurrentDisplayMode.Width, adapterInfo.CurrentDisplayMode.Height, SlimDX.Direct3D9.Format.A8R8G8B8, SlimDX.Direct3D9.Pool.SystemMemory))
             {
                 device.GetFrontBufferData(0, surface);

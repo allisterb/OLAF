@@ -10,11 +10,11 @@ namespace OLAF
 {
     public class AppWindowArtifact : ImageArtifact
     {
-        public AppWindowArtifact(long id, Process process, Bitmap image) : base(id, image)
+        public AppWindowArtifact(long id, string processName, Bitmap image) : base(id, image)
         {
-            Process = process;
+            ProcessName = processName;
         }
-
-        public Process Process { get; }
+   
+        public string ProcessName { get; }
     }
 }

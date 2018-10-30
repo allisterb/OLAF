@@ -12,10 +12,10 @@ using Tesseract;
 
 namespace OLAF.Services.OCR
 {
-    public class TesseractOCR : Service<ImageArtifact, ImageArtifact>
+    public class Tesseract : Service<ImageArtifact, ImageArtifact>
     {
         #region Constructors
-        public TesseractOCR(Profile profile, params Type[] clients) :base(profile, clients)
+        public Tesseract(Profile profile, params Type[] clients) :base(profile, clients)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace OLAF.Services.OCR
 
             TesseractImage.SetPageSegMode(PageSegmentationMode.AUTO_OSD);
             Status = ApiStatus.Initialized;
-            Info("Tesseract OCR initialized.");
+            Info("Tesseract initialized.");
             return ApiResult.Success;
         }
 
@@ -74,28 +74,29 @@ namespace OLAF.Services.OCR
             {
                 TesseractImage.Recognize();
                 ResultIterator resultIterator = TesseractImage.GetIterator();
-                StringBuilder stringBuilder = new StringBuilder();
+                List<string> text = new List<string>();
                 PageIteratorLevel pageIteratorLevel = PageIteratorLevel.RIL_PARA;
                 do
                 {
-                    stringBuilder.Append(resultIterator.GetUTF8Text(pageIteratorLevel).Trim());
+                    text.Add(resultIterator.GetUTF8Text(pageIteratorLevel).Trim());
                 }
                 while (resultIterator.Next(pageIteratorLevel));
 
-                string text = stringBuilder.ToString();
-                if (string.IsNullOrEmpty(text) || text.Length < 20)
+                string alltext = text.Aggregate((s1, s2) => s1 + " " + s2).Trim();
+
+                if (text.Count < 2)
                 {
                     Info("{0} is likely a photo or non-text image.", message.FileArtifact.Name);
                 }
                 else
                 {
                     message.OCRText = text;
-                    Info("OCR Text: {0}", message.OCRText);
+                    Info("OCR Text: {0}", alltext);
                 }
                 op.Complete();
             }
             message.Image.UnlockBits(bData);
-            Global.MessageQueue.Enqueue<TesseractOCR>(message);
+            Global.MessageQueue.Enqueue<Tesseract>(message);
             return ApiResult.Success;
         }
         #endregion

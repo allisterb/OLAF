@@ -49,6 +49,28 @@ namespace OLAF.Win32
             return new Rectangle(new Point(windowRect.X + chromeWidth, windowRect.Y + (windowRect.Height - clientRect.Height - chromeWidth)), clientRect.Size);
         }
 
+        public static Rectangle AdjustWindowRectangeToDesktopBounds(Rectangle win)
+        {
+            Rectangle d = GetAbsoluteClientRect(UnsafeNativeMethods.GetDesktopWindow());
+
+            int x = win.X >= 0 ? win.X : 0;
+            int w = win.X >= 0 ? win.Width : win.Width + (0 - win.X);
+
+            int y = win.Y >= 0 ? win.Y : 0;
+            int h = win.Y >= 0 ? win.Height : win.Height + (0 - win.Y);
+
+            if (w + x > d.Width)
+            {
+                w = d.Width - x;
+            }
+
+            if (h + y > d.Height)
+            {
+                h = d.Height - y;
+            }
+            return new Rectangle(x, y, w, h);
+        }
+
         public static Dictionary<IntPtr, string> GetActiveWindowsList()
         {
             lock (interopLock)

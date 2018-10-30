@@ -75,7 +75,7 @@ namespace OLAF
 
             Global.SetupMessageQueue();
 
-             Profile = new Browsers();
+             Profile = new UserBrowserActivity();
 
             if (Profile.Init() != ApiResult.Success)
             {

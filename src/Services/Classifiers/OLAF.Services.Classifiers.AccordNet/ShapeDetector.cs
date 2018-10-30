@@ -52,14 +52,14 @@ namespace OLAF.Services.Classifiers
             BitmapData bitmapData = image.LockBits(ImageLockMode.ReadWrite);
 
             // step 1 - turn background to black
-            //ColorFiltering colorFilter = new ColorFiltering();
+            ColorFiltering colorFilter = new ColorFiltering();
             //
-            //colorFilter.Red = new IntRange(0, 64);
-            //colorFilter.Green = new IntRange(0, 64);
-            //colorFilter.Blue = new IntRange(0, 64);
-            //colorFilter.FillOutsideRange = false;
+            colorFilter.Red = new IntRange(0, 64);
+            colorFilter.Green = new IntRange(0, 64);
+            colorFilter.Blue = new IntRange(0, 64);
+            colorFilter.FillOutsideRange = false;
 
-            //colorFilter.ApplyInPlace(bitmapData);
+            colorFilter.ApplyInPlace(bitmapData);
 
 
             blobCounter.FilterBlobs = true;
@@ -70,28 +70,27 @@ namespace OLAF.Services.Classifiers
             blobCounter.ProcessImage(bitmapData);
             
             blobs = blobCounter.GetObjectsInformation();
+            Debug("Detected {0} shapes.", blobs.Length);
             image.UnlockBits(bitmapData);
             SimpleShapeChecker shapeChecker = new SimpleShapeChecker();
             GrahamConvexHull grahamScan = new GrahamConvexHull();
 
-            /*
-            Pen borderPen = new Pen(Color.FromArgb(64, 64, 64), 1);
-            Pen highlightPen = new Pen(Color.Red);
-            Pen highlightPenBold = new Pen(Color.FromArgb(0, 255, 0), 3);
-            Pen rectPen = new Pen(Color.Blue);
-            */
-            Pen yellowPen = new Pen(Color.Yellow, 2); // circles
+           
+            
             Pen redPen = new Pen(Color.Red, 2);       // quadrilateral
-            Pen brownPen = new Pen(Color.Brown, 2);   // quadrilateral with known sub-type
-            Pen greenPen = new Pen(Color.Green, 2);   // known triangle
-            Pen bluePen = new Pen(Color.Blue, 2);     // triangle
+             // triangle
 
             Graphics g = Graphics.FromImage(image);
             for (int i = 0; i < blobs.Length; i++)
 
             {
-                List<IntPoint> edgePoints = blobCounter.GetBlobsEdgePoints(blobs[i]);
-                Accord.Point center;
+
+                
+                g.DrawRectangle(redPen, blobs[i].Rectangle);
+
+                #region Experiments
+                /*
+                    Accord.Point center;
                 float radius;
 
                 // is circle ?
@@ -108,56 +107,57 @@ namespace OLAF.Services.Classifiers
 
                     
                 }
+                */
             }
-            
-                /*
-                List<IntPoint> leftEdge = new List<IntPoint>();
-                List<IntPoint> rightEdge = new List<IntPoint>();
-                List<IntPoint> topEdge = new List<IntPoint>();
-                List<IntPoint> bottomEdge = new List<IntPoint>();
 
-                // collect edge points
-                blobCounter.GetBlobsLeftAndRightEdges(blob, out leftEdge, out rightEdge);
-                blobCounter.GetBlobsTopAndBottomEdges(blob, out topEdge, out bottomEdge);
+            /*
+            List<IntPoint> leftEdge = new List<IntPoint>();
+            List<IntPoint> rightEdge = new List<IntPoint>();
+            List<IntPoint> topEdge = new List<IntPoint>();
+            List<IntPoint> bottomEdge = new List<IntPoint>();
 
-                leftEdges.Add(blob.ID, leftEdge);
-                rightEdges.Add(blob.ID, rightEdge);
-                topEdges.Add(blob.ID, topEdge);
-                bottomEdges.Add(blob.ID, bottomEdge);
+            // collect edge points
+            blobCounter.GetBlobsLeftAndRightEdges(blob, out leftEdge, out rightEdge);
+            blobCounter.GetBlobsTopAndBottomEdges(blob, out topEdge, out bottomEdge);
 
-                // find convex hull
-                List<IntPoint> edgePoints = new List<IntPoint>();
-                edgePoints.AddRange(leftEdge);
-                edgePoints.AddRange(rightEdge);
+            leftEdges.Add(blob.ID, leftEdge);
+            rightEdges.Add(blob.ID, rightEdge);
+            topEdges.Add(blob.ID, topEdge);
+            bottomEdges.Add(blob.ID, bottomEdge);
 
-                List<IntPoint> hull = grahamScan.FindHull(edgePoints);
-                hulls.Add(blob.ID, hull);
+            // find convex hull
+            List<IntPoint> edgePoints = new List<IntPoint>();
+            edgePoints.AddRange(leftEdge);
+            edgePoints.AddRange(rightEdge);
 
-                List<IntPoint> quadrilateral = null;
+            List<IntPoint> hull = grahamScan.FindHull(edgePoints);
+            hulls.Add(blob.ID, hull);
 
-                // find quadrilateral
-                if (hull.Count < 4)
-                {
-                    quadrilateral = new List<IntPoint>(hull);
-                }
-                else
-                {
-                    quadrilateral = PointsCloud.FindQuadrilateralCorners(hull);
-                }
-                quadrilaterals.Add(blob.ID, quadrilateral);
+            List<IntPoint> quadrilateral = null;
 
-            }
-            using (Graphics g = Graphics.FromImage(image))
+            // find quadrilateral
+            if (hull.Count < 4)
             {
-                //foreach (var qq in quadrilaterals.Values)
-                //{
-                //    DrawEdge(g, highlightPen, qq);
-                //}
-                
+                quadrilateral = new List<IntPoint>(hull);
             }
-            */
-                image.Save(GetLogDirectoryPathTo("edge_{0}.bmp".F(message.Id)));
-                return ApiResult.Success;
+            else
+            {
+                quadrilateral = PointsCloud.FindQuadrilateralCorners(hull);
+            }
+            quadrilaterals.Add(blob.ID, quadrilateral);
+
+        }
+        using (Graphics g = Graphics.FromImage(image))
+        {
+            //foreach (var qq in quadrilaterals.Values)
+            //{
+            //    DrawEdge(g, highlightPen, qq);
+            //}
+
+        }
+        */
+            #endregion
+                image.Save(GetLogDirectoryPathTo("shapes_{0}.bmp".F(message.Id))); return ApiResult.Success;
             
         }
 
