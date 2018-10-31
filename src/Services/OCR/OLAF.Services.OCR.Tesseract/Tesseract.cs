@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Leptonica;
@@ -52,9 +53,8 @@ namespace OLAF.Services.OCR
             }
 
             TesseractImage.SetPageSegMode(PageSegmentationMode.AUTO_OSD);
-            Status = ApiStatus.Initialized;
-            Info("Tesseract initialized.");
-            return ApiResult.Success;
+
+            return SetInitializedStatusAndReturnSucces();
         }
 
         protected override ApiResult ProcessClientQueueMessage(ImageArtifact message)
@@ -70,11 +70,12 @@ namespace OLAF.Services.OCR
             
             Debug("Pix has width: {0} height: {1} depth: {2} xres: {3} yres: {4}.", Pix.Width, Pix.Height, Pix.Depth, 
                 Pix.XRes, Pix.YRes);
+            List<string> text;
             using (var op = Begin("Tesseract OCR (fast)"))
             {
                 TesseractImage.Recognize();
                 ResultIterator resultIterator = TesseractImage.GetIterator();
-                List<string> text = new List<string>();
+                text = new List<string>();
                 PageIteratorLevel pageIteratorLevel = PageIteratorLevel.RIL_PARA;
                 do
                 {
@@ -84,9 +85,9 @@ namespace OLAF.Services.OCR
 
                 string alltext = text.Aggregate((s1, s2) => s1 + " " + s2).Trim();
 
-                if (text.Count < 2)
+                if (text.Count < 7)
                 {
-                    Info("{0} is likely a photo or non-text image.", message.FileArtifact.Name);
+                    Info("Artifact {0} is likely a photo or non-text image.", message.Id);
                 }
                 else
                 {
@@ -96,7 +97,11 @@ namespace OLAF.Services.OCR
                 op.Complete();
             }
             message.Image.UnlockBits(bData);
-            Global.MessageQueue.Enqueue<Tesseract>(message);
+            EnqueueMessage(message);
+            if (text.Count >= 7)
+            {
+                EnqueueMessage(new TextArtifact(message.Id + 1000, text));
+            }
             return ApiResult.Success;
         }
         #endregion

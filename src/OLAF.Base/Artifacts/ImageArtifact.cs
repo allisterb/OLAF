@@ -35,7 +35,7 @@ namespace OLAF
             = new Dictionary<ImageObjectKinds, List<Rectangle>>();
 
         
-        public List<ArtifactCategory> Catgegories { get; } = new List<ArtifactCategory>();
+        public List<ArtifactCategory> Categories { get; } = new List<ArtifactCategory>();
 
         public bool IsAdultContent { get; set; }
 

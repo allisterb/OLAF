@@ -91,6 +91,7 @@
     <Compile Include="Artifacts\ImageArtifact.cs" />
     <Compile Include="Artifacts\ImageObjectKinds.cs" />
     <Compile Include="Artifacts\AppWindowArtifact.cs" />
+    <Compile Include="Artifacts\TextArtifact.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="Logger\IOperationContext.cs" />
     <Compile Include="Logger\SimpleOperation.cs" />

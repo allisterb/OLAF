@@ -21,7 +21,7 @@ namespace OLAF.Monitors.Windows
             {
                 Detectors.Add(AppWindowActivity);
                 this.Status = ApiStatus.Initializing;
-                Info("Creating app window monitor for app process {0}.", processName);
+                Info("Creating app window monitor for process {0}.", processName);
             }
             else
             {
@@ -46,7 +46,7 @@ namespace OLAF.Monitors.Windows
 
         protected override ApiResult ProcessDetectorQueueMessage(AppWindowActivityMessage message)
         {
-            Info("Processing app window capture of process {0} with dimensions {1}x{2}.", 
+            Info("Analyzing app window of process {0} with dimensions {1}x{2}.", 
                 message.ProcessName, message.Window.Width, message.Window.Height);
             EnqueueMessage(new AppWindowArtifact(message.Id, message.ProcessName, message.Window));
             return ApiResult.Success;

@@ -76,9 +76,8 @@ namespace OLAF.Loggers
                 }
                 if (enabledOptions.Contains("WithLogFile"))
                 {
-                   Log.Logger.Information("Log file is {3}\\logs\\OLAF-{0:D4}{1:D2}{2:D2}.log", 
-                       DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day, 
-                       Directory.GetCurrentDirectory());
+                   Log.Logger.Information("Log file is \\logs\\OLAF-{0:D4}{1:D2}{2:D2}.log", 
+                       DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day);
                 }
                 if (enabledOptions.Contains("WithoutConsole"))
                 {

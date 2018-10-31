@@ -1,4 +1,8 @@
-﻿using System;
+﻿#region Attribution
+//Based on: https://www.cyotek.com/blog/capturing-screenshots-using-csharp-and-p-invoke by Richard Moss
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;

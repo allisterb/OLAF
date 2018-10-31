@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Timers;
 using System.Buffers;
+using System.Runtime.CompilerServices;
 
 using Threading = System.Threading;
 
@@ -41,8 +42,6 @@ namespace OLAF.ActivityDetectors.Windows
             return ApiResult.Success;
         }
 
-
-        
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             Process[] processes = Process.GetProcessesByName(ProcessName);
@@ -51,15 +50,13 @@ namespace OLAF.ActivityDetectors.Windows
                 return;
             }
 
-            appWindowDetectoMutex.WaitOne();
-
             Bitmap capture = null;
             IntPtr activeWindowHandle = UnsafeNativeMethods.GetForegroundWindow();
             var tid = UnsafeNativeMethods.GetWindowThreadProcessId(activeWindowHandle, out uint pid);
 
             if (processes.Any(p => p.Id == pid))
             {
-                Debug("{0} process window in the foreground and will be captured.", ProcessName);
+                Debug("{0} window detected.", ProcessName);
                 try
                 {
                     capture = D3D9Capture.CaptureWindow(activeWindowHandle);
@@ -111,22 +108,29 @@ namespace OLAF.ActivityDetectors.Windows
                 }
             }
 
-            
+        
             if (capture != null)
             {
+                bool analyze = false;
+                appWindowDetectoMutex.WaitOne();
                 if (!CompareImages(previousCapture, capture))
                 {
+                    analyze = true;
+                    previousCapture = capture;
+                }
+                appWindowDetectoMutex.ReleaseMutex();
+
+                if (analyze)
+                {
+                    Debug("Analyzing {0} image.", ProcessName);
                     Global.MessageQueue.Enqueue<AppWindowActivity>(
                            new AppWindowActivityMessage(
                                Threading.Interlocked.Increment(ref currentArtifactId), ProcessName, capture));
-                    previousCapture = capture;
                 }
                 else
                 {
-                    Debug("Skipping duplicate image");
+                    Debug("Not analyzing duplicate image.");
                 }
-              
-                appWindowDetectoMutex.ReleaseMutex();
             }
         }
 
@@ -162,6 +166,50 @@ namespace OLAF.ActivityDetectors.Windows
             return r;
         }
 
+        public unsafe int CompareImagesLinewise(Bitmap b1, Bitmap b2)
+        {
+            if ((b1 == null) || (b2 == null)) throw new ArgumentNullException("Parameter cannot be null");
+            
+            if (b1.Size != b2.Size)
+            {
+                return b2.Size.Height;
+            }
+
+            var bd1 = b1.LockBits(new Rectangle(new Point(0, 0), b1.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            var bd2 = b2.LockBits(new Rectangle(new Point(0, 0), b2.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+
+            int r = 0;
+
+            try
+            {
+                IntPtr bd1scan0 = bd1.Scan0;
+                IntPtr bd2scan0 = bd2.Scan0;
+                void* v1 = bd1scan0.ToPointer();
+                void* v2 = bd2scan0.ToPointer();
+
+
+                int stride = bd1.Stride;
+         
+                for (int i = 0; i < b1.Height; i++)
+                {
+                    void* p1 = Unsafe.Add<byte>(v1, i * stride);
+                    void* p2 = Unsafe.Add<byte>(v2, i * stride);
+                    ReadOnlySpan<byte> s1 = new ReadOnlySpan<byte>(p1, stride);
+                    ReadOnlySpan<byte> s2 = new ReadOnlySpan<byte>(p2, stride);
+                    if (s1.SequenceEqual(s2))
+                    {
+                        r++;
+                    }
+                }
+            }
+            finally
+            {
+                b1.UnlockBits(bd1);
+                b2.UnlockBits(bd2);
+
+            }
+            return r;
+        }
         string ProcessName { get; }
 
         Timer Timer { get; }

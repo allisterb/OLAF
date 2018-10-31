@@ -28,9 +28,7 @@ namespace OLAF.Services.Classifiers
             Detector.ScalingFactor = 1.5f;
             Detector.UseParallelProcessing = true;
             Detector.Suppression = 2;
-            Status = ApiStatus.Initialized;
-            Info("Accord.NET Viola-Jones face detector initialized.");
-            return ApiResult.Success;
+            return SetInitializedStatusAndReturnSucces(); ;
         }
 
         protected override ApiResult ProcessClientQueueMessage(ImageArtifact artifact)
@@ -38,7 +36,7 @@ namespace OLAF.Services.Classifiers
             if (artifact.HasOCRText)
             {
                 Info("Not using face detector on text-rich image.");
-                Global.MessageQueue.Enqueue<ViolaJonesFaceDetector>(artifact);
+                Debug("Pipeline ending for artifact {0}.", artifact.Id);
                 return ApiResult.Success;
             }
             Bitmap image = artifact.Image;

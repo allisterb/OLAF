@@ -171,6 +171,7 @@ namespace OLAF
         protected ApiResult SetInitializedStatusAndReturnSucces()
         {
             Status = ApiStatus.Initialized;
+            Info("{0} initialized.", Type.Name);
             return ApiResult.Success;
         }
 

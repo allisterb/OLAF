@@ -18,7 +18,7 @@ namespace OLAF.ActivityDetectors.Windows
         /// <summary>
         /// Capture the entire client area of a window
         /// </summary>
-        /// <param name=&quot;hWnd&quot;></param>
+        /// <param name="hWnd"></param>
         /// <returns></returns>
         public Bitmap CaptureWindow(IntPtr hWnd)
         {
@@ -29,8 +29,8 @@ namespace OLAF.ActivityDetectors.Windows
         /// <summary>
         /// Capture a region of the screen using Direct3D
         /// </summary>
-        /// <param name=&quot;handle&quot;>The handle of a window</param>
-        /// <param name=&quot;region&quot;>The region to capture (in screen coordinates)</param>
+        /// <param name="handle">The handle of a window</param>
+        /// <param name="region">The region to capture (in screen coordinates)</param>
         /// <returns>A bitmap containing the captured region, this should be disposed of appropriately when finished with it</returns>
         public Bitmap CaptureRegionDirect3D(IntPtr handle, Rectangle region)
         {
@@ -90,6 +90,4 @@ namespace OLAF.ActivityDetectors.Windows
         private Dictionary<IntPtr, SlimDX.Direct3D9.Device> _direct3DDeviceCache = new Dictionary<IntPtr, SlimDX.Direct3D9.Device>();
         #endregion
     }
-
-
 }

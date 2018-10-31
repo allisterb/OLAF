@@ -44,9 +44,7 @@ namespace OLAF.Services.Classifiers
                 ApiKeyServiceClientCredentials c = new ApiKeyServiceClientCredentials(ApiAccountKey);
                 Client = new ComputerVisionClient(c);
                 Client.Endpoint = ApiEndpointUrl;
-                Status = ApiStatus.Initialized;
-                Info("Microsoft Computer Vision API initialized.");
-                return ApiResult.Success;
+                return SetInitializedStatusAndReturnSucces();
             }
             catch(Exception e)
             {
@@ -60,7 +58,8 @@ namespace OLAF.Services.Classifiers
         {
             if (!artifact.HasDetectedObjects(ImageObjectKinds.FaceCandidate) || artifact.HasOCRText)
             {
-                Global.MessageQueue.Enqueue<MSComputerVision>(artifact);
+                Debug("Not calling MS Computer Vision API for images without face object candidates.");
+                Debug("Pipeline ending for artifact {0}.", artifact.Id);
                 return ApiResult.Success;
             }
             else
@@ -92,7 +91,7 @@ namespace OLAF.Services.Classifiers
                     foreach (Category c in analysis.Categories)
                     {
 
-                        artifact.Catgegories.Add(new ArtifactCategory(c.Name, null, c.Score));
+                        artifact.Categories.Add(new ArtifactCategory(c.Name, null, c.Score));
                     }
                 }
                 Info("Image properties: Adult: {0}/{1} Racy: {2}/{3} Description:{4}",
@@ -104,7 +103,7 @@ namespace OLAF.Services.Classifiers
                 artifact.RacyContentScore = analysis.Adult.RacyScore;
                 analysis.Description = analysis.Description;
 
-                Global.MessageQueue.Enqueue<MSComputerVision>(artifact);
+                Debug("Pipeline ending for artifact {0}.", artifact.Id);
                 return ApiResult.Success;
             }
             

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using OLAF.Services.Classifiers;
 using OLAF.Services.OCR;
 using OLAF.Services.Extractors;
+
 namespace OLAF.Pipelines
 {
     public class ImagePipeline : Pipeline
@@ -18,6 +19,8 @@ namespace OLAF.Pipelines
             AddService<Tesseract>();
             AddService<ViolaJonesFaceDetector>();
             AddService<MSComputerVision>();
+            AddService<VaderSharp>();
+            AddService<MSTextAnalytics>();
             SetPipelineInitializingStatus();   
         }
 

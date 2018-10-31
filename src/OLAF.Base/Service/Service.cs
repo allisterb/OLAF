@@ -138,10 +138,13 @@ namespace OLAF
                         Global.MessageQueue.Dequeue(client, cancellationToken);
                     if (message is TClientMessage)
                     {
+                        Debug("{0} consuming message {1}.", Name, message.Id);
                         ProcessClientQueueMessage(message as TClientMessage);
+                        
                     }
                     else
                     {
+                        Debug("{0} passing on message {1}.", Name, message.Id);
                         EnqueueMessage(message);
                     }
                     
