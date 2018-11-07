@@ -59,9 +59,13 @@ namespace OLAF.Services.Classifiers
             if (!artifact.HasDetectedObjects(ImageObjectKinds.FaceCandidate) || artifact.HasOCRText)
             {
                 Debug("Not calling MS Computer Vision API for images without face object candidates.");
-                Debug("Pipeline ending for artifact {0}.", artifact.Id);
-                return ApiResult.Success;
             }
+
+            else if (artifact.FileArtifact == null)
+            {
+                Debug("Not calling MS Computer Vision API for app window images..");
+            }
+
             else
             {
                 Info("Artifact is likely a photo with faces detected; analyzing using MS Computer Vision API.");
@@ -85,6 +89,7 @@ namespace OLAF.Services.Classifiers
                         return ApiResult.Failure;
                     }
                 }
+
                 if (analysis.Categories != null)
                 {
                     Info("Image categories: {0}", analysis.Categories.Select(c => c.Name + "/" + c.Score.ToString()));
@@ -94,6 +99,7 @@ namespace OLAF.Services.Classifiers
                         artifact.Categories.Add(new ArtifactCategory(c.Name, null, c.Score));
                     }
                 }
+
                 Info("Image properties: Adult: {0}/{1} Racy: {2}/{3} Description:{4}",
                     analysis.Adult.IsAdultContent, analysis.Adult.AdultScore, analysis.Adult.IsRacyContent,
                     analysis.Adult.RacyScore, analysis.Description.Tags);
@@ -102,11 +108,9 @@ namespace OLAF.Services.Classifiers
                 artifact.IsRacy = analysis.Adult.IsRacyContent;
                 artifact.RacyContentScore = analysis.Adult.RacyScore;
                 analysis.Description = analysis.Description;
-
-                Debug("Pipeline ending for artifact {0}.", artifact.Id);
-                return ApiResult.Success;
             }
-            
+            EnqueueMessage(artifact);
+            return ApiResult.Success;
         }
         #endregion
 

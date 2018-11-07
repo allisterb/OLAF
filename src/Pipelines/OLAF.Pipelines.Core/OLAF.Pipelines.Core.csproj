@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppWindowPipeline.cs" />
+    <Compile Include="ImageArtifacts.cs" />
     <Compile Include="ImagePipeline.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -84,13 +85,17 @@
       <Project>{e38399b0-02b8-4c54-afd0-c50ceffe9ef8}</Project>
       <Name>OLAF.Services.Classifiers.VaderSharp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Services\Extractors\OLAF.Services.Extractors.Images\OLAF.Services.Extractors.Images.csproj">
+    <ProjectReference Include="..\..\Services\Extractors\OLAF.Services.Extractors.Images\OLAF.Services.Extractors.FileImages.csproj">
       <Project>{28ba3392-f4c4-4e51-810f-5d456843fd3a}</Project>
-      <Name>OLAF.Services.Extractors.Images</Name>
+      <Name>OLAF.Services.Extractors.FileImages</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Services\OCR\OLAF.Services.OCR.Tesseract\OLAF.Services.OCR.Tesseract.csproj">
+    <ProjectReference Include="..\..\Services\Extractors\OLAF.Services.Extractors.TesseractOCR\OLAF.Services.Extractors.TesseractOCR.csproj">
       <Project>{914dd06f-c2ea-49c6-b9d4-0399bfc3fc1c}</Project>
-      <Name>OLAF.Services.OCR.Tesseract</Name>
+      <Name>OLAF.Services.Extractors.TesseractOCR</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Services\Storage\OLAF.Services.Storage.AzureBlobStorage\OLAF.Services.Storage.AzureStorage.csproj">
+      <Project>{18ff34d6-91e0-48ca-ba91-156d90825444}</Project>
+      <Name>OLAF.Services.Storage.AzureStorage</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

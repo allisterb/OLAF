@@ -9,6 +9,7 @@ using Accord.Vision.Detection.Cascades;
 
 namespace OLAF.Services.Classifiers
 {
+    [Description("Detect faces")]
     public class ViolaJonesFaceDetector : Service<ImageArtifact, ImageArtifact>
     {
         #region Constructors
@@ -35,10 +36,10 @@ namespace OLAF.Services.Classifiers
         {
             if (artifact.HasOCRText)
             {
-                Info("Not using face detector on text-rich image.");
-                Debug("Pipeline ending for artifact {0}.", artifact.Id);
+                Info("Not using face detector on text-rich image artifact.");
                 return ApiResult.Success;
             }
+
             Bitmap image = artifact.Image;
             using (var op = Begin("Viola-Jones face detection"))
             {
@@ -54,10 +55,9 @@ namespace OLAF.Services.Classifiers
                         artifact.DetectedObjects[ImageObjectKinds.FaceCandidate].AddRange(objects); 
                     }
                 }
-                Info("Found {0} candidate face objects.", objects.Length);
+                Info("Found {0} candidate face object(s).", objects.Length);
                 Global.MessageQueue.Enqueue<ViolaJonesFaceDetector>(artifact);
                 op.Complete();
-                
             }
             return ApiResult.Success;
         }

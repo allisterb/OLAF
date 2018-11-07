@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -108,6 +109,39 @@ namespace OLAF.Win32
                 }
             }
             return true;
+        }
+
+        public static IntPtr GetSystemInformation(SYSTEM_INFORMATION_CLASS infoClass, out NTSTATUS result, uint infoLength = 0)
+        {
+            if (infoLength == 0)
+            {
+                infoLength = 0x10000;
+            }
+            IntPtr infoPtr = Marshal.AllocHGlobal((int)infoLength);
+
+            int tries = 0;
+            while (true)
+            {
+                result = NtQuerySystemInformation(infoClass, infoPtr, infoLength, out infoLength);
+
+                if (result == NTSTATUS.SUCCESS)
+                    return infoPtr;
+
+                Marshal.FreeHGlobal(infoPtr);  //free pointer when not Successful
+
+                if (result != NTSTATUS.INFO_LENGTH_MISMATCH && result != NTSTATUS.BUFFER_OVERFLOW && result != NTSTATUS.BUFFER_TOO_SMALL)
+                {
+                    return IntPtr.Zero;
+                }
+                else if (++tries > 5)
+                {
+                    return IntPtr.Zero;
+                }
+                else
+                {
+                    infoPtr = Marshal.AllocHGlobal((int)infoLength);
+                }
+            }
         }
 
         private static object interopLock = new object(); 

@@ -16,7 +16,7 @@ namespace OLAF
         #endregion
 
         #region Properties
-        public long Id { get; }
+        public long Id;
         #endregion
     }
 }

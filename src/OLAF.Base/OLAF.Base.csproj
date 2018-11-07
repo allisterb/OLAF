@@ -97,7 +97,12 @@
     <Compile Include="Logger\SimpleOperation.cs" />
     <Compile Include="Artifacts\FileArtifact.cs" />
     <Compile Include="Monitor\IMonitor.cs" />
+    <Compile Include="Native\Win32\File.cs" />
+    <Compile Include="Native\Win32\GDI.cs" />
     <Compile Include="Native\Win32\Interop.cs" />
+    <Compile Include="Native\Win32\Nt.cs" />
+    <Compile Include="Native\Win32\NtStatus.cs" />
+    <Compile Include="Native\Win32\Window.cs" />
     <Compile Include="Pipeline\Pipeline.cs" />
     <Compile Include="Profile\WindowsKnownFolders.cs" />
     <Compile Include="Native\Win32\UnsafeNativeMethods.cs" />
@@ -120,6 +125,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\IService.cs" />
     <Compile Include="Service\Service.cs" />
+    <Compile Include="Api\Attributes\DescriptionAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -8,33 +8,110 @@ namespace OLAF
 {
     public class TextArtifact : Artifact
     {
-        public TextArtifact(long id, List<string> text) : base(id)
+        #region Constructors
+        public TextArtifact(long id, List<string> rawText) : base(id)
         {
-            Text = text;
-            Sentiment = new Dictionary<string, double?>(text.Count);
-            HasProfanity = new Dictionary<string, bool?>(text.Count);
+            Text = new List<string>();
+            Urls = new List<string>();
+           
+            Sentiment = new Dictionary<string, double?>(rawText.Count);
+            HasEmoticon = new Dictionary<string, bool>();
+            HasProfanity = new Dictionary<string, bool?>(rawText.Count);
             HasIdentityHateWords = new Dictionary<string, bool?>();
-            HasHatePhrases = new Dictionary<string, bool?>();
+            HasHatePhrases = new Dictionary<string, bool?>(rawText.Count);
+
+            Languages = new Dictionary<string, string>(rawText.Count);
         
-            foreach (string t in Text)
+            foreach (string t in rawText)
             {
-                if (Sentiment.Keys.Contains(t)) continue;
-                Sentiment.Add(t, null);
-                HasProfanity.Add(t, null);
-                HasIdentityHateWords.Add(t, null);
-                HasHatePhrases.Add(t, null);
+                var urls = t.Split(new[] { ' ','\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Where(w => w.StartsWith("http:") || w.StartsWith("hitp:") 
+                    || w.StartsWith("https:") || w.StartsWith("hitps:")
+                    || w.StartsWith("https/") || w.StartsWith("http/")
+                    );
+                if (urls.Count() > 0)
+                {
+                    Urls.AddRange(urls);
+                    continue;
+                }
+
+                string ant = GetAlphaNumericString(t);
+                ant = string.Join(" ", 
+                    ant.Split(new[] { ' ','\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Where(w => w.Length >= 3 || Pipeline.Dictionaries["words_en_3grams"].Contains(w)))
+                    .Trim();
+
+                if (ant.IsEmpty())
+                {
+                    continue;
+                }
+                else if (Sentiment.Keys.Contains(ant))
+                {
+                    continue;
+                }
+                Sentiment.Add(ant, null);
+                HasEmoticon.Add(ant, ant.Split(new[] { ' ', '\r', '\n'}).Any(a => emoticonWords.Contains(a)));
+                HasProfanity.Add(ant, ant.Split(new[] { ' ', '\r', '\n' }).Any(a => profanityWords.Contains(a)));
+                HasIdentityHateWords.Add(ant, ant.Split(new[] { ' ', '\r', '\n' }).Any(a => identityHateWords.Contains(a)));
+                HasHatePhrases.Add(ant, hatePhrases.Contains(ant));
+                Text.Add(ant);
             }
+            Debug("Added text artifact {0} with Urls {1}.", Text, Urls);
         }
+        #endregion
+
+        #region Properties
+        public List<string> RawText { get; }
 
         public List<string> Text { get; protected set; }
 
+        public List<string> Urls { get; protected set; }
+
         public Dictionary<string, double?> Sentiment { get; protected set; }
+
+        public Dictionary<string, bool> HasEmoticon { get; protected set; }
+
+        public Dictionary<string, bool> HasNegativeEmotionWords { get; protected set; }
 
         public Dictionary<string, bool?> HasProfanity { get; protected set; }
 
         public Dictionary<string, bool?> HasIdentityHateWords { get; protected set; }
 
         public Dictionary<string, bool?> HasHatePhrases { get; protected set; }
+
+        public Dictionary<string, string> Languages { get; protected set; }
+        #endregion
+
+        #region Methods
+        public static string GetAlphaNumericString(string s)
+        {
+            StringBuilder an = new StringBuilder(s.Length);
+            char p = ' ';
+            foreach (char c in s)
+            {
+                if (char.IsLetterOrDigit(c))
+                {
+                    an.Append(c);
+                    p = c;
+                }
+                else if (char.IsPunctuation(c) && char.IsLetterOrDigit(p))
+                {
+                    an.Append(c);
+                    p = c;
+                }
+                else if (char.IsWhiteSpace(c) && (char.IsLetterOrDigit(p) || char.IsPunctuation(p)))
+                {
+                    an.Append(c);
+                    p = c;
+                }
+                else continue;
+
+            }
+            return an.ToString();
+        }
+        #endregion
+
+        #region Fields
 
         #region Words
         protected static string[] slangWords = @"121	one to one
@@ -9487,6 +9564,8 @@ namespace OLAF
             }:)	0.4
             }:-(    -2.1
             }:-)	0.3".Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToArray();
+        #endregion
+        
         #endregion
     }
 }

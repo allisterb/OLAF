@@ -9,7 +9,7 @@ using System.Timers;
 using System.Buffers;
 using System.Runtime.CompilerServices;
 
-using Threading = System.Threading;
+using System.Threading;
 
 using SlimDX.Direct3D9;
 using OLAF.Win32;
@@ -18,19 +18,22 @@ namespace OLAF.ActivityDetectors.Windows
 {
     public class AppWindowActivity : ActivityDetector<AppWindowActivityMessage>
     {
+        #region Constructors
         public AppWindowActivity(Type monitorType, string processName, TimeSpan interval): base(monitorType)
         {
-            ProcessName = processName;
+            this.processName = processName;
             D3D9Capture = new D3D9Capture();
             GDICapture = new GDICapture();
             Interval = interval;
-            Timer = new Timer(Interval.TotalMilliseconds);
+            Timer = new System.Timers.Timer(Interval.TotalMilliseconds);
             Timer.AutoReset = true;
             Timer.Elapsed += Timer_Elapsed;
-            appWindowDetectoMutex = new Threading.Mutex();
+            previousCapture = new Bitmap(1, 1);
             Status = ApiStatus.Ok;
         }
+        #endregion
 
+        #region Overriden members
         public override ApiResult Enable()
         {
             if (Status != ApiStatus.Ok)
@@ -41,100 +44,104 @@ namespace OLAF.ActivityDetectors.Windows
             Timer.Start();
             return ApiResult.Success;
         }
+        #endregion
 
+        #region Event handlers
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            Process[] processes = Process.GetProcessesByName(ProcessName);
+            Process[] processes = Process.GetProcessesByName(processName);
             if (processes == null || processes.Length == 0)
             {
                 return;
             }
 
-            Bitmap capture = null;
+            Bitmap capture = null, previousCaptureCopy = new Bitmap(previousCapture);
+
             IntPtr activeWindowHandle = UnsafeNativeMethods.GetForegroundWindow();
+            string title = Interop.GetWindowTitle(activeWindowHandle);
+            Rectangle rect = Interop.GetWindowRect(activeWindowHandle);
+            int l = rect.Left, t = rect.Top;
             var tid = UnsafeNativeMethods.GetWindowThreadProcessId(activeWindowHandle, out uint pid);
 
             if (processes.Any(p => p.Id == pid))
             {
-                Debug("{0} window detected.", ProcessName);
+                Debug("{0} window detected at ({1},{2}).", processName, l, t);
                 try
                 {
                     capture = D3D9Capture.CaptureWindow(activeWindowHandle);
                 }
-                catch (Direct3D9Exception)
+                catch (Direct3D9Exception d3de)
                 {
-                    Debug("Falling back to GDI capture.");
+                    Debug("{0}. Falling back to GDI capture.", d3de.Message);
                     capture = GDICapture.CaptureWindow(activeWindowHandle);
                 }
                 if (capture == null)
                 {
-                    Error("Could not detect any window activity for app process {0}.", ProcessName);
+                    Error("Could not detect any window activity for app process {0}.", processName);
+                    return;
                 }
             }
-            else if (ProcessName == "chrome" && Interop.GetWindowTitle(activeWindowHandle).Contains("Google Chrome"))
+            else if (processName == "chrome" && title.Contains("Google Chrome"))
             {
-                Debug("Google Chrome incognito mode window detected.", ProcessName);
+                Debug("Google Chrome incognito mode window detected at ({1},{2}).", processName, rect.Left, rect.Top);
                 try
                 {
                     capture = D3D9Capture.CaptureWindow(activeWindowHandle);
                 }
-                catch (Direct3D9Exception)
+                catch (Direct3D9Exception d3de)
                 {
-                    Debug("Falling back to GDI capture.");
+                    Debug("{0}. Falling back to GDI capture.", d3de.Message);
                     capture = GDICapture.CaptureWindow(activeWindowHandle);
                 }
                 if (capture == null)
                 {
-                    Error("Could not detect any window activity for app process {0}.", ProcessName);
+                    Error("Could not detect window activity for Google Chrome.");
+                    return;
                 }
             }            
-
-            else if ((ProcessName == "MicrosoftEdge" || ProcessName == "MicrosoftEdgeCP") && 
-                Interop.GetWindowTitle(activeWindowHandle).Contains("Microsoft Edge"))
+            else if ((processName == "MicrosoftEdge" || processName == "MicrosoftEdgeCP") && 
+                title.Contains("Microsoft Edge"))
             {
-                Debug("Microsoft Edge window detected.", ProcessName);
+                Debug("Microsoft Edge window detected at ({1},{2}).", processName, rect.Left, rect.Top);
                 try
                 {
                     capture = D3D9Capture.CaptureWindow(activeWindowHandle);
                 }
-                catch (Direct3D9Exception)
+                catch (Direct3D9Exception d3de)
                 {
-                    Debug("Falling back to GDI capture.");
+                    Debug("{0}. Falling back to GDI capture.", d3de.Message);
                     capture = GDICapture.CaptureWindow(activeWindowHandle);
                 }
                 if (capture == null)
                 {
-                    Error("Could not detect any window activity for app process {0}.", ProcessName);
+                    Error("Could not detect window activity for Microsoft Edge.");
+                    return;
                 }
             }
-
-        
-            if (capture != null)
+            else
             {
-                bool analyze = false;
-                appWindowDetectoMutex.WaitOne();
-                if (!CompareImages(previousCapture, capture))
-                {
-                    analyze = true;
-                    previousCapture = capture;
-                }
-                appWindowDetectoMutex.ReleaseMutex();
-
-                if (analyze)
-                {
-                    Debug("Analyzing {0} image.", ProcessName);
-                    Global.MessageQueue.Enqueue<AppWindowActivity>(
-                           new AppWindowActivityMessage(
-                               Threading.Interlocked.Increment(ref currentArtifactId), ProcessName, capture));
-                }
-                else
-                {
-                    Debug("Not analyzing duplicate image.");
-                }
+                return;
             }
+
+            if (!ImagesAreDuplicate(previousCaptureCopy, capture))
+            {
+                Debug("Analyzing {0} image.", processName);
+                Interlocked.Exchange(ref previousCapture, capture);
+                Global.MessageQueue.Enqueue<AppWindowActivity>(
+                        new AppWindowActivityMessage(
+                            Interlocked.Increment(ref currentArtifactId), processName, capture, title));
+            }
+            else
+            {
+                Debug("{0} window did not change.", processName);
+            }
+
         }
 
-        public unsafe bool CompareImages(Bitmap b1, Bitmap b2)
+        #endregion
+
+        #region Methods
+        public unsafe bool ImagesAreDuplicate(Bitmap b1, Bitmap b2)
         {
             if ((b1 == null) != (b2 == null)) return false;
             if (b1.Size != b2.Size) return false;
@@ -210,20 +217,22 @@ namespace OLAF.ActivityDetectors.Windows
             }
             return r;
         }
-        string ProcessName { get; }
+        #endregion
 
-        Timer Timer { get; }
+        #region Properties
+        readonly string processName;
+
+        System.Timers.Timer Timer { get; }
 
         TimeSpan Interval { get; }
 
         D3D9Capture D3D9Capture { get; }
 
         GDICapture GDICapture { get; }
+        #endregion
 
+        #region Fields
         Bitmap previousCapture;
-
-        object appWindowDetectorLock = new object();
-
-        Threading.Mutex appWindowDetectoMutex;
+        #endregion
     }
 }

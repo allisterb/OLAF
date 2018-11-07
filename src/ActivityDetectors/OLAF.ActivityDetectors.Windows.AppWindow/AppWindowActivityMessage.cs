@@ -17,15 +17,19 @@ namespace OLAF.ActivityDetectors.Windows
             Window = processWindows.First().Value;
         }
 
-        public AppWindowActivityMessage(long id, string processName, Bitmap processWindow) : base(id)
+        public AppWindowActivityMessage(long id, string processName, Bitmap processWindow, string windowTitle) : base(id)
         {
             ProcessName = processName;
 
             Window = processWindow;
+
+            WindowTitle = windowTitle;
         }
         public string ProcessName { get; }
 
         public Bitmap Window { get; }
+
+        public string WindowTitle { get; }
 
         public Dictionary<Process, Bitmap> ProcessWindows { get; }
     }

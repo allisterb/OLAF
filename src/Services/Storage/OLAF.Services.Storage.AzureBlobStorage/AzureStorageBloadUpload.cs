@@ -17,7 +17,7 @@ using Newtonsoft.Json.Linq;
 namespace OLAF.Services.Storage
 {
     public class AzureStorageBlobUpload : 
-        Service<FileArtifact, AzureStorageBlobUploadedMessage>
+        Service<Artifact, Artifact>
     {
         #region Constructors
         public AzureStorageBlobUpload(Profile profile, params Type[] clients) : base(profile, clients)
@@ -32,6 +32,7 @@ namespace OLAF.Services.Storage
             {
                 ApiConnectionString = ConfigurationManager.ConnectionStrings["OLAFArtifacts"].ConnectionString;
             }
+            ArtifactsBlobDrectory = AzureStorageApi.GetValidAzureBlobName(Profile.ArtifactsDirectory.Name);
             Status = ApiStatus.Initializing;
         }
         #endregion
@@ -45,59 +46,83 @@ namespace OLAF.Services.Storage
             {
                 ApiAccountName = Storage.StorageAccount.Credentials.AccountName;
                 Info("{0} service initialized using Azure Blob Storage account {1}.", type.Name, ApiAccountName);
-                Status = ApiStatus.Initialized;
-                return ApiResult.Success;
+                return SetInitializedStatusAndReturnSucces();
             }
             else
             {
-                Status = ApiStatus.Error;
-                return ApiResult.Failure;
+                return SetErrorStatusAndReturnFailure("Could not initialize {0} service using Azure Blob Storage account {1}.".F(type.Name, ApiAccountName));
             }
         }
 
-        protected override ApiResult ProcessClientQueueMessage(FileArtifact message)
+        protected override ApiResult ProcessClientQueueMessage(Artifact artifact)
         {
             ThrowIfNotOk();
-            CloudBlockBlob blob = null;
-            string containerName = GetAzureResourceName(Profile.ArtifactsDirectory.Name).ToLower();
-            string blobName = GetAzureResourceName(message.Path.GetPathFilename());
-            try
+
+            if (!artifact.Preserve)
             {
-                Task<CloudBlob> t = Storage.GetorCreateCloudBlobAsync(containerName, blobName,
-                    BlobType.BlockBlob);
-                blob = (CloudBlockBlob)t.Result;
-                Global.MessageQueue.Enqueue<AzureStorageBlobUpload>(
-                    new AzureStorageBlobUploadedMessage(message.Id, blob));
+                Info("Artifact not tagged for preservation.");
                 return ApiResult.Success;
-            
             }
-            catch (Exception e)
+
+            switch (artifact)
             {
-                Error(e, "Error occurred attempting to upload artifact {0} to container {1}",
-                    message.Name, Profile.Name);
-                return ApiResult.Failure;
+                case FileArtifact fileArtifact: return UploadFileArtifact(fileArtifact);
+                
+                default: throw new NotImplementedException();
             }
+           
         }
         #endregion
 
-        #region Methods
+        #region Properties
+        public static string ArtifactsContainerName { get; } = AzureStorageApi.GetValidAzureContainerName("olafartifacts");
+
+        public string ArtifactsBlobDrectory { get; }
+
         public AzureStorageApi Storage { get; protected set; }
 
         protected bool UseEmulator { get; }
+        #endregion
 
-        public static string GetAzureResourceName(string name)
+        #region Methods
+        protected ApiResult UploadFileArtifact(FileArtifact artifact)
         {
-            StringBuilder rn = new StringBuilder(63, 63);
-            int i = 0;
-            foreach (char c in name)
+            CloudBlockBlob blob = null;
+            string blobName = AzureStorageApi.GetValidAzureBlobName(artifact.Name);
+            using (var op = Begin("Uploading artifact {0} to Azure Blob Storage.", artifact.Name))
             {
-                if (char.IsLetterOrDigit(c))
-                    rn.Append(c);
-                else
-                    rn.Append('-');
-                if (++i == 63) break;
+                try
+                {
+                    blob = (CloudBlockBlob)Storage.GetCloudBlob(ArtifactsContainerName, ArtifactsBlobDrectory, blobName,
+                        BlobType.BlockBlob);
+
+                    if (blob.Exists())
+                    {
+                        Error("The block blob {0}/{1}/{2} already exists.", ArtifactsContainerName, ArtifactsBlobDrectory,
+                        blobName);
+                        return ApiResult.Failure;
+                    }
+                    else
+                    {
+                        if (artifact.HasData)
+                        {
+                            blob.UploadFromByteArray(artifact.Data, 0, artifact.Data.Length);
+                        }
+                        else
+                        {
+                            blob.UploadFromFile(artifact.Path);
+                        }
+                        op.Complete();
+                        return ApiResult.Success;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Error(e, "Error occurred attempting to upload artifact {0} to container {1}",
+                        artifact.Name, Profile.Name);
+                    return ApiResult.Failure;
+                }
             }
-            return rn.ToString();
         }
         #endregion
     }

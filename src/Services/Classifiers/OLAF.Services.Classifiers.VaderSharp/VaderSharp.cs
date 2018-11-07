@@ -10,14 +10,7 @@ namespace OLAF.Services.Classifiers
     public class VaderSharp : Service<TextArtifact, TextArtifact>
     {
         #region Constructors
-        public VaderSharp(Profile profile) : base(profile)
-        {
-            if (Status != ApiStatus.Initializing)
-            {
-                return;
-            }
-            Status = ApiStatus.Initializing;
-        }
+        public VaderSharp(Profile profile) : base(profile) {}
         #endregion
 
         #region Overriden members
@@ -39,10 +32,8 @@ namespace OLAF.Services.Classifiers
                 var k = SentimentIntensityAnalyzer.PolarityScores(t);
                 message.Sentiment[t] = k.Compound;
             }
-            Info("VaderSharp sentiment scores: {0}.", message.Sentiment);
             EnqueueMessage(message);
             return ApiResult.Success;
-            
         }
         #endregion
 

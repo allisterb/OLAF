@@ -7,21 +7,22 @@ using System.Threading.Tasks;
 
 using OLAF.Services.Classifiers;
 using OLAF.Services.Extractors;
+using OLAF.Services.Storage;
 
 namespace OLAF.Pipelines
 {
-    [Description("Process file and app window activity image artifacts.")]
-    public class ImagePipeline : Pipeline
+    [Description("Process image file artifacts.")]
+    public class ImageArtifacts : Pipeline
     {
-        public ImagePipeline(Profile profile) : base(profile)
+        public ImageArtifacts(Profile profile) : base(profile)
         {
             AddService<FileImages>();
             AddService<TesseractOCR>();
             AddService<ViolaJonesFaceDetector>();
             AddService<MSComputerVision>();
-            AddService<VaderSharp>();
-            AddService<MSTextAnalytics>();
-            SetPipelineInitializingStatus();   
+            AddService<AzureStorageBlobUpload>();
+            SetPipelineInitializingStatus();
         }
     }
+    
 }

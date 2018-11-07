@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -27,8 +28,7 @@ namespace OLAF
         #endregion
 
         #region Properties
-        public Type QueueMessageType { get; } = typeof(TServiceMessage);
-
+ 
         public List<Type> Clients { get; }
 
         public bool ShutdownRequested => shutdownRequested;
@@ -46,6 +46,10 @@ namespace OLAF
         public string ApiEndpointUrl { get; protected set; }
 
         public Profile Profile { get; }
+
+        public Pipeline Pipeline { get; set; }
+
+        public bool IsLastInPipeline => Pipeline.Services.Values.Last() == this;
         #endregion
 
         #region Methods
@@ -139,13 +143,23 @@ namespace OLAF
                     if (message is TClientMessage)
                     {
                         Debug("{0} consuming message {1}.", Name, message.Id);
-                        ProcessClientQueueMessage(message as TClientMessage);
-                        
+                        ApiResult r = ProcessClientQueueMessage(message as TClientMessage);
+                        if (IsLastInPipeline)
+                        {
+                            Debug("Pipeline ending for artifact {0}.", message.Id);
+                        }
                     }
                     else
                     {
-                        Debug("{0} passing on message {1}.", Name, message.Id);
-                        EnqueueMessage(message);
+                        if (IsLastInPipeline)
+                        {
+                            Debug("Pipeline ending for artifact {0}.", message.Id);
+                        }
+                        else
+                        {
+                            Debug("{0} passing on message {1}.", Name, message.Id);
+                            EnqueueMessage(message);
+                        }
                     }
                     
                 }
@@ -161,12 +175,30 @@ namespace OLAF
             }
             catch (Exception ex)
             {
-                Error(ex, "Error occurred during {0} client queue observng in service {1}. Resuming", client.Name, Name);
+                Error(ex, "Error occurred during {0} client queue observng in service {1}.", client.Name, Name);
+                Info("Resuming {0} client queue observer in service {1}.", client.Name, type.Name);
                 ObserveClientQueue(client, token);
             }
         }
 
         
+
+        [DebuggerStepThrough]
+        protected ApiResult PipelineEndingForArtifactSuccess(Artifact a, string message = "")
+        {
+            Info(message, a);
+            
+            return ApiResult.Success;
+        }
+
+        [DebuggerStepThrough]
+        protected ApiResult PipelineEndingForArtifactFailure(Artifact a, string message = "")
+        {
+            Error(message, a);
+            Debug("Pipeline ending for artifact {0}.", a.Id);
+            return ApiResult.Failure;
+        }
+
         #endregion
 
         #region Fields

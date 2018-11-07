@@ -31,6 +31,14 @@ namespace OLAF
         public static string[] ImageWildcardExtensions = {"*.bmp", "*.dib", "*.rle", "*.jpg", "*.jpeg", "*.jpe", "*.jfif", "*.gif", "*.tif",
             "*.tiff", "*.png"};
 
+        public static List<string> UserKnownFolders = new List<string>()
+        {
+            WindowsKnownFolders.GetPath(KnownFolder.Downloads),
+            WindowsKnownFolders.GetPath(KnownFolder.Pictures),
+            WindowsKnownFolders.GetPath(KnownFolder.Documents),
+            WindowsKnownFolders.GetPath(KnownFolder.Desktop)
+        };
+        
         public DirectoryInfo ArtifactsDirectory { get; }
 
         public Pipeline Pipeline { get; protected set; }

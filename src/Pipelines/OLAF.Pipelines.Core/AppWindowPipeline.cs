@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-using OLAF.Services.OCR;
+using OLAF.Services.Extractors;
 
 namespace OLAF.Pipelines
 {
@@ -13,11 +13,9 @@ namespace OLAF.Pipelines
     {
         public AppWindowPipeline(Profile profile) : base(profile)
         {
-            AddService<Tesseract>();
+            AddService<TesseractOCR>();
             SetPipelineInitializingStatus();   
         }
-
-        public override string Description { get; } = "Process window captures";
 
     }
 }

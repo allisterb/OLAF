@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace OLAF
 {
-    public interface IMonitor
+    public interface IMonitor : IQueueProducer
     {
         string Name { get; }
 

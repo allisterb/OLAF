@@ -53,36 +53,55 @@ namespace OLAF.Services.Classifiers
             }
         }
 
-        protected override ApiResult ProcessClientQueueMessage(TextArtifact message)
+        protected override ApiResult ProcessClientQueueMessage(TextArtifact artifact)
         {
-            List<Input> input = message.Text.Select((t, i) => new Input(i.ToString(), t)).ToList();
-            LanguageBatchResult result;
-            using (var op = Begin("Find English language sentences using MS Text Analytics API."))
+            List<MultiLanguageInput> mlinput = artifact.Text
+                .Where(t => artifact.HasHatePhrases[t].Value || artifact.HasIdentityHateWords[t].Value)
+                .Select((t, i) => new MultiLanguageInput("en", i.ToString(), t)).ToList();
+
+            if (mlinput.Count == 0)
+            {
+                Info("No hate speech detected.");
+                return ApiResult.Success;
+            }
+
+            Info("Analyzing text artifact {0} with hate words using MS Text Analytics.", artifact.Id);
+            SentimentBatchResult sentimentResult;
+            EntitiesBatchResultV2dot1 entitiesResult;
+            using (var op = Begin("Detect sentiment and entities using MS Text Analytics API."))
             {
                 try
                 {
-                    Task<LanguageBatchResult> r = Client.DetectLanguageAsync(new BatchInput(input));
-                    result = r.Result;
+                    Task<SentimentBatchResult> sr = Client.SentimentAsync(new MultiLanguageBatchInput(mlinput));
+                    Task<EntitiesBatchResultV2dot1> er = Client.EntitiesAsync(new MultiLanguageBatchInput(mlinput));
+                    Task.WaitAll(sr, er);
+                    sentimentResult = sr.Result;
+                    entitiesResult = er.Result;
                     op.Complete();
+                    Info("Text artifact {0} summary:", artifact.Id);
+                    for (int i = 0; i < artifact.Text.Count; i++)
+                    {
+                        string s = artifact.Text[i];
+                        Info("{0}. Text: {1}. Has Profanity: {2}. Has IdentityHate: {3}. VADER Sentiment: {4}. MS Text Sentiment: {5}. Entities: {6}.",
+                            i, s, artifact.HasProfanity[s], artifact.HasIdentityHateWords[s],
+                            artifact.Sentiment[s],
+                            sentimentResult.Documents.SingleOrDefault(d => d.Id == i.ToString())?.Score,
+                            entitiesResult.Documents.SingleOrDefault(d => d.Id == i.ToString())?.Entities.Select(e => e.Name));
+                    }
+                    return ApiResult.Success;
                 }
                 catch (Exception e)
                 {
                     Error(e, "An error occurred connecting to the MS tText Analytics API.");
-                    return SetErrorStatusAndReturnFailure();
+                    return ApiResult.Failure;
                 }
             }
-            var l =  result.Documents.Where(doc => doc.DetectedLanguages.Select(d => d.Name).Contains("en"));
-            Debug("Pipeline ending for artifact {0}.", message.Id);
-            Info("Docs: {0}.", l);
-            return SetOkStatusAndReturnSucces();
         }
 
         #endregion
 
         #region Properties
         TextAnalyticsClient Client { get; set; }
-
-        
         #endregion
 
         #region Types
@@ -98,7 +117,6 @@ namespace OLAF.Services.Classifiers
                 request.Headers.Add("Ocp-Apim-Subscription-Key", subscriptionKey);
                 return base.ProcessHttpRequestAsync(request, cancellationToken);
             }
-
 
             protected string subscriptionKey;
         }

@@ -9,9 +9,9 @@ using System.Threading;
 
 namespace OLAF.Services.Extractors
 {
-    public class Images : Service<FileArtifact, ImageArtifact>
+    public class FileImages : Service<FileArtifact, ImageArtifact>
     {
-        public Images(Profile profile, params Type[] clients) : base(profile, clients) {}
+        public FileImages(Profile profile, params Type[] clients) : base(profile, clients) {}
 
         public override ApiResult Init() => SetInitializedStatusAndReturnSucces();
 
@@ -29,7 +29,7 @@ namespace OLAF.Services.Extractors
                             artifact.Name, image.Width, image.Height, image.PixelFormat, image.HorizontalResolution,
                             image.VerticalResolution);
                         op.Complete();
-                        Global.MessageQueue.Enqueue<Images>(new ImageArtifact(artifact, image));
+                        Global.MessageQueue.Enqueue<FileImages>(new ImageArtifact(artifact, image));
                     }
                     return ApiResult.Success;
                 }
@@ -79,7 +79,7 @@ namespace OLAF.Services.Extractors
                            artifact.Name, image.Width, image.Height, image.PixelFormat, image.HorizontalResolution,
                            image.VerticalResolution);
                     op.Complete();
-                    Global.MessageQueue.Enqueue<Images>(new ImageArtifact(artifact, image));
+                    Global.MessageQueue.Enqueue<FileImages>(new ImageArtifact(artifact, image));
                 }
                 return ApiResult.Success;
             }

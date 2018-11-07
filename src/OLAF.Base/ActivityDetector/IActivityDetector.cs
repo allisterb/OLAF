@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OLAF
 {
-    public interface IActivityDetector
+    public interface IActivityDetector : IQueueProducer
     {
         ApiResult Enable();
     }

@@ -8,6 +8,6 @@ namespace OLAF
 {
     public interface IQueueProducer
     {
-        Type QueueMessageType { get; }
+
     }
 }

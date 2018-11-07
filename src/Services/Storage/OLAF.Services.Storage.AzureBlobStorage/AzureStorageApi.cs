@@ -42,6 +42,36 @@ namespace OLAF.Services
         #endregion
 
         #region Methods
+        public static string GetValidAzureBlobName(string name)
+        {
+            StringBuilder rn = new StringBuilder(1, 1024);
+            int i = 0;
+            foreach (char c in name)
+            {
+                if (char.IsLetterOrDigit(c) || c == '_')
+                    rn.Append(c);
+                else
+                    rn.Append('_');
+                if (++i == 1024) break;
+            }
+            return rn.ToString();
+        }
+
+        public static string GetValidAzureContainerName(string name)
+        {
+            StringBuilder rn = new StringBuilder(1, 63);
+            int i = 0;
+            foreach (char c in name)
+            {
+                if (char.IsLetterOrDigit(c))
+                    rn.Append(c);
+                else
+                    rn.Append('-');
+                if (++i == 63) break;
+            }
+            return rn.ToString();
+        }
+
         public static string GetConnectionString(Uri endPointUrl, string accountKey)
         {
             if (endPointUrl.Segments.Length < 2)
@@ -54,15 +84,15 @@ namespace OLAF.Services
             return csb.ToString();
         }
 
-        public async Task<ICloudBlob> GetCloudBlobAsync(string containerName, string blobName, DateTimeOffset? snapshotTime = null)
+        public async Task<ICloudBlob> GetCloudBlobAsync(string containerName, string dirName, string blobName, DateTimeOffset? snapshotTime = null)
         {
-            using (var azOp = L.Begin("Get Azure Storage blob {0}/{1}", containerName, blobName))
+            using (var azOp = L.Begin("Get Azure Storage blob {0}/{1}/{2}", containerName, dirName, blobName))
             {
                 try
                 {
                     GetCloudBlobClient();
                     CloudBlobContainer Container = BlobClient.GetContainerReference(containerName);
-                    ICloudBlob cloudBlob = await Container.GetBlobReferenceFromServerAsync(blobName);
+                    ICloudBlob cloudBlob = await Container.GetBlobReferenceFromServerAsync(dirName + @"/" + blobName);
                     azOp.Complete();
                     return cloudBlob;
                 }
@@ -74,7 +104,7 @@ namespace OLAF.Services
                     }
                     else
                     {
-                        L.Error(se, "A storage error occurred getting Azure Storage blob {bn} in container {cn}.", blobName, containerName);
+                        L.Error(se, "A storage error occurred getting Azure Storage blob {bn} in container {cn}.", dirName + @"/" + blobName, containerName);
                         return null;
                     }
                 }
@@ -86,22 +116,21 @@ namespace OLAF.Services
                     }
                     else
                     {
-                        L.Error(e, "An error occurred getting Azure Storage blob {bn} from container {cn}.", blobName, containerName);
+                        L.Error(e, "An error occurred getting Azure Storage blob {bn} from container {cn}.", dirName + @"/" + blobName, containerName);
                         return null;
                     }
                 }
             }
         }
 
-        public async Task<CloudBlob> GetorCreateCloudBlobAsync(string containerName, string blobName, BlobType blobType, DateTimeOffset? snapshotTime = null)
+        public CloudBlob GetCloudBlob(string containerName, string dirName, string blobName, BlobType blobType, DateTimeOffset? snapshotTime = null)
         {
-            using (var azOp = L.Begin("Get Azure Storage blob {0}/{1}", containerName, blobName))
+            using (var azOp = L.Begin("Get Azure Storage blob {0}/{1}/{2}", containerName, blobName))
             {
                 try
                 {
                     GetCloudBlobClient();
                     CloudBlobContainer Container = BlobClient.GetContainerReference(containerName);
-                    await Container.CreateIfNotExistsAsync();
                     CloudBlob cloudBlob;
                     switch (blobType)
                     {
@@ -153,18 +182,17 @@ namespace OLAF.Services
         /// Get a CloudBlobDirectory instance with the specified name in the given container.
         /// </summary>
         /// <param name="containerName">Container name.</param>
-        /// <param name="directoryName">Blob directory name.</param>
+        /// <param name="directoryPath">Blob directory name.</param>
         /// <returns>A <see cref="Task{T}"/> object of type <see cref="CloudBlobDirectory"/> that represents the asynchronous IOperationContext.</returns>
-        public async Task<CloudBlobDirectory> GetCloudBlobDirectoryAsync(string containerName, string directoryName)
+        public CloudBlobDirectory GetCloudBlobDirectory(string containerName, string directoryPath)
         {
-            using (IOperationContext azOp = L.Begin("Get Azure Storage blob directory"))
+            using (IOperationContext azOp = L.Begin("Get Azure Storage blob directory {0)/{1}.", containerName, directoryPath))
             {
                 try
                 {
                     GetCloudBlobClient();
                     CloudBlobContainer container = BlobClient.GetContainerReference(containerName);
-                    await container.CreateIfNotExistsAsync();
-                    CloudBlobDirectory dir = container.GetDirectoryReference(directoryName);
+                    CloudBlobDirectory dir = container.GetDirectoryReference(directoryPath);
                     azOp.Complete();
                     return dir;
                 }
@@ -176,7 +204,7 @@ namespace OLAF.Services
                     }
                     else
                     {
-                        L.Error(se, "A storage error occurred getting Azure Storage directory {dn} from container {cn}.", directoryName, containerName);
+                        L.Error(se, "A storage error occurred getting Azure Storage directory {dn} from container {cn}.", directoryPath, containerName);
                         return null;
                     }
                 }
@@ -188,15 +216,14 @@ namespace OLAF.Services
                     }
                     else
                     {
-                        L.Error(e, "An error occurred getting Azure Storage directory {dn} from container {cn}.", directoryName, containerName);
+                        L.Error(e, "An error occurred getting Azure Storage directory {dn} from container {cn}.", directoryPath, containerName);
                         return null;
                     }
                 }
             }
         }
 
-        
-
+       
         public async Task<CloudBlobStream> OpenAppendBlobWriteStream(CloudAppendBlob blob)
         {
             BlobRequestOptions requestOptions = new BlobRequestOptions();

@@ -9,13 +9,11 @@ using OLAF.Monitors;
 using OLAF.Monitors.Windows;
 using OLAF.Pipelines;
 
-
 namespace OLAF.Profiles
 {
-    public class UserBrowserActivity : Profile
+    public class UserDownloads : Profile
     {
-        #region Constructors
-        public UserBrowserActivity()
+        public UserDownloads()
         {
             IEnumerable<string> missingFolders = UserKnownFolders.Where(f => !Directory.Exists(f));
             if (missingFolders.Count() > 0)
@@ -30,26 +28,11 @@ namespace OLAF.Profiles
                 return;
             }
 
-            Monitors.Add (new DirectoryChangesMonitor(UserKnownFolders.ToArray(),
+            Monitors.Add(new DirectoryChangesMonitor(UserKnownFolders.ToArray(),
                 BasicImageWildcardExtensions.ToArray(), this));
-            
-            List<IMonitor> browserWindowMonitors = new List<IMonitor>()
-            {
-                new AppWindowMonitor("chrome"),
-                new AppWindowMonitor("firefox"),
-                new AppWindowMonitor("MicrosoftEdgeCP"),
-            };
-            Monitors.AddRange(browserWindowMonitors);
 
-            Pipeline = new ImagePipeline(this);
+            Pipeline = new ImageArtifacts(this);
             Status = Pipeline.Status;
         }
-        #endregion
-
-        #region Properties
-        public Dictionary<string, string> Paths { get; protected set; }
-        #endregion
-
-        
     }
 }

@@ -28,6 +28,7 @@ namespace OLAF
                 .Concat(ActivityDetectorAssemblies)
                 .Concat(ServiceAssemblies)
                 .ToList();
+
             CancellationTokenSource = new CancellationTokenSource();
         }
         #endregion
@@ -86,12 +87,7 @@ namespace OLAF
 
         public static void SetupMessageQueue()
         {
-            Type[] queueTypes = GetTypesImplementing<IMonitor>()
-                .Concat(GetTypesImplementing<IActivityDetector>())
-                .Concat(GetTypesImplementing<IQueueProducer>())
-                .Concat(GetTypesImplementing<IService>())
-                .ToArray();
-
+            Type[] queueTypes = GetTypesImplementing<IQueueProducer>().ToArray();
             lock (setupMessageQueueLock)
             {
                 if (MessageQueue == null)
@@ -103,14 +99,19 @@ namespace OLAF
 
         public static Type[] GetSubTypes<T>(string assemblyName = "")
         {
-            IEnumerable<Assembly> assemblies = LoadedAssemblies;
-            if (LoadedAssemblies.Count(a => assemblyName.IsNotEmpty() && a.GetName().Name == assemblyName) > 0)
+            IEnumerable<Assembly> assemblies = null;
+            if (assemblyName.IsNotEmpty() &&
+                LoadedAssemblies.Count(a => assemblyName.IsNotEmpty() && a.GetName().Name == assemblyName) > 0)
             {
                 assemblies = LoadedAssemblies.Where(a => a.FullName.StartsWith(assemblyName));
             }
-            else if (assemblyName.IsNotEmpty())
+            else if (assemblyName.IsEmpty())
             {
-                return null;
+                assemblies = LoadedAssemblies;
+            }
+            else
+            {
+                throw new InvalidOperationException($"The assembly {assemblyName} is not loaded.");
             }
 
             return assemblies
@@ -122,15 +123,21 @@ namespace OLAF
 
         public static Type[] GetTypesImplementing<T>(string assemblyName = "")
         {
-            IEnumerable<Assembly> assemblies = LoadedAssemblies;
-            if (LoadedAssemblies.Count(a => assemblyName.IsNotEmpty() && a.GetName().Name == assemblyName) > 0)
+            IEnumerable<Assembly> assemblies = null;
+            if (assemblyName.IsNotEmpty() &&
+                LoadedAssemblies.Count(a => assemblyName.IsNotEmpty() && a.GetName().Name == assemblyName) > 0)
             {
                 assemblies = LoadedAssemblies.Where(a => a.FullName.StartsWith(assemblyName));
             }
-            else if (assemblyName.IsNotEmpty())
+            else if (assemblyName.IsEmpty())
             {
-                return null;
+                assemblies = LoadedAssemblies;
             }
+            else
+            {
+                throw new InvalidOperationException($"The assembly {assemblyName} is not loaded.");
+            }
+
             IEnumerable<Type> types =
                 from type in assemblies.SelectMany(a => a.GetTypes())
                 where typeof(T).IsAssignableFrom(type) && type.IsClass && !type.IsAbstract

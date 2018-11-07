@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="UserBrowserActivity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserDownloads.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ActivityDetectors\OLAF.ActivityDetectors.FileSystem\OLAF.ActivityDetectors.FileSystem.csproj">

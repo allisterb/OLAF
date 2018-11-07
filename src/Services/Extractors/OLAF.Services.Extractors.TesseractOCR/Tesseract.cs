@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 using Leptonica;
 using Tesseract;
 
-namespace OLAF.Services.OCR
+namespace OLAF.Services.Extractors
 {
-    public class Tesseract : Service<ImageArtifact, ImageArtifact>
+    public class TesseractOCR : Service<ImageArtifact, Artifact>
     {
         #region Constructors
-        public Tesseract(Profile profile, params Type[] clients) :base(profile, clients)
+        public TesseractOCR(Profile profile, params Type[] clients) :base(profile, clients)
         {
             try
             {
@@ -39,17 +39,13 @@ namespace OLAF.Services.OCR
 
             if (!Directory.Exists(GetDataDirectoryPathTo("tessdata")))
             {
-                Error("Tesseract data directory not found.");
-                Status = ApiStatus.FileNotFound;
-                return ApiResult.Failure;
+                return SetErrorStatusAndReturnFailure("Tesseract data directory not found. Could not initialize tesseract.net.");
             }
 
-            if(!TesseractImage.Init(GetDataDirectoryPathTo("tessdata"), "eng", OcrEngineMode.DEFAULT, 
+            if (!TesseractImage.Init(GetDataDirectoryPathTo("tessdata"), "eng", OcrEngineMode.DEFAULT, 
                 new[] { "logfile" }))
             {
-                Error("Could not initialize tesseract.net.");
-                Status = ApiStatus.Error;
-                return ApiResult.Failure;
+                return SetErrorStatusAndReturnFailure("Init() method returned false. Could not initialize tesseract.net.");
             }
 
             TesseractImage.SetPageSegMode(PageSegmentationMode.AUTO_OSD);
@@ -79,29 +75,41 @@ namespace OLAF.Services.OCR
                 PageIteratorLevel pageIteratorLevel = PageIteratorLevel.RIL_PARA;
                 do
                 {
-                    text.Add(resultIterator.GetUTF8Text(pageIteratorLevel).Trim());
+                    string r = resultIterator.GetUTF8Text(pageIteratorLevel);
+                    if (r.IsEmpty()) continue;
+                    text.Add(r.Trim());
                 }
                 while (resultIterator.Next(pageIteratorLevel));
 
-                string alltext = text.Aggregate((s1, s2) => s1 + " " + s2).Trim();
-
-                if (text.Count < 7)
+                if (text.Count > 0)
                 {
-                    Info("Artifact {0} is likely a photo or non-text image.", message.Id);
+                    string alltext = text.Aggregate((s1, s2) => s1 + " " + s2).Trim();
+
+                    if (text.Count < 7)
+                    {
+                        Info("Artifact {0} is likely a photo or non-text image.", message.Id);
+                    }
+                    else
+                    {
+                        message.OCRText = text;
+                        Info("OCR Text: {0}", alltext);
+                    }
                 }
                 else
                 {
-                    message.OCRText = text;
-                    Info("OCR Text: {0}", alltext);
+                    Info("No text recognized in artifact {0}.", message.Id);
                 }
                 op.Complete();
             }
+
             message.Image.UnlockBits(bData);
             EnqueueMessage(message);
             if (text.Count >= 7)
             {
-                EnqueueMessage(new TextArtifact(message.Id + 1000, text));
+                TextArtifact artifact = new TextArtifact(message.Id + 1000, text);
+                EnqueueMessage(artifact);
             }
+
             return ApiResult.Success;
         }
         #endregion
