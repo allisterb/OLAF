@@ -144,9 +144,22 @@ namespace OLAF
                     {
                         Debug("{0} consuming message {1}.", Name, message.Id);
                         ApiResult r = ProcessClientQueueMessage(message as TClientMessage);
-                        if (IsLastInPipeline)
+                        if (r != ApiResult.Success)
+                        {
+                            Debug("{0} did not succeed for artifact {1}.", Name, message.Id);
+                            Debug("Pipeline ending for artifact {0}.", message.Id);
+                        }
+                        else if (IsLastInPipeline)
                         {
                             Debug("Pipeline ending for artifact {0}.", message.Id);
+                        }
+                        else if (!(message is TServiceMessage))
+                        {
+                            Debug("Pipeline ending for artifact {0}.", message.Id);
+                        }
+                        else
+                        {
+                            EnqueueMessage(message);
                         }
                     }
                     else
@@ -157,7 +170,7 @@ namespace OLAF
                         }
                         else
                         {
-                            Debug("{0} passing on message {1}.", Name, message.Id);
+                            Debug("{0} passing on message {1} of type {2}.", Name, message.Id, typeof(Message).ToString());
                             EnqueueMessage(message);
                         }
                     }

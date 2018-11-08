@@ -56,7 +56,6 @@ namespace OLAF.Services.Classifiers
                     }
                 }
                 Info("Found {0} candidate face object(s).", objects.Length);
-                Global.MessageQueue.Enqueue<ViolaJonesFaceDetector>(artifact);
                 op.Complete();
             }
             return ApiResult.Success;

@@ -48,7 +48,7 @@ namespace OLAF.Services
             int i = 0;
             foreach (char c in name)
             {
-                if (char.IsLetterOrDigit(c) || c == '_')
+                if (char.IsLetterOrDigit(c) || c == '/' || c == '_')
                     rn.Append(c);
                 else
                     rn.Append('_');
@@ -178,6 +178,35 @@ namespace OLAF.Services
 
         }
 
+        public ApiResult UploadBlobData(CloudBlockBlob blob, byte[] data)
+        {
+            ThrowIfNotInitialized();
+            try
+            {
+                blob.UploadFromByteArray(data, 0, data.Length);
+                return ApiResult.Success;
+            }
+            catch(Exception e)
+            {
+                L.Error(e, "Error occurred during upload of blob {0} data to container {1}.", blob.Name, blob.Container.Name);
+                return ApiResult.Failure;
+            }
+        }
+
+        public ApiResult UploadBlobData(CloudBlockBlob blob, string path)
+        {
+            ThrowIfNotInitialized();
+            try
+            {
+                blob.UploadFromFile(path);
+                return ApiResult.Success;
+            }
+            catch (Exception e)
+            {
+                L.Error(e, "Error occurred during upload of blob {0} data from file {1} to container {2}.", blob.Name, path, blob.Container.Name);
+                return ApiResult.Failure;
+            }
+        }
         /// <summary>
         /// Get a CloudBlobDirectory instance with the specified name in the given container.
         /// </summary>
@@ -281,6 +310,14 @@ namespace OLAF.Services
                 return null;
             }
 
+        }
+
+        private void ThrowIfNotInitialized()
+        {
+            if (!this.Initialised)
+            {
+                throw new InvalidOperationException("The Azure Blob Storage client is not initialized.");
+            }
         }
         #endregion
 

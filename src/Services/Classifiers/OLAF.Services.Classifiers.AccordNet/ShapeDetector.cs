@@ -157,7 +157,8 @@ namespace OLAF.Services.Classifiers
         }
         */
             #endregion
-                image.Save(GetLogDirectoryPathTo("shapes_{0}.bmp".F(message.Id))); return ApiResult.Success;
+                image.Save(GetLogDirectoryPathTo("shapes_{0}.bmp".F(message.Id)));
+            return ApiResult.Success;
             
         }
 

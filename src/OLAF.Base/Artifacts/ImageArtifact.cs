@@ -13,19 +13,33 @@ namespace OLAF
         public ImageArtifact(long id, Bitmap image) : base(id)
         {
             Image = image;
+            ImageConverter converter = new ImageConverter();
+            Data =  (byte[])converter.ConvertTo(image, typeof(byte[]));
+            Name = id.ToString();
         }
 
-        public ImageArtifact(FileArtifact artifact, Bitmap image) : base(artifact.Id)
+        public ImageArtifact(FileArtifact artifact, Bitmap image) : base(artifact.Id + 1000)
         {
             FileArtifact = artifact;
+            Name = FileArtifact.Name;
             Image = image;
+            if (artifact.HasData)
+            {
+                Data = artifact.Data;
+            }
+            ImageConverter converter = new ImageConverter();
+            Data = (byte[])converter.ConvertTo(image, typeof(byte[]));
         }
         #endregion
 
         #region Properties
+        public byte[] Data { get; }
+       
+        public Bitmap Image { get; }
+
         public FileArtifact FileArtifact { get; }
 
-        public Bitmap Image { get; }
+        public bool HasData => Data != null && Data.Length != 0;
 
         public bool HasBitmap => Image != null;
 

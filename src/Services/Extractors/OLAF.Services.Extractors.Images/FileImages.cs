@@ -79,12 +79,12 @@ namespace OLAF.Services.Extractors
                            artifact.Name, image.Width, image.Height, image.PixelFormat, image.HorizontalResolution,
                            image.VerticalResolution);
                     op.Complete();
-                    Global.MessageQueue.Enqueue<FileImages>(new ImageArtifact(artifact, image));
+                    ImageArtifact ia = new ImageArtifact(artifact, image);
+                    EnqueueMessage(ia);
+                    Info("New image artifact id is {0}.", ia.Id);
                 }
                 return ApiResult.Success;
             }
         }
-
-       
     }
 }

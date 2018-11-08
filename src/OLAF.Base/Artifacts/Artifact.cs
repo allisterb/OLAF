@@ -20,6 +20,8 @@ namespace OLAF
         #region Properties
         protected static ILogger L => Global.Logger;
 
+        public virtual string Name { get; protected set; }
+
         public bool Preserve { get; set; }
         #endregion
 

@@ -32,7 +32,7 @@ namespace OLAF.Services.Storage
             {
                 ApiConnectionString = ConfigurationManager.ConnectionStrings["OLAFArtifacts"].ConnectionString;
             }
-            ArtifactsBlobDrectory = AzureStorageApi.GetValidAzureBlobName(Profile.ArtifactsDirectory.Name);
+            ArtifactsBlobDirectory = AzureStorageApi.GetValidAzureBlobName(Profile.ArtifactsDirectory.Name);
             Status = ApiStatus.Initializing;
         }
         #endregion
@@ -61,14 +61,11 @@ namespace OLAF.Services.Storage
             if (!artifact.Preserve)
             {
                 Info("Artifact not tagged for preservation.");
-                return ApiResult.Success;
+                return UploadArtifact(artifact);
             }
-
-            switch (artifact)
+            else
             {
-                case FileArtifact fileArtifact: return UploadFileArtifact(fileArtifact);
-                
-                default: throw new NotImplementedException();
+                return UploadArtifact(artifact);
             }
            
         }
@@ -77,7 +74,7 @@ namespace OLAF.Services.Storage
         #region Properties
         public static string ArtifactsContainerName { get; } = AzureStorageApi.GetValidAzureContainerName("olafartifacts");
 
-        public string ArtifactsBlobDrectory { get; }
+        public string ArtifactsBlobDirectory { get; }
 
         public AzureStorageApi Storage { get; protected set; }
 
@@ -85,45 +82,63 @@ namespace OLAF.Services.Storage
         #endregion
 
         #region Methods
-        protected ApiResult UploadFileArtifact(FileArtifact artifact)
+        protected ApiResult UploadArtifact(Artifact artifact)
         {
             CloudBlockBlob blob = null;
             string blobName = AzureStorageApi.GetValidAzureBlobName(artifact.Name);
-            using (var op = Begin("Uploading artifact {0} to Azure Blob Storage.", artifact.Name))
+            string blobPath = GetBlobPathForArtifact(artifact);
+            using (var op = Begin("Uploading blob {0} to Azure Blob Storage.", ArtifactsContainerName, blobPath))
             {
-                try
+                blob = (CloudBlockBlob)Storage.GetCloudBlob(ArtifactsContainerName, ArtifactsBlobDirectory, blobName,
+                    BlobType.BlockBlob);
+                if (blob == null)
                 {
-                    blob = (CloudBlockBlob)Storage.GetCloudBlob(ArtifactsContainerName, ArtifactsBlobDrectory, blobName,
-                        BlobType.BlockBlob);
-
-                    if (blob.Exists())
+                    Error("Could not get reference to blob {0}.", blobPath);
+                    return ApiResult.Failure;
+                }
+                else if (blob.Exists())
+                {
+                    Error("The block blob {0} already exists.", blobPath);
+                    return ApiResult.Failure;
+                }
+                else
+                {
+                    if (artifact is FileArtifact fileArtifact)
                     {
-                        Error("The block blob {0}/{1}/{2} already exists.", ArtifactsContainerName, ArtifactsBlobDrectory,
-                        blobName);
-                        return ApiResult.Failure;
-                    }
-                    else
-                    {
-                        if (artifact.HasData)
+                        if (fileArtifact.HasData)
                         {
-                            blob.UploadFromByteArray(artifact.Data, 0, artifact.Data.Length);
+                            return Storage.UploadBlobData(blob, fileArtifact.Data);
                         }
                         else
                         {
-                            blob.UploadFromFile(artifact.Path);
+                            return Storage.UploadBlobData(blob, fileArtifact.Path);
                         }
-                        op.Complete();
-                        return ApiResult.Success;
                     }
+                    else if (artifact is ImageArtifact imageArtifact)
+                    {
+                        if (imageArtifact.HasData)
+                        {
+                            return Storage.UploadBlobData(blob, imageArtifact.Data);
+                        }
+                        else if (imageArtifact.HasFile && imageArtifact.FileArtifact.HasData)
+                        {
+                            return Storage.UploadBlobData(blob, imageArtifact.FileArtifact.Data);
+                        }
+                        else if (imageArtifact.HasFile)
+                        {
+                            return Storage.UploadBlobData(blob, imageArtifact.FileArtifact.Path);
+                        }
+                        else throw new Exception("Image artifact {0} does not have associated data or file.".F(artifact.Id));
+                    }
+                    else
+                        throw new NotImplementedException("Unknown artifact type.");  
                 }
-                catch (Exception e)
-                {
-                    Error(e, "Error occurred attempting to upload artifact {0} to container {1}",
-                        artifact.Name, Profile.Name);
-                    return ApiResult.Failure;
-                }
+                
             }
         }
+
+        protected string GetBlobPathForArtifact(Artifact artifact) => "{0}/{1}/{2}".F(ArtifactsContainerName, ArtifactsBlobDirectory,
+            AzureStorageApi.GetValidAzureBlobName(artifact.Name));
         #endregion
     }
 }

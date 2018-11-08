@@ -103,7 +103,6 @@ namespace OLAF.Services.Extractors
             }
 
             message.Image.UnlockBits(bData);
-            EnqueueMessage(message);
             if (text.Count >= 7)
             {
                 TextArtifact artifact = new TextArtifact(message.Id + 1000, text);

@@ -32,7 +32,6 @@ namespace OLAF.Services.Classifiers
                 var k = SentimentIntensityAnalyzer.PolarityScores(t);
                 message.Sentiment[t] = k.Compound;
             }
-            EnqueueMessage(message);
             return ApiResult.Success;
         }
         #endregion

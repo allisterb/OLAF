@@ -109,7 +109,6 @@ namespace OLAF.Services.Classifiers
                 artifact.RacyContentScore = analysis.Adult.RacyScore;
                 analysis.Description = analysis.Description;
             }
-            EnqueueMessage(artifact);
             return ApiResult.Success;
         }
         #endregion
