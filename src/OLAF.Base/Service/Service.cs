@@ -134,12 +134,12 @@ namespace OLAF
 
         protected virtual void ObserveClientQueue(Type client, CancellationToken token)
         {
+            Message message = null;
             try
             {
                 while (!shutdownRequested && !token.IsCancellationRequested)
                 {
-                    Message message =
-                        Global.MessageQueue.Dequeue(client, cancellationToken);
+                    message = Global.MessageQueue.Dequeue(client, cancellationToken);
                     if (message is TClientMessage)
                     {
                         Debug("{0} consuming message {1}.", Name, message.Id);
@@ -170,7 +170,7 @@ namespace OLAF
                         }
                         else
                         {
-                            Debug("{0} passing on message {1} of type {2}.", Name, message.Id, typeof(Message).ToString());
+                            Debug("{0} passing on message {1} of type {2}.", Name, message.Id, message.GetType().ToString());
                             EnqueueMessage(message);
                         }
                     }
@@ -188,7 +188,17 @@ namespace OLAF
             }
             catch (Exception ex)
             {
-                Error(ex, "Error occurred during {0} client queue observng in service {1}.", client.Name, Name);
+                if (message != null)
+                {
+                    Error(ex, "Error occurred during {0} client queue observng in service {1} for artifact {2}.",
+                    client.Name, Name, message.Id);
+                    Debug("Pipeline ending for artifact {0}.", message.Id);
+                }
+                else
+                {
+                    Error(ex, "Error occurred during {0} client queue observng in service {1}.",
+                    client.Name, Name);
+                }
                 Info("Resuming {0} client queue observer in service {1}.", client.Name, type.Name);
                 ObserveClientQueue(client, token);
             }

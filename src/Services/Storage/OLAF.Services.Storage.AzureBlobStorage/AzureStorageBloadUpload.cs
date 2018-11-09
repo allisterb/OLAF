@@ -60,8 +60,8 @@ namespace OLAF.Services.Storage
 
             if (!artifact.Preserve)
             {
-                Info("Artifact not tagged for preservation.");
-                return UploadArtifact(artifact);
+                Info("Artifact id {0} not tagged for preservation.", artifact.Id);
+                return ApiResult.Success;
             }
             else
             {
@@ -87,54 +87,53 @@ namespace OLAF.Services.Storage
             CloudBlockBlob blob = null;
             string blobName = AzureStorageApi.GetValidAzureBlobName(artifact.Name);
             string blobPath = GetBlobPathForArtifact(artifact);
-            using (var op = Begin("Uploading blob {0} to Azure Blob Storage.", ArtifactsContainerName, blobPath))
+            blob = (CloudBlockBlob)Storage.GetCloudBlob(ArtifactsContainerName, ArtifactsBlobDirectory, blobName,
+                BlobType.BlockBlob);
+            if (blob == null)
             {
-                blob = (CloudBlockBlob)Storage.GetCloudBlob(ArtifactsContainerName, ArtifactsBlobDirectory, blobName,
-                    BlobType.BlockBlob);
-                if (blob == null)
+                Error("Could not get reference to blob {0}.", blobPath);
+                return ApiResult.Failure;
+            }
+            else if (blob.Exists())
+            {
+                Error("The block blob {0} already exists.", blobPath);
+                return ApiResult.Failure;
+            }
+            else
+            {
+                if (artifact is FileArtifact fileArtifact)
                 {
-                    Error("Could not get reference to blob {0}.", blobPath);
-                    return ApiResult.Failure;
-                }
-                else if (blob.Exists())
-                {
-                    Error("The block blob {0} already exists.", blobPath);
-                    return ApiResult.Failure;
-                }
-                else
-                {
-                    if (artifact is FileArtifact fileArtifact)
+                    if (fileArtifact.HasData)
                     {
-                        if (fileArtifact.HasData)
-                        {
-                            return Storage.UploadBlobData(blob, fileArtifact.Data);
-                        }
-                        else
-                        {
-                            return Storage.UploadBlobData(blob, fileArtifact.Path);
-                        }
-                    }
-                    else if (artifact is ImageArtifact imageArtifact)
-                    {
-                        if (imageArtifact.HasData)
-                        {
-                            return Storage.UploadBlobData(blob, imageArtifact.Data);
-                        }
-                        else if (imageArtifact.HasFile && imageArtifact.FileArtifact.HasData)
-                        {
-                            return Storage.UploadBlobData(blob, imageArtifact.FileArtifact.Data);
-                        }
-                        else if (imageArtifact.HasFile)
-                        {
-                            return Storage.UploadBlobData(blob, imageArtifact.FileArtifact.Path);
-                        }
-                        else throw new Exception("Image artifact {0} does not have associated data or file.".F(artifact.Id));
+                        return Storage.UploadBlobData(blob, fileArtifact.Data);
                     }
                     else
-                        throw new NotImplementedException("Unknown artifact type.");  
+                    {
+                        return Storage.UploadBlobData(blob, fileArtifact.Path);
+                    }
                 }
-                
-            }
+                else if (artifact is ImageArtifact imageArtifact)
+                {
+                    if (imageArtifact.HasData)
+                    {
+                        return Storage.UploadBlobData(blob, imageArtifact.Data);
+                    }
+                    else if (imageArtifact.HasFile && imageArtifact.FileArtifact.HasData)
+                    {
+                        return Storage.UploadBlobData(blob, imageArtifact.FileArtifact.Data);
+                    }
+                    else if (imageArtifact.HasFile)
+                    {
+                        return Storage.UploadBlobData(blob, imageArtifact.FileArtifact.Path);
+                    }
+                    else throw new Exception("Image artifact {0} does not have associated data or file.".F(artifact.Id));
+                }
+                else if (artifact is TextArtifact textArtifact)
+                {
+                    return Storage.UploadBlobData(blob, textArtifact.Text.ToArray());
+                }
+                else throw new NotImplementedException("Unknown artifact type.");  
+            }             
         }
 
         protected string GetBlobPathForArtifact(Artifact artifact) => "{0}/{1}/{2}".F(ArtifactsContainerName, ArtifactsBlobDirectory,

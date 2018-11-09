@@ -7,6 +7,7 @@ namespace OLAF.Services
     using System;
     using System.Diagnostics.Contracts;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -48,7 +49,7 @@ namespace OLAF.Services
             int i = 0;
             foreach (char c in name)
             {
-                if (char.IsLetterOrDigit(c) || c == '/' || c == '_')
+                if (char.IsLetterOrDigit(c) || c == '/' || c == '_' || c =='.')
                     rn.Append(c);
                 else
                     rn.Append('_');
@@ -88,11 +89,13 @@ namespace OLAF.Services
         {
             using (var azOp = L.Begin("Get Azure Storage blob {0}/{1}/{2}", containerName, dirName, blobName))
             {
+                string blobPath = "{0}/{1}".F(dirName, blobName);
                 try
                 {
                     GetCloudBlobClient();
                     CloudBlobContainer Container = BlobClient.GetContainerReference(containerName);
-                    ICloudBlob cloudBlob = await Container.GetBlobReferenceFromServerAsync(dirName + @"/" + blobName);
+                    await Container.CreateIfNotExistsAsync();
+                    ICloudBlob cloudBlob = await Container.GetBlobReferenceFromServerAsync(blobPath);
                     azOp.Complete();
                     return cloudBlob;
                 }
@@ -104,7 +107,7 @@ namespace OLAF.Services
                     }
                     else
                     {
-                        L.Error(se, "A storage error occurred getting Azure Storage blob {bn} in container {cn}.", dirName + @"/" + blobName, containerName);
+                        L.Error(se, "A storage error occurred getting Azure Storage blob {bp} in container {cn}.", blobPath, containerName);
                         return null;
                     }
                 }
@@ -116,7 +119,7 @@ namespace OLAF.Services
                     }
                     else
                     {
-                        L.Error(e, "An error occurred getting Azure Storage blob {bn} from container {cn}.", dirName + @"/" + blobName, containerName);
+                        L.Error(e, "An error occurred getting Azure Storage blob {bp} from container {cn}.", blobPath, containerName);
                         return null;
                     }
                 }
@@ -125,23 +128,25 @@ namespace OLAF.Services
 
         public CloudBlob GetCloudBlob(string containerName, string dirName, string blobName, BlobType blobType, DateTimeOffset? snapshotTime = null)
         {
-            using (var azOp = L.Begin("Get Azure Storage blob {0}/{1}/{2}", containerName, blobName))
+            using (var azOp = L.Begin("Get Azure Storage blob {0}/{1}/{2}", containerName, dirName, blobName))
             {
+                string blobPath = "{0}/{1}".F(dirName, blobName);
                 try
                 {
                     GetCloudBlobClient();
                     CloudBlobContainer Container = BlobClient.GetContainerReference(containerName);
+                    Container.CreateIfNotExists();
                     CloudBlob cloudBlob;
                     switch (blobType)
                     {
                         case BlobType.AppendBlob:
-                            cloudBlob = Container.GetAppendBlobReference(blobName, snapshotTime);
+                            cloudBlob = Container.GetAppendBlobReference(blobPath, snapshotTime);
                             break;
                         case BlobType.BlockBlob:
-                            cloudBlob = Container.GetBlockBlobReference(blobName, snapshotTime);
+                            cloudBlob = Container.GetBlockBlobReference(blobPath, snapshotTime);
                             break;
                         case BlobType.PageBlob:
-                            cloudBlob = Container.GetPageBlobReference(blobName, snapshotTime);
+                            cloudBlob = Container.GetPageBlobReference(blobPath, snapshotTime);
                             break;
                         case BlobType.Unspecified:
                         default:
@@ -158,7 +163,7 @@ namespace OLAF.Services
                     }
                     else
                     {
-                        L.Error(se, "A storage error occurred getting/creating Azure Storage blob {bn} in container {cn}.", blobName, containerName);
+                        L.Error(se, "A storage error occurred getting/creating Azure Storage blob {bp} in container {cn}.", blobPath, containerName);
                         return null;
                     }
                 }
@@ -170,7 +175,7 @@ namespace OLAF.Services
                     }
                     else
                     {
-                        L.Error(e, "An error occurred getting Azure Storage blob {bn} from container {cn}.", blobName, containerName);
+                        L.Error(e, "An error occurred getting Azure Storage blob {bp} from container {cn}.", blobPath, containerName);
                         return null;
                     }
                 }
@@ -183,8 +188,23 @@ namespace OLAF.Services
             ThrowIfNotInitialized();
             try
             {
-                blob.UploadFromByteArray(data, 0, data.Length);
-                return ApiResult.Success;
+                using (var op = L.Begin("Upload data for blob {0}.", blob.Name))
+                {
+                    blob.UploadFromByteArray(data, 0, data.Length);
+                    string ext = blob.Name.Split('.').Last();
+                    if (ext.Length != 3)
+                    {
+                        L.Warn("Cannot determine extension and content-type for blob {0}.", blob.Name);
+                    }
+                    else
+                    {
+                        blob.Properties.ContentType = MimeTypes.MimeTypeMap.GetMimeType(ext);
+                        blob.SetProperties();
+                        L.Debug("Set blob {0} content-type to {1}.", blob.Name, blob.Properties.ContentType);
+                    }
+                    op.Complete();
+                    return ApiResult.Success;
+                }
             }
             catch(Exception e)
             {
@@ -207,6 +227,22 @@ namespace OLAF.Services
                 return ApiResult.Failure;
             }
         }
+
+        public ApiResult UploadBlobData(CloudBlockBlob blob, string[] text)
+        {
+            ThrowIfNotInitialized();
+            try
+            {
+                blob.UploadText(string.Join(Environment.NewLine, text));
+                return ApiResult.Success;
+            }
+            catch (Exception e)
+            {
+                L.Error(e, "Error occurred during upload of blob {0} text to container {1}.", blob.Name, blob.Container.Name);
+                return ApiResult.Failure;
+            }
+        }
+
         /// <summary>
         /// Get a CloudBlobDirectory instance with the specified name in the given container.
         /// </summary>

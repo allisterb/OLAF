@@ -58,6 +58,11 @@ namespace OLAF
             }
             Debug("Added text artifact {0} with Urls {1}.", Text, Urls);
         }
+
+        public TextArtifact(long id, string name, List<string> rawText) : this(id, rawText)
+        {
+            Name = name;
+        }
         #endregion
 
         #region Properties

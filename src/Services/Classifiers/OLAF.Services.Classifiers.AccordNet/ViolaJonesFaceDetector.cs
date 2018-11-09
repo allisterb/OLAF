@@ -36,12 +36,12 @@ namespace OLAF.Services.Classifiers
         {
             if (artifact.HasOCRText)
             {
-                Info("Not using face detector on text-rich image artifact.");
+                Info("Not using face detector on text-rich image artifact {0}.", artifact.Id);
                 return ApiResult.Success;
             }
 
             Bitmap image = artifact.Image;
-            using (var op = Begin("Viola-Jones face detection"))
+            using (var op = Begin("Viola-Jones face detection on image artifact {0}.", artifact.Id))
             {
                 Rectangle[] objects = Detector.ProcessFrame(image);
                 if (objects.Length > 0)
@@ -55,7 +55,7 @@ namespace OLAF.Services.Classifiers
                         artifact.DetectedObjects[ImageObjectKinds.FaceCandidate].AddRange(objects); 
                     }
                 }
-                Info("Found {0} candidate face object(s).", objects.Length);
+                Info("Found {0} candidate face object(s) in artifact {1}.", objects.Length, artifact.Id);
                 op.Complete();
             }
             return ApiResult.Success;

@@ -58,17 +58,17 @@ namespace OLAF.Services.Classifiers
         {
             if (!artifact.HasDetectedObjects(ImageObjectKinds.FaceCandidate) || artifact.HasOCRText)
             {
-                Debug("Not calling MS Computer Vision API for images without face object candidates.");
+                Debug("Not calling MS Computer Vision API for image artifact {0} without face object candidates.", artifact.Id);
             }
 
             else if (artifact.FileArtifact == null)
             {
-                Debug("Not calling MS Computer Vision API for app window images..");
+                Debug("Not calling MS Computer Vision API for non-file image artifact {0}.", artifact.Id);
             }
 
             else
             {
-                Info("Artifact is likely a photo with faces detected; analyzing using MS Computer Vision API.");
+                Info("Artifact {0} is likely a photo with faces detected; analyzing using MS Computer Vision API.", artifact.Id);
                 ImageAnalysis analysis = null;
                 using (var op = Begin("Analyze image using MS Computer Vision API."))
                 {

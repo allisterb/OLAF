@@ -13,7 +13,7 @@ namespace OLAF
         #region Constructors
         public Artifact(long id) : base(id)
         {
-            
+            Name = id.ToString();
         }
         #endregion
 

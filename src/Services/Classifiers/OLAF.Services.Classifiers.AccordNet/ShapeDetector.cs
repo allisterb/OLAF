@@ -70,7 +70,7 @@ namespace OLAF.Services.Classifiers
             blobCounter.ProcessImage(bitmapData);
             
             blobs = blobCounter.GetObjectsInformation();
-            Debug("Detected {0} shapes.", blobs.Length);
+            Debug("Detected {0} shapes in image artifact {1}.", blobs.Length, message.Id);
             image.UnlockBits(bitmapData);
             SimpleShapeChecker shapeChecker = new SimpleShapeChecker();
             GrahamConvexHull grahamScan = new GrahamConvexHull();
