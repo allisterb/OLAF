@@ -29,7 +29,10 @@ namespace OLAF.Services.Extractors
                             artifact.Name, image.Width, image.Height, image.PixelFormat, image.HorizontalResolution,
                             image.VerticalResolution);
                         op.Complete();
-                        Global.MessageQueue.Enqueue<FileImages>(new ImageArtifact(artifact, image));
+                        ImageArtifact img = new ImageArtifact(image, artifact);
+                        EnqueueMessage(img);
+                        Info("{0} added artifact id {1} of type {2} from artifact {3}.", Name, img.Id, img.GetType(),
+                            artifact.Id);
                     }
                     return ApiResult.Success;
                 }
@@ -79,9 +82,10 @@ namespace OLAF.Services.Extractors
                            artifact.Name, image.Width, image.Height, image.PixelFormat, image.HorizontalResolution,
                            image.VerticalResolution);
                     op.Complete();
-                    ImageArtifact ia = new ImageArtifact(artifact, image);
+                    ImageArtifact ia = new ImageArtifact(image, artifact);
                     EnqueueMessage(ia);
-                    Info("New image artifact id is {0}.", ia.Id);
+                    Info("{0} added artifact id {1} of type {2} from artifact {3}.", Name, ia.Id, ia.GetType(),
+                           artifact.Id);
                 }
                 return ApiResult.Success;
             }

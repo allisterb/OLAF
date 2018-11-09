@@ -137,7 +137,6 @@ namespace OLAF
         #endregion
 
         #region Fields
-        
         protected bool shutdownRequested = false;
         protected bool shutdownCompleted = false;
         #endregion

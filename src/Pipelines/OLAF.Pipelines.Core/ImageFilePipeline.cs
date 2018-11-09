@@ -12,9 +12,9 @@ using OLAF.Services.Storage;
 namespace OLAF.Pipelines
 {
     [Description("Process image file artifacts.")]
-    public class ImageArtifacts : Pipeline
+    public class ImageFilePipeline : Pipeline
     {
-        public ImageArtifacts(Profile profile) : base(profile)
+        public ImageFilePipeline(Profile profile) : base(profile)
         {
             AddService<FileImages>();
             AddService<TesseractOCR>();

@@ -10,14 +10,14 @@ namespace OLAF.ActivityDetectors.Windows
 {
     public class AppWindowActivityMessage : Message
     {
-        public AppWindowActivityMessage(long id, string processName, Dictionary<Process, Bitmap> processWindows) : base(id)
+        public AppWindowActivityMessage(string processName, Dictionary<Process, Bitmap> processWindows) : base()
         {
             ProcessName = processName ?? throw new ArgumentNullException(nameof(processName));
             ProcessWindows = processWindows ?? throw new ArgumentNullException(nameof(processWindows)); ;
             Window = processWindows.First().Value;
         }
 
-        public AppWindowActivityMessage(long id, string processName, Bitmap processWindow, string windowTitle) : base(id)
+        public AppWindowActivityMessage(string processName, Bitmap processWindow, string windowTitle) : base()
         {
             ProcessName = processName;
 

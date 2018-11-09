@@ -87,7 +87,7 @@ namespace OLAF.Services.Extractors
 
                     if (text.Count < 7)
                     {
-                        Info("Artifact {0} is likely a photo or non-text image.", message.Id);
+                        Info("Artifact id {0} is likely a photo or non-text image.", message.Id);
                     }
                     else
                     {
@@ -97,7 +97,7 @@ namespace OLAF.Services.Extractors
                 }
                 else
                 {
-                    Info("No text recognized in artifact {0}.", message.Id);
+                    Info("No text recognized in artifact id {0}.", message.Id);
                 }
                 op.Complete();
             }
@@ -105,8 +105,10 @@ namespace OLAF.Services.Extractors
             message.Image.UnlockBits(bData);
             if (text.Count >= 7)
             {
-                TextArtifact artifact = new TextArtifact(message.Id + 1000, message.Name + ".txt", text);
+                TextArtifact artifact = new TextArtifact(message.Name + ".txt", text);
                 EnqueueMessage(artifact);
+                Info("{0} added artifact id {1} of type {2} from artifact {3}.", Name, artifact.Id, artifact.GetType(), 
+                    message.Id);
             }
 
             return ApiResult.Success;

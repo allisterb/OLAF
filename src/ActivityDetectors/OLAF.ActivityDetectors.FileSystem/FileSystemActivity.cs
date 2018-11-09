@@ -105,7 +105,7 @@ namespace OLAF.ActivityDetectors
         #region Event Handlers
         private void FileSystemActivity_Created(object sender, FileSystemEventArgs e)
         {
-            Global.MessageQueue.Enqueue<FileSystemActivity>(new FileSystemChangeMessage(Interlocked.Increment(ref currentArtifactId), e.FullPath, e.ChangeType));
+            EnqueueMessage(new FileSystemChangeMessage(e.FullPath, e.ChangeType));
         }
         #endregion
 

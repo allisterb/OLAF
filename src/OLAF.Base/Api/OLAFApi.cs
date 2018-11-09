@@ -230,6 +230,7 @@ namespace OLAF
         #region Fields
         protected Type type;
         protected CancellationToken cancellationToken;
+        protected static long currentMessageId;
         #endregion
     }
 }

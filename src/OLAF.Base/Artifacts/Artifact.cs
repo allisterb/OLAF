@@ -11,9 +11,14 @@ namespace OLAF
     public abstract class Artifact : Message
     {
         #region Constructors
+        protected Artifact() : base()
+        {
+            Name = Id.ToString();
+        }
+
         public Artifact(long id) : base(id)
         {
-            Name = id.ToString();
+            Name = Id.ToString();
         }
         #endregion
 

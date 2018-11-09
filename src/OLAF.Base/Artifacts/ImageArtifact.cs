@@ -10,25 +10,17 @@ namespace OLAF
     public class ImageArtifact : Artifact
     {
         #region Constructors
-        public ImageArtifact(long id, Bitmap image) : base(id)
+        public ImageArtifact(Bitmap image) : base()
         {
             Image = image;
             ImageConverter converter = new ImageConverter();
             Data =  (byte[])converter.ConvertTo(image, typeof(byte[]));
-            Name = id.ToString();
         }
 
-        public ImageArtifact(FileArtifact artifact, Bitmap image) : base(artifact.Id + 1000)
+        public ImageArtifact(Bitmap image, FileArtifact artifact) : this(image)
         {
             FileArtifact = artifact;
             Name = FileArtifact.Name;
-            Image = image;
-            if (artifact.HasData)
-            {
-                Data = artifact.Data;
-            }
-            ImageConverter converter = new ImageConverter();
-            Data = (byte[])converter.ConvertTo(image, typeof(byte[]));
         }
         #endregion
 

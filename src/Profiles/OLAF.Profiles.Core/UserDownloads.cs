@@ -31,7 +31,7 @@ namespace OLAF.Profiles
             Monitors.Add(new DirectoryChangesMonitor(UserKnownFolders.ToArray(),
                 BasicImageWildcardExtensions.ToArray(), this));
 
-            Pipeline = new ImageArtifacts(this);
+            Pipeline = new ImageFilePipeline(this);
             Status = Pipeline.Status;
         }
     }

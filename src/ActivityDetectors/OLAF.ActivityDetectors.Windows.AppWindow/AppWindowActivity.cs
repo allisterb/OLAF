@@ -55,8 +55,7 @@ namespace OLAF.ActivityDetectors.Windows
                 return;
             }
 
-            Bitmap capture = null, previousCaptureCopy = new Bitmap(previousCapture);
-
+            Bitmap capture = null;
             IntPtr activeWindowHandle = UnsafeNativeMethods.GetForegroundWindow();
             string title = Interop.GetWindowTitle(activeWindowHandle);
             Rectangle rect = Interop.GetWindowRect(activeWindowHandle);
@@ -123,13 +122,10 @@ namespace OLAF.ActivityDetectors.Windows
                 return;
             }
 
-            if (!ImagesAreDuplicate(previousCaptureCopy, capture))
+            if (!ImagesAreDuplicate(previousCapture, capture))
             {
-                Debug("Analyzing {0} image.", processName);
                 Interlocked.Exchange(ref previousCapture, capture);
-                Global.MessageQueue.Enqueue<AppWindowActivity>(
-                        new AppWindowActivityMessage(
-                            Interlocked.Increment(ref currentArtifactId), processName, capture, title));
+                Global.MessageQueue.Enqueue<AppWindowActivity>(new AppWindowActivityMessage(processName, capture, title));
             }
             else
             {

@@ -54,7 +54,8 @@ namespace OLAF.Monitors
 
         protected override ApiResult ProcessDetectorQueueMessage(FileSystemChangeMessage message)
         {
-            string artifactName = string.Format("{0}_{1}", message.Id, Path.GetFileName(message.Path));
+            long aid = message.Id;
+            string artifactName = string.Format("{0}_{1}", aid, Path.GetFileName(message.Path));
             string artifactPath = Profile.GetArtifactsDirectoryPathTo(artifactName);
             Debug("Waiting a bit for file to complete write...");
             Thread.Sleep(300);
@@ -67,8 +68,7 @@ namespace OLAF.Monitors
                         Debug("Read {0} bytes from {1}.", data.Length, message.Path);
                         File.WriteAllBytes(artifactPath, data);
                         Debug("Wrote {0} bytes to {1}.", data.Length, artifactPath);
-                        Global.MessageQueue.Enqueue<DirectoryChangesMonitor>(
-                            new FileArtifact(message.Id, artifactPath, data));
+                        Global.MessageQueue.Enqueue<DirectoryChangesMonitor>(new FileArtifact(aid, artifactPath, data));
                         return ApiResult.Success;
                     }
                     else
@@ -82,8 +82,7 @@ namespace OLAF.Monitors
                     if (TryCopyFile(message.Path, artifactPath))
                     {
                         Debug("Copied artifact {0} to {1}.", message.Path, artifactPath);
-                        Global.MessageQueue.Enqueue<DirectoryChangesMonitor>(
-                            new FileArtifact(message.Id, artifactPath));
+                        Global.MessageQueue.Enqueue<DirectoryChangesMonitor>(new FileArtifact(aid, artifactPath));
                         return ApiResult.Success;
                     }
                     else

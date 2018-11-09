@@ -56,7 +56,7 @@ namespace OLAF.Services.Classifiers
         protected override ApiResult ProcessClientQueueMessage(TextArtifact artifact)
         {
             List<MultiLanguageInput> mlinput = artifact.Text
-                .Where(t => artifact.HasHatePhrases[t].Value || artifact.HasIdentityHateWords[t].Value)
+                .Where(t => artifact.HasIdentityHatePhrases[t].Value || artifact.HasIdentityHateWords[t].Value)
                 .Select((t, i) => new MultiLanguageInput("en", i.ToString(), t)).ToList();
 
             if (mlinput.Count == 0)

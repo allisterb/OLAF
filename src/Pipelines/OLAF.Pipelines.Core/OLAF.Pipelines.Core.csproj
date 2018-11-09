@@ -60,7 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppWindowPipeline.cs" />
-    <Compile Include="ImageArtifacts.cs" />
+    <Compile Include="ImageFilePipeline.cs" />
     <Compile Include="ImagePipeline.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

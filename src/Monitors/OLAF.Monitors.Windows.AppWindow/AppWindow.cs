@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 
 using OLAF.ActivityDetectors.Windows;
@@ -48,7 +48,7 @@ namespace OLAF.Monitors.Windows
         {
             Info("Analyzing app window of process {0} with dimensions {1}x{2}.", 
                 message.ProcessName, message.Window.Width, message.Window.Height);
-            EnqueueMessage(new AppWindowArtifact(message.Id, message.ProcessName, message.Window));
+            EnqueueMessage(new AppWindowArtifact(message.ProcessName, message.Window));
             return ApiResult.Success;
         }
 
