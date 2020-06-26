@@ -43,13 +43,15 @@ namespace OLAF.Monitors
             Debug("Shutting down and disposing {0} {1}.", DirectoryChangesMonitors.Count, "DirectoryChangeMonitor(s)");
             foreach(var dcm in DirectoryChangesMonitors)
             {
-                if (!dcm.Value.ShutdownCompleted)
+                if (!dcm.Value.ShutdownRequested)
                 {
                     var r = dcm.Value.Shutdown();
-                    Debug("Shutdown of directory changes monitor for path {0} returned.", r);
+                    if (r != ApiResult.Success)
+                    {
+                        Error("Shutdown of directory changes monitor for path {0} returned {1}.", dcm.Key, r);
+                    }    
                 }
                 dcm.Value.Dispose();
-
             }
             return ApiResult.Success;
         }
@@ -92,8 +94,20 @@ namespace OLAF.Monitors
             else
             {
                 Info("Storage device at drive letter {0} removed.", message.DriveLetter);
+                var path = message.DriveLetter + "\\";
+                if (DirectoryChangesMonitors.ContainsKey(path))
+                {
+                    if (DirectoryChangesMonitors.TryRemove(path, out DirectoryChangesMonitor m))
+                    {                        
+                        m.Dispose();
+                        Info("Stopped directory changes monitor for path {0}.", path);
+                    }
+                    else
+                    {
+                        Warn("Did not find {0} for path {1}, ignoring.", "DirectoryChangesMonitor", path);
+                    }       
+                }
             }
-            
             return ApiResult.Success;
         }
         #endregion
