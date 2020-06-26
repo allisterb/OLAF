@@ -11,6 +11,7 @@ namespace OLAF
         public FileArtifact(long id, string artifactPath) : base(id)
         {
             Path = artifactPath;
+            base.Name = Path?.GetPathFilename();
         }
 
         public FileArtifact(long id, string artifactPath, byte[] artifactFileData) : this(id, artifactPath)
@@ -21,7 +22,6 @@ namespace OLAF
 
         #region Properties
         public string Path { get; }
-        public string Name => Path?.GetPathFilename();
         public bool FileLocked { get; set; } = false;
         public int FileOpenAttempts { get; set; } = 0;
         public byte[] Data { get; set; }

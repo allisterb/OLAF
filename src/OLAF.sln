@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29020.237
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Base", "OLAF.Base\OLAF.Base.csproj", "{8D448B26-D206-48C8-B17F-A31133C25665}"
 EndProject
@@ -17,9 +17,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Monitors.DirectoryChanges", "Monitors\OLAF.Monitors.DirectoryChanges\OLAF.Monitors.DirectoryChanges.csproj", "{DBA4C2FE-6C57-4C11-8446-591DA0A594EB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Services.Storage.AzureStorage", "Services\Storage\OLAF.Services.Storage.AzureBlobStorage\OLAF.Services.Storage.AzureStorage.csproj", "{18FF34D6-91E0-48CA-BA91-156D90825444}"
-	ProjectSection(ProjectDependencies) = postProject
-		{040FCE51-AA78-40B9-9639-9B8C7F469827} = {040FCE51-AA78-40B9-9639-9B8C7F469827}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Services.Classifiers.MSComputerVision", "Services\Classifiers\OLAF.Services.Classifiers.MSComputerVision\OLAF.Services.Classifiers.MSComputerVision.csproj", "{040FCE51-AA78-40B9-9639-9B8C7F469827}"
 EndProject
@@ -68,6 +65,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{C218
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dictionaries", "Dictionaries", "{BB3D61DD-ED34-45D0-ADB0-0F94734945DC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Base", "Base", "{6017A3C8-411A-4E30-AE13-66E8D9757193}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -276,6 +275,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{8D448B26-D206-48C8-B17F-A31133C25665} = {6017A3C8-411A-4E30-AE13-66E8D9757193}
 		{81A43067-E9CF-4CAB-BB84-13AC75D85240} = {D6D3BF19-4E46-4BE1-802E-2B0D3FFE4F83}
 		{8C8EF527-DC14-48CE-9423-4CD3665A3DE8} = {06C5F404-B60C-488C-BCDD-7AE145E28E5F}
 		{7AA345D8-730F-4DD2-BA79-D63EFE3131CD} = {D5613E65-04C8-40E1-8A61-E531895E0B00}

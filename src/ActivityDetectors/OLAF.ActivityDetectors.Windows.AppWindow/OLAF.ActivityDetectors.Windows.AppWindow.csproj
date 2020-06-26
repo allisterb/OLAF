@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -87,6 +88,7 @@
     <Compile Include="AppWindowActivity.cs" />
     <Compile Include="D3D9Capture.cs" />
     <Compile Include="GDICapture.cs" />
+    <Compile Include="MSAAContent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AppWindowActivityMessage.cs" />
   </ItemGroup>
