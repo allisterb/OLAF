@@ -68,7 +68,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dictionaries", "Dictionarie
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Base", "Base", "{6017A3C8-411A-4E30-AE13-66E8D9757193}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.ActivityDetectors.USBDrive", "OLAF.ActivityDetectors.USBDrive\OLAF.ActivityDetectors.USBDrive.csproj", "{DC9B93A8-2407-4B07-AD0C-ADD27582A0AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.ActivityDetectors.StorageDevice", "ActivityDetectors\OLAF.ActivityDetectors.StorageDevice\OLAF.ActivityDetectors.StorageDevice.csproj", "{DC9B93A8-2407-4B07-AD0C-ADD27582A0AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Monitors.StorageDevice", "Monitors\OLAF.Monitors.StorageDevice\OLAF.Monitors.StorageDevice.csproj", "{E78CAC80-0C03-4EE0-95D8-BF0FF4323387}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -280,10 +282,22 @@ Global
 		{DC9B93A8-2407-4B07-AD0C-ADD27582A0AA}.Debug|x86.Build.0 = Debug|Any CPU
 		{DC9B93A8-2407-4B07-AD0C-ADD27582A0AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC9B93A8-2407-4B07-AD0C-ADD27582A0AA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DC9B93A8-2407-4B07-AD0C-ADD27582A0AA}.Release|x64.ActiveCfg = Release|Any CPU
-		{DC9B93A8-2407-4B07-AD0C-ADD27582A0AA}.Release|x64.Build.0 = Release|Any CPU
+		{DC9B93A8-2407-4B07-AD0C-ADD27582A0AA}.Release|x64.ActiveCfg = Release|x64
+		{DC9B93A8-2407-4B07-AD0C-ADD27582A0AA}.Release|x64.Build.0 = Release|x64
 		{DC9B93A8-2407-4B07-AD0C-ADD27582A0AA}.Release|x86.ActiveCfg = Release|Any CPU
 		{DC9B93A8-2407-4B07-AD0C-ADD27582A0AA}.Release|x86.Build.0 = Release|Any CPU
+		{E78CAC80-0C03-4EE0-95D8-BF0FF4323387}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E78CAC80-0C03-4EE0-95D8-BF0FF4323387}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E78CAC80-0C03-4EE0-95D8-BF0FF4323387}.Debug|x64.ActiveCfg = Debug|x64
+		{E78CAC80-0C03-4EE0-95D8-BF0FF4323387}.Debug|x64.Build.0 = Debug|x64
+		{E78CAC80-0C03-4EE0-95D8-BF0FF4323387}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E78CAC80-0C03-4EE0-95D8-BF0FF4323387}.Debug|x86.Build.0 = Debug|Any CPU
+		{E78CAC80-0C03-4EE0-95D8-BF0FF4323387}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E78CAC80-0C03-4EE0-95D8-BF0FF4323387}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E78CAC80-0C03-4EE0-95D8-BF0FF4323387}.Release|x64.ActiveCfg = Release|x64
+		{E78CAC80-0C03-4EE0-95D8-BF0FF4323387}.Release|x64.Build.0 = Release|x64
+		{E78CAC80-0C03-4EE0-95D8-BF0FF4323387}.Release|x86.ActiveCfg = Release|Any CPU
+		{E78CAC80-0C03-4EE0-95D8-BF0FF4323387}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -309,6 +323,7 @@ Global
 		{8211B459-7538-4DB3-A97D-E514D3CD4CD2} = {6CC3CDC1-0950-47BF-8AE8-02EEA465AEBE}
 		{8B1DAEC3-7AD1-4244-85C4-BBDDFF8E75FD} = {6CC3CDC1-0950-47BF-8AE8-02EEA465AEBE}
 		{DC9B93A8-2407-4B07-AD0C-ADD27582A0AA} = {D5613E65-04C8-40E1-8A61-E531895E0B00}
+		{E78CAC80-0C03-4EE0-95D8-BF0FF4323387} = {E0CF0C19-3462-42A6-98FE-21330428CBC2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6AF7C0FB-8348-44E7-A1BF-AB0846441F39}

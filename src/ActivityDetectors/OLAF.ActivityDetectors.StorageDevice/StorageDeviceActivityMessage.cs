@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 
 namespace OLAF.ActivityDetectors
 {
-    public enum USBActivityEventType
+    public enum StorageActivityEventType
     {
         Inserted = 2,
         Removed = 3
     }
 
     [Serializable]
-    public class USBDriveActivityMessage : Message
+    public class StorageDeviceActivityMessage : Message
     {
         #region Constructors
-        public USBDriveActivityMessage(USBActivityEventType type, string driveLetter, DateTime time) : base()
+        public StorageDeviceActivityMessage(StorageActivityEventType type, string driveLetter, DateTime time) : base()
         {
             EventType = type;
             DriveLetter = driveLetter;
@@ -27,7 +27,7 @@ namespace OLAF.ActivityDetectors
         #region Properties
         public string DriveLetter { get; }
         public DateTime Time { get; }
-        public USBActivityEventType EventType { get; }
+        public StorageActivityEventType EventType { get; }
         #endregion
     }
 }

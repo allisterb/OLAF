@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace OLAF.ActivityDetectors
 {
-    public class USBDriveActivity : ActivityDetector<USBDriveActivityMessage>, IDisposable
+    public class StorageDeviceActivity : ActivityDetector<StorageDeviceActivityMessage>, IDisposable
     {
         #region Constructors
-        public USBDriveActivity(Type mt) : base(mt) 
+        public StorageDeviceActivity(Type mt) : base(mt) 
         {
             Watcher = new ManagementEventWatcher();
             WqlEventQuery query = new WqlEventQuery("SELECT * FROM Win32_VolumeChangeEvent WHERE EventType = 2 or EventType = 3");
             Watcher.Query = query;
             Watcher.EventArrived += Watcher_EventArrived;
-            Status = ApiStatus.Ok;
+            Status = ApiStatus.Initialized;
         }
         #endregion
 
@@ -38,8 +38,8 @@ namespace OLAF.ActivityDetectors
         private void Watcher_EventArrived(object sender, EventArrivedEventArgs e)
         {
             string driveName = e.NewEvent.Properties["DriveName"].Value.ToString();
-            USBActivityEventType eventType = ((Convert.ToInt16(e.NewEvent.Properties["EventType"].Value)) == 2) ? USBActivityEventType.Inserted : USBActivityEventType.Removed;
-            EnqueueMessage(new USBDriveActivityMessage(eventType, driveName, DateTime.Now));
+            StorageActivityEventType eventType = ((Convert.ToInt16(e.NewEvent.Properties["EventType"].Value)) == 2) ? StorageActivityEventType.Inserted : StorageActivityEventType.Removed;
+            EnqueueMessage(new StorageDeviceActivityMessage(eventType, driveName, DateTime.Now));
         }
         #endregion
 
@@ -101,12 +101,10 @@ namespace OLAF.ActivityDetectors
 
         }
 
-        ~USBDriveActivity()
+        ~StorageDeviceActivity()
         {
             this.Dispose(false);
         }
         #endregion
     }
-
-
 }

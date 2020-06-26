@@ -7,8 +7,8 @@
     <ProjectGuid>{DC9B93A8-2407-4B07-AD0C-ADD27582A0AA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OLAF.ActivityDetectors.USBDrive</RootNamespace>
-    <AssemblyName>OLAF.ActivityDetectors.USBDrive</AssemblyName>
+    <RootNamespace>OLAF.ActivityDetectors.StorageDevice</RootNamespace>
+    <AssemblyName>OLAF.ActivityDetectors.StorageDevice</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -62,15 +62,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="USBDriveActivity.cs" />
+    <Compile Include="StorageDeviceActivity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="USBDriveActivityMessage.cs" />
+    <Compile Include="StorageDeviceActivityMessage.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OLAF.Base\OLAF.Base.csproj">
+    <ProjectReference Include="..\..\OLAF.Base\OLAF.Base.csproj">
       <Project>{8d448b26-d206-48c8-b17f-a31133c25665}</Project>
       <Name>OLAF.Base</Name>
     </ProjectReference>
