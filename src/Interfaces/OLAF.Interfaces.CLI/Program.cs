@@ -75,7 +75,6 @@ namespace OLAF
 
             Global.SetupMessageQueue();
 
-            //Profile = new UserBrowserActivity();
             Profile = new UserDownloads();
             if (Profile.Init() != ApiResult.Success)
             {
