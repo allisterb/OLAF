@@ -30,7 +30,7 @@ namespace OLAF.Profiles
 
             Monitors.Add(new DirectoryChangesMonitor(UserKnownFolders.ToArray(),
                 BasicImageWildcardExtensions.ToArray(), this));
-            Monitors.Add(new StorageDeviceMonitor());
+            Monitors.Add(new StorageDeviceMonitor(new string[] { "*.*" }, this));
             Pipeline = new ImageFilePipeline(this);
             Status = Pipeline.Status;
         }

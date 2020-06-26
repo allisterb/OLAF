@@ -9,7 +9,7 @@ using OLAF.ActivityDetectors;
 
 namespace OLAF.Monitors
 {
-    public class DirectoryChangesMonitor : FileSystemMonitor<FileSystemActivity, FileSystemChangeMessage, FileArtifact>
+    public class DirectoryChangesMonitor : FileSystemMonitor<FileSystemActivity, FileSystemChangeMessage, FileArtifact>, IDisposable
     {
         #region Constructors
         public DirectoryChangesMonitor(Dictionary<string, string> paths, Profile profile) : base(paths, profile) {}
@@ -27,7 +27,7 @@ namespace OLAF.Monitors
                 for (int i = 0; i < Paths.Count; i++)
                 {
                     KeyValuePair<DirectoryInfo, string> path = Paths.ElementAt(i);
-                    Detectors.Add(new FileSystemActivity(path.Key.FullName, path.Value, 
+                    Detectors.Add(new FileSystemActivity(path.Key.FullName, path.Value, true, 
                         typeof(DirectoryChangesMonitor)));
                 }
                 Info("Monitoring {0} paths for files with extension(s) {1}.", Paths.Count,
@@ -176,6 +176,76 @@ namespace OLAF.Monitors
                 }
             }
             return false;
+        }
+        #endregion
+
+        #region Properties
+        public bool IsDisposed { get; protected set; }
+        #endregion
+
+        #region Disposer and Finalizer
+        /// /// </remarks>         
+        public void Dispose()
+        {
+            Dispose(true);
+            // This object will be cleaned up by the Dispose method. 
+            // Therefore, you should call GC.SupressFinalize to 
+            // take this object off the finalization queue 
+            // and prevent finalization code for this object 
+            // from executing a second time. 
+            // Always use SuppressFinalize() in case a subclass 
+            // of this type implements a finalizer. GC.SuppressFinalize(this); }
+        }
+
+        protected void Dispose(bool isDisposing)
+        {
+            try
+            {
+                if (!this.IsDisposed)
+                {
+                    // Explicitly set root references to null to expressly tell the GarbageCollector 
+                    // that the resources have been disposed of and its ok to release the memory 
+                    // allocated for them.
+
+                    if (isDisposing)
+                    {
+                        // Release all managed resources here 
+                        // Need to unregister/detach yourself from the events. Always make sure 
+                        // the object is not null first before trying to unregister/detach them! 
+                        // Failure to unregister can be a BIG source of memory leaks 
+                        //if (someDisposableObjectWithAnEventHandler != null)
+                        //{ someDisposableObjectWithAnEventHandler.SomeEvent -= someDelegate; 
+                        //someDisposableObjectWithAnEventHandler.Dispose(); 
+                        //someDisposableObjectWithAnEventHandler = null; } 
+                        // If this is a WinForm/UI control, uncomment this code 
+                        //if (components != null) //{ // components.Dispose(); //} } 
+                        foreach (var d in Detectors)
+                        {
+                            if (!ReferenceEquals(d, null))
+                            {
+                                d.Dispose();
+                            }
+                        }
+                        
+                    }
+                    // Release all unmanaged resources here 
+                    // (example) if (someComObject != null && Marshal.IsComObject(someComObject)) { Marshal.FinalReleaseComObject(someComObject); someComObject = null; 
+                }
+            }
+            catch (Exception e)
+            {
+                Error(e, "Exception thrown during disposal of USB.");
+            }
+            finally
+            {
+                this.IsDisposed = true;
+            }
+
+        }
+
+        ~DirectoryChangesMonitor()
+        {
+            this.Dispose(false);
         }
         #endregion
     }

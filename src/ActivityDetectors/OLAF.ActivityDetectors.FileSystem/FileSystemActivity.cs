@@ -10,9 +10,10 @@ namespace OLAF.ActivityDetectors
     public class FileSystemActivity : ActivityDetector<FileSystemChangeMessage>, IDisposable
     {
         #region Constructors
-        public FileSystemActivity(string path, string filter, Type mt) : base(mt)
+        public FileSystemActivity(string path, string filter, bool includeSubDirs, Type mt) : base(mt)
         {
             FileSystemWatcher = new FileSystemWatcher(path, filter);
+            FileSystemWatcher.IncludeSubdirectories = includeSubDirs;
             FileSystemWatcher.Created += FileSystemActivity_Created;
             FileSystemWatcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.CreationTime | NotifyFilters.Size;
             Path = path;
@@ -35,6 +36,7 @@ namespace OLAF.ActivityDetectors
         #region Properties
         public string Path { get; protected set; }
 
+        public bool IsDisposed { get; protected set; } = false;
         protected FileSystemWatcher FileSystemWatcher { get; set; }
         #endregion
 
@@ -107,10 +109,6 @@ namespace OLAF.ActivityDetectors
         {
             EnqueueMessage(new FileSystemChangeMessage(e.FullPath, e.ChangeType));
         }
-        #endregion
-
-        #region Fields
-        private bool IsDisposed = false;
         #endregion
     }
 }
