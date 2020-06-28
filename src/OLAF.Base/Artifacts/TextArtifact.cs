@@ -13,6 +13,7 @@ namespace OLAF
         {
             Text = new List<string>();
             Urls = new List<string>();
+            Metadata = new Dictionary<string, object>();
            
             Sentiment = new Dictionary<string, double?>(rawText.Count);
             HasEmoticon = new Dictionary<string, bool>();
@@ -90,6 +91,8 @@ namespace OLAF
         public Dictionary<string, bool?> HasIdentityHatePhrases { get; protected set; }
 
         public Dictionary<string, string> Languages { get; protected set; }
+
+        public Dictionary<string, object> Metadata { get; protected set; }
         #endregion
 
         #region Methods

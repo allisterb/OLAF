@@ -26,7 +26,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Services.Classifiers.V
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Services.Classifiers.MSTextAnalytics", "Services\Classifiers\OLAF.Services.Classifiers.MSTextAnalytics\OLAF.Services.Classifiers.MSTextAnalytics.csproj", "{BBA65C07-B63B-4BC5-897B-7E4D79C0441C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Services.Extractors.FileImages", "Services\Extractors\OLAF.Services.Extractors.Images\OLAF.Services.Extractors.FileImages.csproj", "{28BA3392-F4C4-4E51-810F-5D456843FD3A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Services.Extractors.Images", "Services\Extractors\OLAF.Services.Extractors.Images\OLAF.Services.Extractors.Images.csproj", "{28BA3392-F4C4-4E51-810F-5D456843FD3A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Services.Extractors.TesseractOCR", "Services\Extractors\OLAF.Services.Extractors.TesseractOCR\OLAF.Services.Extractors.TesseractOCR.csproj", "{914DD06F-C2EA-49C6-B9D4-0399BFC3FC1C}"
 EndProject
@@ -71,6 +71,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.ActivityDetectors.StorageDevice", "ActivityDetectors\OLAF.ActivityDetectors.StorageDevice\OLAF.ActivityDetectors.StorageDevice.csproj", "{DC9B93A8-2407-4B07-AD0C-ADD27582A0AA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Monitors.StorageDevice", "Monitors\OLAF.Monitors.StorageDevice\OLAF.Monitors.StorageDevice.csproj", "{E78CAC80-0C03-4EE0-95D8-BF0FF4323387}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OLAF.Services.Extractors.Documents", "Services\Extractors\OLAF.Services.Extractors.Documents\OLAF.Services.Extractors.Documents.csproj", "{61581ECD-E9D6-40DD-AAAA-2021AB366637}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -298,6 +300,18 @@ Global
 		{E78CAC80-0C03-4EE0-95D8-BF0FF4323387}.Release|x64.Build.0 = Release|x64
 		{E78CAC80-0C03-4EE0-95D8-BF0FF4323387}.Release|x86.ActiveCfg = Release|Any CPU
 		{E78CAC80-0C03-4EE0-95D8-BF0FF4323387}.Release|x86.Build.0 = Release|Any CPU
+		{61581ECD-E9D6-40DD-AAAA-2021AB366637}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61581ECD-E9D6-40DD-AAAA-2021AB366637}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61581ECD-E9D6-40DD-AAAA-2021AB366637}.Debug|x64.ActiveCfg = Debug|x64
+		{61581ECD-E9D6-40DD-AAAA-2021AB366637}.Debug|x64.Build.0 = Debug|x64
+		{61581ECD-E9D6-40DD-AAAA-2021AB366637}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{61581ECD-E9D6-40DD-AAAA-2021AB366637}.Debug|x86.Build.0 = Debug|Any CPU
+		{61581ECD-E9D6-40DD-AAAA-2021AB366637}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61581ECD-E9D6-40DD-AAAA-2021AB366637}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61581ECD-E9D6-40DD-AAAA-2021AB366637}.Release|x64.ActiveCfg = Release|Any CPU
+		{61581ECD-E9D6-40DD-AAAA-2021AB366637}.Release|x64.Build.0 = Release|Any CPU
+		{61581ECD-E9D6-40DD-AAAA-2021AB366637}.Release|x86.ActiveCfg = Release|Any CPU
+		{61581ECD-E9D6-40DD-AAAA-2021AB366637}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -324,6 +338,7 @@ Global
 		{8B1DAEC3-7AD1-4244-85C4-BBDDFF8E75FD} = {6CC3CDC1-0950-47BF-8AE8-02EEA465AEBE}
 		{DC9B93A8-2407-4B07-AD0C-ADD27582A0AA} = {D5613E65-04C8-40E1-8A61-E531895E0B00}
 		{E78CAC80-0C03-4EE0-95D8-BF0FF4323387} = {E0CF0C19-3462-42A6-98FE-21330428CBC2}
+		{61581ECD-E9D6-40DD-AAAA-2021AB366637} = {8B1DAEC3-7AD1-4244-85C4-BBDDFF8E75FD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6AF7C0FB-8348-44E7-A1BF-AB0846441F39}

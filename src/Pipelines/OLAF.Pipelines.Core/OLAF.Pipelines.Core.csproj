@@ -85,9 +85,9 @@
       <Project>{e38399b0-02b8-4c54-afd0-c50ceffe9ef8}</Project>
       <Name>OLAF.Services.Classifiers.VaderSharp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Services\Extractors\OLAF.Services.Extractors.Images\OLAF.Services.Extractors.FileImages.csproj">
+    <ProjectReference Include="..\..\Services\Extractors\OLAF.Services.Extractors.Images\OLAF.Services.Extractors.Images.csproj">
       <Project>{28ba3392-f4c4-4e51-810f-5d456843fd3a}</Project>
-      <Name>OLAF.Services.Extractors.FileImages</Name>
+      <Name>OLAF.Services.Extractors.Images</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Services\Extractors\OLAF.Services.Extractors.TesseractOCR\OLAF.Services.Extractors.TesseractOCR.csproj">
       <Project>{914dd06f-c2ea-49c6-b9d4-0399bfc3fc1c}</Project>

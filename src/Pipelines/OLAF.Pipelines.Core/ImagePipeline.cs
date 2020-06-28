@@ -15,7 +15,7 @@ namespace OLAF.Pipelines
     {
         public ImagePipeline(Profile profile) : base(profile)
         {
-            AddService<FileImages>();
+            AddService<Images>();
             AddService<TesseractOCR>();
             AddService<ViolaJonesFaceDetector>();
             AddService<MSComputerVision>();

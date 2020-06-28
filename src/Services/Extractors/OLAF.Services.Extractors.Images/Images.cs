@@ -9,9 +9,12 @@ using System.Threading;
 
 namespace OLAF.Services.Extractors
 {
-    public class FileImages : Service<FileArtifact, ImageArtifact>
+    /// <summary>
+    /// Extract image data from files.
+    /// </summary>
+    public class Images : Service<FileArtifact, ImageArtifact>
     {
-        public FileImages(Profile profile, params Type[] clients) : base(profile, clients) {}
+        public Images(Profile profile, params Type[] clients) : base(profile, clients) {}
 
         public override ApiResult Init() => SetInitializedStatusAndReturnSucces();
 

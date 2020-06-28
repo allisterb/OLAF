@@ -75,7 +75,7 @@ namespace OLAF
 
             Global.SetupMessageQueue();
 
-            Profile = new UserDocuments();
+            Profile = new DLP();
             if (Profile.Init() != ApiResult.Success)
             {
                 Error("Could not initialize profile {0}.", Profile.Name);
