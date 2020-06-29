@@ -1,0 +1,3 @@
+[submodule "ext/tikadotnet"]
+	path = ext/tikadotnet
+	url = https://github.com/KevM/tikaondotnet.git
