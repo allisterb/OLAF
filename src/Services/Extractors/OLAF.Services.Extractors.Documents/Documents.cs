@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-using org.apache.tika;
-using org.apache.tika.io;
-using org.apache.tika.metadata;
+//using org.apache.tika;
+//using org.apache.tika.io;
+//using org.apache.tika.metadata;
 using TikaOnDotNet.TextExtraction;
 using TikaOnDotNet.TextExtraction.Stream;
 
@@ -21,8 +21,13 @@ namespace OLAF.Services.Extractors
 
         public override ApiResult Init()
         {
+            //var rr = new org.apache.tika.config.TikaConfig(new java.io.File("tika.config"));
+            //var dd = rr.getDetector();
+            //var pp = new org.apache.tika.parser.AutoDetectParser(rr);
+            //pp.parse
             Extractor = new TextExtractor();
             return SetInitializedStatusAndReturnSucces();
+            
         }
 
         protected override ApiResult ProcessClientQueueMessage(FileArtifact artifact)

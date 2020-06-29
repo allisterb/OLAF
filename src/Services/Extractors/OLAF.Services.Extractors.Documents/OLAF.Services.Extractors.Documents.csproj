@@ -144,10 +144,7 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="TikaOnDotNet, Version=1.17.1.0, Culture=neutral, PublicKeyToken=fd70f0f601f583f3, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\TikaOnDotnet.TextExtractor.1.17.1\lib\TikaOnDotNet.dll</HintPath>
-    </Reference>
-    <Reference Include="TikaOnDotNet.TextExtraction, Version=1.17.1.0, Culture=neutral, PublicKeyToken=fd70f0f601f583f3, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\TikaOnDotnet.TextExtractor.1.17.1\lib\TikaOnDotNet.TextExtraction.dll</HintPath>
+      <HintPath>..\..\..\packages\TikaOnDotnet.1.17.1\lib\TikaOnDotNet.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -155,13 +152,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\ext\tikadotnet\src\TikaOnDotnet.TextExtractor\TikaOnDotnet.TextExtraction .OLAF.csproj">
+      <Project>{4c55e602-1c6c-4396-a118-70ba9a93fd97}</Project>
+      <Name>TikaOnDotnet.TextExtraction .OLAF</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\OLAF.Base\OLAF.Base.csproj">
       <Project>{8d448b26-d206-48c8-b17f-a31133c25665}</Project>
       <Name>OLAF.Base</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
