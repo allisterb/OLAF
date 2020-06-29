@@ -12,8 +12,6 @@ namespace OLAF.Monitors
     public class DirectoryChangesMonitor : FileSystemMonitor<FileSystemActivity, FileSystemChangeMessage, FileArtifact>, IDisposable
     {
         #region Constructors
-        public DirectoryChangesMonitor(Dictionary<string, string> paths, Profile profile) : base(paths, profile) {}
-
         public DirectoryChangesMonitor(string[] dirs, string[] exts, Profile profile) : base(dirs, exts, profile) {}
         #endregion
 
@@ -30,8 +28,6 @@ namespace OLAF.Monitors
                     Detectors.Add(new FileSystemActivity(path.Key.FullName, path.Value, true, 
                         typeof(DirectoryChangesMonitor)));
                 }
-                Info("Monitoring {0} paths for files with extension(s) {1}.", Paths.Count,
-                    Paths.Values.Distinct());
                 return SetInitializedStatusAndReturnSucces();
             }
             catch (Exception e)

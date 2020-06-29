@@ -16,66 +16,6 @@ namespace OLAF
         where TMonitorMessage : Message
     {
         #region Constructors
-        public FileSystemMonitor(Dictionary<string, string> paths, Profile profile)
-        {
-            if (paths == null)
-            {
-                throw new ArgumentNullException(nameof(paths));
-            }
-            else if (paths.Count == 0)
-            {
-                throw new ArgumentException("No paths specified.", nameof(paths));
-            }
-
-            Paths = new Dictionary<DirectoryInfo, string>(paths.Keys.Count);
-            Profile = profile;
-            foreach (KeyValuePair<string, string> kv in paths)
-            {
-                try
-                {
-                    if (Directory.Exists(kv.Key))
-                    {
-                        DirectoryInfo dir = new DirectoryInfo(kv.Key);
-                        string searchPattern = Path.Combine(dir.FullName, kv.Value);
-                        var findFileData = new UnsafeNativeMethods.WIN32_FIND_DATA();
-                        IntPtr hFindFile = UnsafeNativeMethods.FindFirstFile(searchPattern, ref findFileData);
-                        if (hFindFile != UnsafeNativeMethods.INVALID_HANDLE_VALUE)
-                        {
-                            Debug("Adding {0} {1} to monitored paths.", dir.FullName, kv.Value);
-                            Paths.Add(dir, kv.Value);
-
-                        }
-                        else
-                        {
-                            Warn("Path {0} currently has no files matching pattern {1}.", dir.FullName, kv.Value);
-                            Debug("Adding {0} {1} to monitored paths.", dir.FullName, kv.Value);
-                            Paths.Add(dir, kv.Value);
-                        }
-                    }
-                    else
-                    {
-                        Warn("The directory {0} does not exist.", kv.Key);
-                        continue;
-                    }
-                }
-                catch (Exception e)
-                {
-                    Error(e, "Error occurred enumerating files in directory {0} using search pattern {1}.",
-                        kv.Key, kv.Value);
-                    Debug("Not adding {0} to monitored paths.", kv.Key);
-                    continue;
-                }
-            }
-            if (Paths.Count > 0)
-            {
-                Status = ApiStatus.Initializing;
-            }
-            else
-            {
-                Status = ApiStatus.FileNotFound;
-            }
-        }
-        
         public FileSystemMonitor(string[] directories, string[] extensions, Profile profile)
         {
             if (directories == null)
@@ -114,15 +54,12 @@ namespace OLAF
                                 if (hFindFile != UnsafeNativeMethods.INVALID_HANDLE_VALUE)
                                 {
                                     Verbose("Adding {0} {1} to monitored paths.", dir.FullName, ext);
-                                    Paths.Add(dir, ext);
-
                                 }
                                 else
                                 {
-                                    Verbose("Path {0} currently has no files matching pattern {1}.", dir.FullName, ext);
-                                    Verbose("Adding {0} {1} to monitored paths.", dir.FullName, ext);
-                                    Paths.Add(dir, ext);
+                                    Verbose("Path {0} currently has no files matching pattern {1}. Adding {0} to monitored paths.", dir.FullName, ext);
                                 }
+                                Paths.Add(dir, ext);
                             }
                             catch (Exception e)
                             {
@@ -144,6 +81,11 @@ namespace OLAF
                     Error(e, "Error occurred enumerating files in directory {0}.", d);
                     Debug("Not adding {0} to monitored paths.", d);
                     continue;
+                }
+                if (Paths.Keys.Any((dir) => dir.FullName == d))
+                {
+                    var p = Paths.Keys.Where((dir) => dir.FullName == d).Count();
+                    Info("Monitoring {0} extensions for path {1}: {2}.", p, d, extensions);
                 }
             }
             Profile = profile;

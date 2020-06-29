@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 using OLAF.Monitors;
-using OLAF.Monitors.Windows;
 using OLAF.Pipelines;
 
 namespace OLAF.Profiles
@@ -29,9 +28,9 @@ namespace OLAF.Profiles
             }
 
             Monitors.Add(new DirectoryChangesMonitor(UserKnownFolders.ToArray(),
-                BasicImageWildcardExtensions.ToArray(), this));
+                DocumentWildcardExtensions, this));
             Monitors.Add(new StorageDeviceMonitor(BasicImageWildcardExtensions.ToArray(), this));
-            Pipeline = new ImageFilePipeline(this);
+            Pipeline = new DocumentPipeline(this);
             Status = Pipeline.Status;
         }
     }

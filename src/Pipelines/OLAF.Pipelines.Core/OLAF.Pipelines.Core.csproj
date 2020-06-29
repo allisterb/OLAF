@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppWindowPipeline.cs" />
+    <Compile Include="DocumentPipeline.cs" />
     <Compile Include="ImageFilePipeline.cs" />
     <Compile Include="ImagePipeline.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -84,6 +85,10 @@
     <ProjectReference Include="..\..\Services\Classifiers\OLAF.Services.Classifiers.VaderSharp\OLAF.Services.Classifiers.VaderSharp.csproj">
       <Project>{e38399b0-02b8-4c54-afd0-c50ceffe9ef8}</Project>
       <Name>OLAF.Services.Classifiers.VaderSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Services\Extractors\OLAF.Services.Extractors.Documents\OLAF.Services.Extractors.Documents.csproj">
+      <Project>{61581ecd-e9d6-40dd-aaaa-2021ab366637}</Project>
+      <Name>OLAF.Services.Extractors.Documents</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Services\Extractors\OLAF.Services.Extractors.Images\OLAF.Services.Extractors.Images.csproj">
       <Project>{28ba3392-f4c4-4e51-810f-5d456843fd3a}</Project>
