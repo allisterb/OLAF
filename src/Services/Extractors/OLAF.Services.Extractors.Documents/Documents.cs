@@ -15,19 +15,20 @@ namespace OLAF.Services.Extractors
 {
     public class Documents : Service<FileArtifact, TextArtifact>
     {
+        static Documents()
+        {
+            var t = typeof(com.sun.codemodel.@internal.ClassType); // IKVM.OpenJDK.Tools
+            t = typeof(com.sun.org.apache.xalan.@internal.xsltc.trax.TransformerFactoryImpl); // IKVM.OpenJDK.XML.Transform
+            t = typeof(com.sun.org.glassfish.external.amx.AMX); // IKVM.OpenJDK.XML.WebServices
+        }
         public Documents(Profile profile, params Type[] clients) : base(profile, clients) {}
 
         protected TextExtractor Extractor { get; set; }
 
         public override ApiResult Init()
         {
-            //var rr = new org.apache.tika.config.TikaConfig(new java.io.File("tika.config"));
-            //var dd = rr.getDetector();
-            //var pp = new org.apache.tika.parser.AutoDetectParser(rr);
-            //pp.parse
             Extractor = new TextExtractor();
-            return SetInitializedStatusAndReturnSucces();
-            
+            return SetInitializedStatusAndReturnSucces();   
         }
 
         protected override ApiResult ProcessClientQueueMessage(FileArtifact artifact)
