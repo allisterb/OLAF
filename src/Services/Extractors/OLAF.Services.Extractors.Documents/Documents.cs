@@ -5,9 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-//using org.apache.tika;
-//using org.apache.tika.io;
-//using org.apache.tika.metadata;
 using TikaOnDotNet.TextExtraction;
 using TikaOnDotNet.TextExtraction.Stream;
 
@@ -17,9 +14,11 @@ namespace OLAF.Services.Extractors
     {
         static Documents()
         {
-            var t = typeof(com.sun.codemodel.@internal.ClassType); // IKVM.OpenJDK.Tools
-            t = typeof(com.sun.org.apache.xalan.@internal.xsltc.trax.TransformerFactoryImpl); // IKVM.OpenJDK.XML.Transform
-            t = typeof(com.sun.org.glassfish.external.amx.AMX); // IKVM.OpenJDK.XML.WebServices
+            /* Work around Tikaondotnet #15: https://github.com/KevM/tikaondotnet/issues/15 */
+
+            var t = typeof(com.sun.codemodel.@internal.ClassType);
+            t = typeof(com.sun.org.apache.xalan.@internal.xsltc.trax.TransformerFactoryImpl);
+            t = typeof(com.sun.org.glassfish.external.amx.AMX); 
         }
         public Documents(Profile profile, params Type[] clients) : base(profile, clients) {}
 

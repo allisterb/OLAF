@@ -35,34 +35,9 @@ namespace OLAF
                     Urls.AddRange(urls);
                     continue;
                 }
-
-                string ant = GetAlphaNumericString(t);
-                ant = string.Join(" ", 
-                    ant.Split(new[] { ' ','\r', '\n' })
-                    .Where(w => w.Length >= 3 || Pipeline.Dictionaries["words_en_3grams"].Contains(w.ToLower())))
-                    .Trim();
-
-                if (ant.IsEmpty())
-                {
-                    continue;
-                }
-                else if (Sentiment.Keys.Contains(ant))
-                {
-                    continue;
-                }
-                Sentiment.Add(ant, null);
-                HasProfanity.Add(ant, ant.Split(new[] { ' ', '\r', '\n' }).Any(a => profanityWords.Contains(a.ToLower())));
-                HasIdentityHateWords.Add(ant, ant.Split(new[] { ' ', '\r', '\n' }).Any(a => identityHateWords.Contains(a.ToLower())));
-                HasIdentityHatePhrases.Add(ant, identityHatePhrases.Contains(ant));
-                Text.Add(ant);
+                Text.Add(t);
             }
-
-            Debug("Added text artifact {0}. Has Profanity: {1}. Has Identity Hate: {2}. Has Hate Phrases: {3}. Urls {4}.", 
-                Text,
-                HasProfanity.Any(kv => kv.Value.GetValueOrDefault()),
-                HasIdentityHateWords.Any(kv => kv.Value.GetValueOrDefault()),
-                HasIdentityHatePhrases.Any(kv => kv.Value.GetValueOrDefault()),
-                Urls);
+            Debug("Added text artifact with {0} lines and {1} Urls.", Text.Count, Urls.Count);
         }
 
         public TextArtifact(string name, List<string> rawText) : this(rawText)

@@ -32,7 +32,7 @@ namespace OLAF
 
         public static Dictionary<string, string> DictionaryFiles { get; } = new Dictionary<string, string>()
         {
-            {"words_en", "words_en.txt.gz" }
+            
         };
 
        
@@ -152,7 +152,11 @@ namespace OLAF
 
         public static ApiResult SetupDictionaries()
         {
-            if (Dictionaries != null && Dictionaries.Count == DictionaryFiles.Count * 2)
+            if (DictionaryFiles.Count == 0)
+            {
+                return ApiResult.Success;
+            }
+            else if (Dictionaries != null && Dictionaries.Count == DictionaryFiles.Count * 2)
             {
                 Debug("Dictionaries already setup. Not running dictionary setup again.");
                 return ApiResult.Success;
