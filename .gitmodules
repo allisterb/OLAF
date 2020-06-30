@@ -1,3 +1,6 @@
 [submodule "ext/tikadotnet"]
 	path = ext/tikadotnet
 	url = https://github.com/KevM/tikaondotnet.git
+[submodule "ext/Log-Analytics-Data-Collector-Wrapper"]
+	path = ext/Log-Analytics-Data-Collector-Wrapper
+	url = https://github.com/allisterb/Log-Analytics-Data-Collector-Wrapper.git
