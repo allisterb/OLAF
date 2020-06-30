@@ -97,6 +97,7 @@
     <Compile Include="Logger\SimpleOperation.cs" />
     <Compile Include="Artifacts\FileArtifact.cs" />
     <Compile Include="Monitor\IMonitor.cs" />
+    <Compile Include="Native\Win32\Device.cs" />
     <Compile Include="Native\Win32\File.cs" />
     <Compile Include="Native\Win32\GDI.cs" />
     <Compile Include="Native\Win32\Interop.cs" />
@@ -105,7 +106,7 @@
     <Compile Include="Native\Win32\Window.cs" />
     <Compile Include="Pipeline\Pipeline.cs" />
     <Compile Include="Profile\WindowsKnownFolders.cs" />
-    <Compile Include="Native\Win32\UnsafeNativeMethods.cs" />
+    <Compile Include="Native\Win32\Constants.cs" />
     <Compile Include="Api\OLAFApiStatus.cs" />
     <Compile Include="Api\OLAFApi.cs" />
     <Compile Include="Api\Global.cs" />

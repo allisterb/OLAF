@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Threading;
+
+using OLAF.Win32;
 
 using OLAF.ActivityDetectors;
 
@@ -9,7 +12,7 @@ namespace OLAF.Monitors
     public class StorageDeviceMonitor : Monitor<StorageDeviceActivity, StorageDeviceActivityMessage, FileArtifact>
     {
         #region Constructors
-        public StorageDeviceMonitor(string[] extensions, Profile profile) : base() 
+        public StorageDeviceMonitor(string[] extensions, Profile profile) : base()
         {
             Extensions = extensions;
             Detector = new StorageDeviceActivity(typeof(StorageDeviceMonitor));
@@ -32,7 +35,6 @@ namespace OLAF.Monitors
                 Error("Storage device activity detector did not initialize.");
                 return SetErrorStatusAndReturnFailure();
             }
-
         }
 
         public override ApiResult Shutdown()
@@ -40,20 +42,33 @@ namespace OLAF.Monitors
             if (base.Shutdown() != ApiResult.Success) return ApiResult.Failure;
             Debug("Disposing of {0}.", "StorageDeviceActivityDetector");
             Detector.Dispose();
-            Debug("Shutting down and disposing {0} {1}.", DirectoryChangesMonitors.Count, "DirectoryChangeMonitor(s)");
-            foreach(var dcm in DirectoryChangesMonitors)
+            if (DirectoryChangesMonitors.Count != 0)
             {
-                if (!dcm.Value.ShutdownRequested)
+                foreach (var dcm in DirectoryChangesMonitors)
                 {
-                    var r = dcm.Value.Shutdown();
-                    if (r != ApiResult.Success)
+                    if (!dcm.Value.ShutdownRequested)
                     {
-                        Error("Shutdown of directory changes monitor for path {0} returned {1}.", dcm.Key, r);
-                    }    
+                        var r = dcm.Value.Shutdown();
+                        if (r != ApiResult.Success)
+                        {
+                            Error("Shutdown of directory changes monitor for path {0} returned {1}.", dcm.Key, r);
+                        }
+                        else
+                        {
+                            Info("{0} for path {1} shutdown completed successfully.", "DirectoryChangeMonitor", dcm.Key);
+                        }
+                    }
+                    dcm.Value.Dispose();
                 }
-                dcm.Value.Dispose();
+                return ApiResult.Success;
             }
-            return ApiResult.Success;
+            else
+            {
+                Info("No {0} monitors active.", "DirectoryChangesMonitor");
+                return ApiResult.Success;
+            }
+
+
         }
 
         protected override ApiResult ProcessDetectorQueueMessage(StorageDeviceActivityMessage message)
@@ -61,6 +76,11 @@ namespace OLAF.Monitors
             if (message.EventType == StorageActivityEventType.Inserted)
             {
                 Info("Storage device mounted at drive letter {0}.", message.DriveLetter);
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+                {
+                    var title = Win32.Interop.GetWindowTitle(Win32.UnsafeNativeMethods.GetForegroundWindow());
+                    Info("Current windows title is {0}.", title);
+                }
                 var path = message.DriveLetter + "\\";
                 var m = new DirectoryChangesMonitor(new string[] { path }, Extensions, this.Profile);
                 if (m.Init() == ApiResult.Failure)
@@ -79,7 +99,6 @@ namespace OLAF.Monitors
                 {
                     if (DirectoryChangesMonitors.TryAdd(path, m))
                     {
-                        Info("Started {0} for path {1} for file extensions {2}.", "DirectoryChangesMonitor", path, Extensions);
                         return ApiResult.Success;
                     }
                     else
@@ -88,7 +107,6 @@ namespace OLAF.Monitors
                         m.Dispose();
                         return ApiResult.Failure;
                     }
-                    
                 }
             }
             else
@@ -98,14 +116,14 @@ namespace OLAF.Monitors
                 if (DirectoryChangesMonitors.ContainsKey(path))
                 {
                     if (DirectoryChangesMonitors.TryRemove(path, out DirectoryChangesMonitor m))
-                    {                        
+                    {
                         m.Dispose();
                         Info("Stopped directory changes monitor for path {0}.", path);
                     }
                     else
                     {
                         Warn("Did not find {0} for path {1}, ignoring.", "DirectoryChangesMonitor", path);
-                    }       
+                    }
                 }
             }
             return ApiResult.Success;
@@ -116,6 +134,8 @@ namespace OLAF.Monitors
         protected string[] Extensions { get; }
         protected StorageDeviceActivity Detector { get; }
         protected ConcurrentDictionary<string, DirectoryChangesMonitor> DirectoryChangesMonitors { get; } = new ConcurrentDictionary<string, DirectoryChangesMonitor>();
+        protected Thread Win32MessageThread { get; set; }
         #endregion
+
     }
 }

@@ -13,8 +13,8 @@ namespace OLAF.Win32
     public static class Interop
     {
         public static Dictionary<IntPtr, string> ActiveWindowsList { get; set; }
-        
-        
+
+
         /// <summary></summary>
         /// Get a windows client rectangle in a .NET structure
         /// </summary>
@@ -47,7 +47,7 @@ namespace OLAF.Win32
             // This gives us the width of the left, right and bottom chrome - we can then determine the top height
             int chromeWidth = (int)((windowRect.Width - clientRect.Width) / 2);
 
-            return new Rectangle(new Point(windowRect.X + chromeWidth, windowRect.Y + (windowRect.Height - clientRect.Height - chromeWidth)), clientRect.Size);
+            return new Rectangle(new System.Drawing.Point(windowRect.X + chromeWidth, windowRect.Y + (windowRect.Height - clientRect.Height - chromeWidth)), clientRect.Size);
         }
 
         public static Rectangle AdjustWindowRectangeToDesktopBounds(Rectangle win)
@@ -97,7 +97,7 @@ namespace OLAF.Win32
                 {
                     if (GetWindowLong(hwnd, GWL_HWNDPARENT) == 0)
                     {
-                      
+
                         StringBuilder title = new StringBuilder(GetWindowTextLength(hwnd) + 1);
                         GetWindowText(hwnd, title, title.Capacity);
 
@@ -144,6 +144,109 @@ namespace OLAF.Win32
             }
         }
 
-        private static object interopLock = new object(); 
+        /// <summary>
+        /// Gets drive letter from a bit mask where bit 0 = A, bit 1 = B etc.
+        /// There can actually be more than one drive in the mask but we 
+        /// just use the last one in this case.
+        /// </summary>
+        /// <param name="mask"></param>
+        /// <returns></returns>
+        public static char DriveMaskToLetter(int mask)
+        {
+            char letter;
+            string drives = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            // 1 = A
+            // 2 = B
+            // 4 = C...
+            int cnt = 0;
+            int pom = mask / 2;
+            while (pom != 0)
+            {
+                // while there is any bit set in the mask
+                // shift it to the righ...                
+                pom = pom / 2;
+                cnt++;
+            }
+
+            if (cnt < drives.Length)
+                letter = drives[cnt];
+            else
+                letter = '?';
+
+            return letter;
+        }
+
+        /// <summary>
+        /// Opens a directory, returns it's handle or zero.
+        /// </summary>
+        /// <param name="dirPath">path to the directory, e.g. "C:\\dir"</param>
+        /// <returns>handle to the directory. Close it with CloseHandle().</returns>
+
+        public static IntPtr OpenDirectory(string dirPath)
+        {
+            //
+            // CreateFile  - MSDN
+            const uint GENERIC_READ = 0x80000000;
+            const uint OPEN_EXISTING = 3;
+            const uint FILE_SHARE_READ = 0x00000001;
+            const uint FILE_SHARE_WRITE = 0x00000002;
+            const uint FILE_ATTRIBUTE_NORMAL = 128;
+            const uint FILE_FLAG_BACKUP_SEMANTICS = 0x02000000;
+            IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
+            // open the existing file for reading          
+
+            IntPtr handle = CreateFile(
+                  dirPath,
+                  GENERIC_READ,
+                  FILE_SHARE_READ | FILE_SHARE_WRITE,
+                  0,
+                  OPEN_EXISTING,
+                  FILE_FLAG_BACKUP_SEMANTICS | FILE_ATTRIBUTE_NORMAL,
+                  0);
+
+            if (handle == INVALID_HANDLE_VALUE)
+                return IntPtr.Zero;
+            else
+                return handle;
+        }
+
+        public static bool CloseDirectoryHandle(IntPtr handle)
+        {
+            return CloseHandle(handle);
+        }
+        /// <summary>
+        /// New version which gets the handle automatically for specified directory
+        /// Only for registering! Unregister with the old version of this function...
+        /// </summary>
+        /// <param name="register"></param>
+        /// <param name="dirPath">e.g. C:\\dir</param>
+        public static IntPtr RegisterDeviceNotification(IntPtr wndHandle, string dirPath)
+        {
+            IntPtr handle = OpenDirectory(dirPath);
+            if (handle == IntPtr.Zero)
+            {
+                return IntPtr.Zero;
+                
+            }
+            // save handle for closing it when unregistering
+            
+           
+            DEV_BROADCAST_HANDLE data = new DEV_BROADCAST_HANDLE();
+            data.dbch_devicetype = DBT_DEVTYP_HANDLE;
+            data.dbch_reserved = 0;
+            data.dbch_nameoffset = 0;
+            //data.dbch_data = null;
+            //data.dbch_eventguid = 0;
+            data.dbch_handle = handle;
+            data.dbch_hdevnotify = (IntPtr)0;
+            int size = Marshal.SizeOf(data);
+            data.dbch_size = size;
+            IntPtr buffer = Marshal.AllocHGlobal(size);
+            Marshal.StructureToPtr(data, buffer, true);
+            return UnsafeNativeMethods.RegisterDeviceNotification(wndHandle, buffer, 0);
+        }
+
+        private static object interopLock = new object();
+
     }
 }
