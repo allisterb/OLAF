@@ -130,7 +130,7 @@ namespace OLAF.Services.Storage
                 }
                 else if (artifact is TextArtifact textArtifact)
                 {
-                    return Storage.UploadBlobData(blob, textArtifact.Text.ToArray());
+                    return Storage.UploadBlobData(blob, textArtifact.Text.Split(Environment.NewLine.ToCharArray()).ToArray());
                 }
                 else throw new NotImplementedException("Unknown artifact type.");  
             }             

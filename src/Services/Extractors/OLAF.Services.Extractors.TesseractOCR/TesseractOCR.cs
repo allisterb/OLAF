@@ -105,7 +105,7 @@ namespace OLAF.Services.Extractors
             message.Image.UnlockBits(bData);
             if (text.Count >= 7)
             {
-                TextArtifact artifact = new TextArtifact(message.Name + ".txt", text);
+                TextArtifact artifact = new TextArtifact(message.Name + ".txt", string.Join(Environment.NewLine, text.ToArray()));
                 EnqueueMessage(artifact);
                 Info("{0} added artifact id {1} of type {2} from artifact {3}.", Name, artifact.Id, artifact.GetType(), 
                     message.Id);

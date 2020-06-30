@@ -27,7 +27,7 @@ namespace OLAF.Services.Classifiers
 
         protected override ApiResult ProcessClientQueueMessage(TextArtifact message)
         {
-            foreach (string t in message.Text)
+            foreach (string t in message.Text.Split(Environment.NewLine.ToCharArray()))
             {
                 var k = SentimentIntensityAnalyzer.PolarityScores(t);
                 message.Sentiment[t] = k.Compound;

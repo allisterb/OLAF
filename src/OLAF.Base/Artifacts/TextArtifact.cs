@@ -9,21 +9,12 @@ namespace OLAF
     public class TextArtifact : Artifact
     {
         #region Constructors
-        public TextArtifact(List<string> rawText) : base()
+        public TextArtifact(string rawText) : base()
         {
-            Text = new List<string>();
+            Text = rawText;
             Urls = new List<string>();
             Metadata = new Dictionary<string, object>();
-           
-            Sentiment = new Dictionary<string, double?>(rawText.Count);
-            HasEmoticon = new Dictionary<string, bool>();
-            HasProfanity = new Dictionary<string, bool?>(rawText.Count);
-            HasIdentityHateWords = new Dictionary<string, bool?>();
-            HasIdentityHatePhrases = new Dictionary<string, bool?>(rawText.Count);
-
-            Languages = new Dictionary<string, string>(rawText.Count);
-        
-            foreach (string t in rawText)
+            foreach (string t in rawText.Split(Environment.NewLine.ToCharArray()))
             {
                 var urls = t.Split(new[] { ' ','\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
                     .Where(w => w.StartsWith("http:") || w.StartsWith("hitp:") 
@@ -35,12 +26,12 @@ namespace OLAF
                     Urls.AddRange(urls);
                     continue;
                 }
-                Text.Add(t);
+             
             }
-            Debug("Added text artifact with {0} lines and {1} Urls.", Text.Count, Urls.Count);
+            Debug("Added text artifact with {0} characters and {1} Urls.", Text.Length, Urls.Count);
         }
 
-        public TextArtifact(string name, List<string> rawText) : this(rawText)
+        public TextArtifact(string name, string rawText) : this(rawText)
         {
             Name = name;
         }
@@ -49,7 +40,7 @@ namespace OLAF
         #region Properties
         public List<string> RawText { get; }
 
-        public List<string> Text { get; protected set; }
+        public string Text { get; protected set; }
 
         public List<string> Urls { get; protected set; }
 

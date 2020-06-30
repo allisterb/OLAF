@@ -44,7 +44,7 @@ namespace OLAF.Services.Extractors
                         {
                             Debug("Extracted {0} document from file {1}.", result.ContentType, artifact.Path);
                             op.Complete();
-                            TextArtifact text = new TextArtifact(artifact.Path, result.Text.Split(Environment.NewLine.ToCharArray()).ToList());
+                            TextArtifact text = new TextArtifact(artifact.Path, result.Text);
                             if (result.Metadata != null)
                             {
                                 foreach (var m in result.Metadata)
@@ -109,7 +109,7 @@ namespace OLAF.Services.Extractors
                     {
                         Debug("Extracted {0} document from artifact {1} data.", result.ContentType, artifact.Id);
                         op.Complete();
-                        TextArtifact text = new TextArtifact(artifact.Path, result.Text.Split(Environment.NewLine.ToCharArray()).ToList());
+                        TextArtifact text = new TextArtifact(artifact.Path, result.Text);
                         if (result.Metadata != null)
                         {
                             foreach (var m in result.Metadata)

@@ -55,7 +55,9 @@ namespace OLAF.Services.Classifiers
 
         protected override ApiResult ProcessClientQueueMessage(TextArtifact artifact)
         {
-            List<MultiLanguageInput> mlinput = artifact.Text
+
+            var _text = artifact.Text.Split(Environment.NewLine.ToCharArray());
+            List<MultiLanguageInput> mlinput = _text
                 .Where(t => artifact.HasIdentityHatePhrases[t].Value || artifact.HasIdentityHateWords[t].Value)
                 .Select((t, i) => new MultiLanguageInput("en", i.ToString(), t)).ToList();
 
@@ -79,9 +81,10 @@ namespace OLAF.Services.Classifiers
                     entitiesResult = er.Result;
                     op.Complete();
                     Info("Text artifact {0} summary:", artifact.Id);
-                    for (int i = 0; i < artifact.Text.Count; i++)
+                    
+                    for (int i = 0; i < _text.Count(); i++)
                     {
-                        string s = artifact.Text[i];
+                        string s = _text[i];
                         Info("{0}. Text: {1}. Has Profanity: {2}. Has IdentityHate: {3}. VADER Sentiment: {4}. MS Text Sentiment: {5}. Entities: {6}.",
                             i, s, artifact.HasProfanity[s], artifact.HasIdentityHateWords[s],
                             artifact.Sentiment[s],
