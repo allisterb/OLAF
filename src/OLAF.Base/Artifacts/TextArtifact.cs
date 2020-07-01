@@ -54,7 +54,11 @@ namespace OLAF
 
         public Dictionary<string, double> Sentiment { get; protected set; }
 
-        public List<string> Urls { get; protected set; }
+        public List<string> Urls { get; } = new List<string>();
+
+        public List<string> Entities { get; } = new List<string>();
+
+        public List<string> KeyWords { get; } = new List<string>();
 
         public Dictionary<string, bool?> HasCompetitorName { get; protected set; }
 
