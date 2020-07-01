@@ -10,10 +10,12 @@ using TikaOnDotNet.TextExtraction.Stream;
 
 namespace OLAF.Services.Extractors
 {
+    
     public class Documents : Service<FileArtifact, TextArtifact>
     {
         static Documents()
         {
+            Environment.SetEnvironmentVariable("TIKA_CONFIG", "tika-config.xml", EnvironmentVariableTarget.Process);
             /* Work around Tikaondotnet #15: https://github.com/KevM/tikaondotnet/issues/15 */
 
             var t = typeof(com.sun.codemodel.@internal.ClassType);

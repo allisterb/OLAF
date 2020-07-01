@@ -32,10 +32,9 @@ namespace OLAF
 
         public static Dictionary<string, string> DictionaryFiles { get; } = new Dictionary<string, string>()
         {
-            
+            {"competitors_en", "competitors_en.txt" }
         };
 
-       
         #endregion
 
         #region Methods
@@ -190,8 +189,7 @@ namespace OLAF
                             using (FileStream fs = File.OpenRead(dfpath))
                             using (Stream s = df.Value.EndsWith(".gz") || df.Value.EndsWith(".GZ") ? 
                                 new GZipStream(fs, CompressionMode.Decompress) : (Stream)fs)
-                            {
-           
+                            {           
                                 var data = ReadAllLines(() => s, Encoding.UTF8).ToArray();
                                 Dictionaries.Add(df.Key, new HashSet<string>(data));
                                 Debug("Read {0} entries from file.", data.Length, dfpath);

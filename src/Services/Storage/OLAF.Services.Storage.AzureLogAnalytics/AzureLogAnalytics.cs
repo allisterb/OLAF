@@ -10,10 +10,11 @@ namespace OLAF.Services.Storage
 {
     public class AzureLogAnalytics : Service<Artifact, Artifact>
     {
-        public AzureLogAnalytics(Profile profile, params Type[] clients) : base(profile, clients) 
-        { 
-        }
+        #region Constructors
+        public AzureLogAnalytics(Profile profile, params Type[] clients) : base(profile, clients) { }
+        #endregion
 
+        #region Overriden members
         public override ApiResult Init()
         {
             var i = Global.GetAppSetting("cred.config", "AzureLogAnalytics").Trim().Split(":".ToCharArray());
@@ -38,10 +39,11 @@ namespace OLAF.Services.Storage
                 Type = "OLAF_TEST",
                 Message = "test"
             };
-            Wrapper.SendLogEntry(b, "foo").Wait();
+            Wrapper.SendLogEntry(b, "OLAF").Wait();
             return ApiResult.Success;
            
         }
+        #endregion
 
         #region Properties
         public string I { get; protected set; }

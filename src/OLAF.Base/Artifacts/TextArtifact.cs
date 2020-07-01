@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace OLAF
@@ -9,6 +10,15 @@ namespace OLAF
     public class TextArtifact : Artifact
     {
         #region Constructors
+        static TextArtifact()
+        {
+            for(int i = 0; i < PatternsSource.Count; i++)
+            {
+                var kv = PatternsSource.ElementAt(i);
+                Patterns.Add(kv.Key, new Regex(kv.Value, RegexOptions.Compiled | RegexOptions.IgnoreCase));
+            }
+        }
+        
         public TextArtifact(string rawText) : base()
         {
             Text = rawText;
@@ -42,23 +52,26 @@ namespace OLAF
 
         public string Text { get; protected set; }
 
+        public Dictionary<string, double> Sentiment { get; protected set; }
+
         public List<string> Urls { get; protected set; }
 
-        public Dictionary<string, double?> Sentiment { get; protected set; }
-
-        public Dictionary<string, bool> HasEmoticon { get; protected set; }
-
-        public Dictionary<string, bool> HasNegativeEmotionWords { get; protected set; }
-
-        public Dictionary<string, bool?> HasProfanity { get; protected set; }
-
-        public Dictionary<string, bool?> HasIdentityHateWords { get; protected set; }
-
-        public Dictionary<string, bool?> HasIdentityHatePhrases { get; protected set; }
+        public Dictionary<string, bool?> HasCompetitorName { get; protected set; }
 
         public Dictionary<string, string> Languages { get; protected set; }
 
         public Dictionary<string, object> Metadata { get; protected set; }
+
+        public static Dictionary<string, string> PatternsSource { get; protected set; } = new Dictionary<string, string>()
+        {
+            { "Apt", @"(apt|bldg|dept|fl|hngr|lot|pier|rm|ste|slip|trlr|unit|#)\.? *[a-z0-9-]+\b" },
+            { "P.O. Box", @"P\.? ?O\.? *Box +\d+" },
+            { "Credit Card", @"\d{4}[ -]?\d{4}[ -]?\d{4}[ -]?\d{4}|\d{4}[ -]?\d{6}[ -]?\d{4}\d?/" },
+            { "SSN", @"\b\d{3}[ -.]\d{2}[ -.]\d{4}\b" },
+            { "credentials", @"(login( cred(ential)?s| info(rmation)?)?|cred(ential)?s) ?:\s*\S+\s+\/?\s*\S+" }
+        };
+
+        public static Dictionary<string, Regex> Patterns { get; } = new Dictionary<string, Regex>();
         #endregion
 
         #region Methods

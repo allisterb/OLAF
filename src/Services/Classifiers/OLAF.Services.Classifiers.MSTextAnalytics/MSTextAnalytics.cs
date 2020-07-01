@@ -17,20 +17,22 @@ namespace OLAF.Services.Classifiers
         #region Constructors
         public MSTextAnalytics(Profile profile) : base(profile)
         {
-            if (ConfigurationManager.AppSettings["OLAF-MS-TXT"] == null)
+            string ak, ae;
+            //using Microsoft.Azure.CognitiveServices.Language.TextAnalytics.Models.
+            if (string.IsNullOrEmpty(ak = Global.GetAppSetting("cred.config", "AK")))
             {
-                Error("No Microsoft Text Analytics API accounts are configured.");
+                Error("Could not read the Azure Text Analytics key from file {0}.", "cred.config");
                 Status = ApiStatus.ConfigurationError;
             }
-            else if (ConfigurationManager.AppSettings["OLAF-MS-TXT-API"] == null)
+            else if (string.IsNullOrEmpty(ae = Global.GetAppSetting("cred.config", "AE")))
             {
-                Error("No Microsoft Text Analytics API accounts are configured.");
+                Error("Could not read the Azure Text Analytics endpoint URL from file {0}.", "cred.config");
                 Status = ApiStatus.ConfigurationError;
             }
             else
-            {
-                ApiAccountKey = ConfigurationManager.AppSettings["OLAF-MS-TXT"];
-                ApiEndpointUrl = ConfigurationManager.AppSettings["OLAF-MS-TXT-API"];
+            { 
+                ApiAccountKey = ak;
+                ApiEndpointUrl = ae;
                 Status = ApiStatus.Initializing;
             }
         }
@@ -57,27 +59,18 @@ namespace OLAF.Services.Classifiers
         {
 
             var _text = artifact.Text.Split(Environment.NewLine.ToCharArray());
-            List<MultiLanguageInput> mlinput = _text
-                .Where(t => artifact.HasIdentityHatePhrases[t].Value || artifact.HasIdentityHateWords[t].Value)
-                .Select((t, i) => new MultiLanguageInput("en", i.ToString(), t)).ToList();
-
-            if (mlinput.Count == 0)
-            {
-                Info("No hate speech detected.");
-                return ApiResult.Success;
-            }
-
-            Info("Analyzing text artifact {0} with hate words using MS Text Analytics.", artifact.Id);
-            SentimentBatchResult sentimentResult;
+            List<MultiLanguageInput> mlinput = _text.Select((t, i) => new MultiLanguageInput("en", i.ToString(), t)).ToList();
+            Info("Analyzing text artifact {0} using MS Text Analytics.", artifact.Id);
             EntitiesBatchResultV2dot1 entitiesResult;
+            KeyPhraseBatchResult keyPhraseResult;
             using (var op = Begin("Detect sentiment and entities using MS Text Analytics API."))
             {
                 try
                 {
-                    Task<SentimentBatchResult> sr = Client.SentimentAsync(new MultiLanguageBatchInput(mlinput));
                     Task<EntitiesBatchResultV2dot1> er = Client.EntitiesAsync(new MultiLanguageBatchInput(mlinput));
-                    Task.WaitAll(sr, er);
-                    sentimentResult = sr.Result;
+                    Task<KeyPhraseBatchResult> kr = Client.KeyPhrasesAsync(new MultiLanguageBatchInput(mlinput));
+                    Task.WaitAll(er, kr);
+                    keyPhraseResult = kr.Result;
                     entitiesResult = er.Result;
                     op.Complete();
                     Info("Text artifact {0} summary:", artifact.Id);
@@ -85,11 +78,9 @@ namespace OLAF.Services.Classifiers
                     for (int i = 0; i < _text.Count(); i++)
                     {
                         string s = _text[i];
-                        Info("{0}. Text: {1}. Has Profanity: {2}. Has IdentityHate: {3}. VADER Sentiment: {4}. MS Text Sentiment: {5}. Entities: {6}.",
-                            i, s, artifact.HasProfanity[s], artifact.HasIdentityHateWords[s],
-                            artifact.Sentiment[s],
-                            sentimentResult.Documents.SingleOrDefault(d => d.Id == i.ToString())?.Score,
-                            entitiesResult.Documents.SingleOrDefault(d => d.Id == i.ToString())?.Entities.Select(e => e.Name));
+                        Info("Entities: {0}. Keywords: {1}.",
+                            entitiesResult.Documents.SingleOrDefault(d => d.Id == i.ToString())?.Entities.Select(e => e.Name),
+                            keyPhraseResult.Documents.SingleOrDefault(d => d.Id == i.ToString())?.KeyPhrases.Select(e => e));
                     }
                     return ApiResult.Success;
                 }
