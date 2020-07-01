@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="AzureLogAnalytics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="BaseLogEvent.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\ext\Log-Analytics-Data-Collector-Wrapper\LogAnalytics.DataCollector.Wrapper\LogAnalytics.DataCollector.Wrapper\LogAnalytics.DataCollector.Wrapper.csproj">

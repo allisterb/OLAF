@@ -204,8 +204,6 @@ namespace OLAF
             }
         }
 
-        
-
         [DebuggerStepThrough]
         protected ApiResult PipelineEndingForArtifactSuccess(Artifact a, string message = "")
         {

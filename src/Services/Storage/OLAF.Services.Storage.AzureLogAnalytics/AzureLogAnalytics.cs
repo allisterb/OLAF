@@ -16,7 +16,7 @@ namespace OLAF.Services.Storage
 
         public override ApiResult Init()
         {
-            var i = Global.GetAppSetting("cred.config").Trim().Split(":".ToCharArray());
+            var i = Global.GetAppSetting("cred.config", "AzureLogAnalytics").Trim().Split(":".ToCharArray());
             if (i.Length != 2 || string.IsNullOrEmpty(i[0]) || string.IsNullOrEmpty(i[1]))
             {
                 Error("Could not read Azure Log Analytics key or workspace id from file {0}.", "cred.config");
@@ -33,7 +33,14 @@ namespace OLAF.Services.Storage
 
         protected override ApiResult ProcessClientQueueMessage(Artifact message)
         {
-            throw new NotImplementedException();
+            var b = new BaseLogEvent()
+            {
+                Type = "OLAF_TEST",
+                Message = "test"
+            };
+            Wrapper.SendLogEntry(b, "foo").Wait();
+            return ApiResult.Success;
+           
         }
 
         #region Properties

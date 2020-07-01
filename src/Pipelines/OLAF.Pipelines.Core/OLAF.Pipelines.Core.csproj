@@ -102,6 +102,10 @@
       <Project>{18ff34d6-91e0-48ca-ba91-156d90825444}</Project>
       <Name>OLAF.Services.Storage.AzureStorage</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Services\Storage\OLAF.Services.Storage.AzureLogAnalytics\OLAF.Services.Storage.AzureLogAnalytics.csproj">
+      <Project>{5c845798-0c83-478a-877f-1740238338f9}</Project>
+      <Name>OLAF.Services.Storage.AzureLogAnalytics</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

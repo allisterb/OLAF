@@ -17,6 +17,7 @@ namespace OLAF.Pipelines
         public DocumentPipeline(Profile profile) : base(profile)
         {
             AddService<Documents>();
+            AddService<AzureLogAnalytics>();
             SetPipelineInitializingStatus();
         }
     }
