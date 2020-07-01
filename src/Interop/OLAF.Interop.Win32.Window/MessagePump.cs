@@ -47,30 +47,33 @@ namespace OLAF.Win32
         //     The return value of the message.
         public IntPtr Result { get; set; }
 
-        public WindowsMessage(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, IntPtr result)
+        public object Parent { get; set; }
+
+        public WindowsMessage(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, IntPtr result, object parent)
         {
             HWnd = hwnd;
             Msg = msg;
             WParam = wparam;
             LParam = lparam;
             Result = result;
+            Parent = parent;
         }
     }
 
     public class MessagePump : NativeWindow
     {
         public event EventHandler<WindowsMessage> MessageReceived; 
-        public bool IsStopped = false;
         public CancellationToken Token;
         public AutoResetEvent Sync; 
-
-        public MessagePump(Dictionary<string, object> props)
+        public object Parent;
+        public MessagePump(ConcurrentDictionary<string, object> props)
         {
             EventHandler<WindowsMessage> handler = props.ContainsKey("handler") ? (EventHandler<WindowsMessage>)props["handler"] : null;
             if (handler != null)
             {
                 MessageReceived += handler;
             }
+            Parent = props["parent"];
             Token = (CancellationToken)props["cancellation_token"];
             Sync = (AutoResetEvent)props["sync"];
             CreateHandle(new CreateParams());
@@ -82,27 +85,24 @@ namespace OLAF.Win32
             if (Token.IsCancellationRequested)
             {
                 Application.ExitThread();
-                IsStopped = true;
             }
             else
             {
-                MessageReceived?.Invoke(this, new WindowsMessage(msg.HWnd, msg.Msg, msg.WParam, msg.LParam, msg.Result));
+                MessageReceived?.Invoke(this, new WindowsMessage(msg.HWnd, msg.Msg, msg.WParam, msg.LParam, msg.Result, this.Parent));
             }
-            // filter messages here for your purposes
             base.WndProc(ref msg);
 
         }
 
         public static void Run(object _props)
         {
-            var props = (Dictionary<string, object>)_props;
+            var props = (ConcurrentDictionary<string, object>)_props;
             var p = new MessagePump(props);
-            p.Sync.Set();
             Console.WriteLine("Handle is {0}.", p.Handle);
+            props.AddOrUpdate("handle", p.Handle, (i, u) => p.Handle);
+            p.Sync.Set();
             Application.Run();
         }
-
-
     }
 
     /**

@@ -16,10 +16,10 @@ namespace OLAF.Tests.Win32.Window
             CancellationTokenSource cts = new CancellationTokenSource();
             AutoResetEvent messagePumpRunning = new AutoResetEvent(false);
             EventHandler<WindowsMessage> handler = (s, m) => Console.WriteLine(m.HWnd);  
-            var props = new Dictionary<string, object>();
-            props.Add("cancellation_token", cts.Token);
-            props.Add("sync", messagePumpRunning);
-            props.Add("handler", handler);
+            var props = new ConcurrentDictionary<string, object>();
+            props.TryAdd("cancellation_token", cts.Token);
+            props.TryAdd("sync", messagePumpRunning);
+            props.TryAdd("handler", handler);
             var thread = new Thread(() => MessagePump.Run(props));
             thread.Start();
             messagePumpRunning.WaitOne();

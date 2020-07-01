@@ -271,3 +271,4 @@ __pycache__/
 /data/tessdata
 /logs
 /data/dictionaries
+cred.config

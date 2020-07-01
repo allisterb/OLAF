@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -144,8 +145,37 @@ namespace OLAF
                 select type;
             return types.ToArray();
         }
-        #endregion
         
+        public static string GetAppSetting(string fileName, string key, bool throwIfNotExists = false)
+        {
+            if (!File.Exists(fileName))
+            {
+                throw new Exception($"The configuration file {fileName} does not exist.");
+            }
+            ExeConfigurationFileMap fileMap = new ExeConfigurationFileMap();
+            fileMap.ExeConfigFilename = fileName;
+            Configuration configuration = ConfigurationManager.OpenMappedExeConfiguration(fileMap, ConfigurationUserLevel.None);
+            if (!configuration.AppSettings.Settings.AllKeys.Contains(key) &&throwIfNotExists)
+            {
+                throw new Exception($"The key {key} does not exist in the file {fileName}.");
+            }
+            else if (!configuration.AppSettings.Settings.AllKeys.Contains(key))
+            {
+                return "";
+            }
+            else return configuration.AppSettings.Settings[key].Value;
+        }
+        
+        public static string GetAppSetting(string key)
+        {
+            if (!ConfigurationManager.AppSettings.AllKeys.Contains(key))
+            {
+                throw new Exception($"The key {key} does not exist in the default configuration file.");
+            }
+            return ConfigurationManager.AppSettings[key];
+        }
+        #endregion
+
         #region Fields
         private static object setupLoggerLock = new object();
         private static bool loggerIsSetup = false;

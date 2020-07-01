@@ -34,6 +34,7 @@ namespace OLAF
         #region Methods
         static void Main(string[] args)
         {
+            var setting = Global.GetAppSetting("cred.config", "foo");
             if (args.Contains("--wait-for-attach"))
             {
                 Console.WriteLine("Attach debugger and press any key to continue execution...");
