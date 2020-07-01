@@ -72,7 +72,6 @@ namespace OLAF.Services.Classifiers
                     keyPhraseResult = kr.Result;
                     entitiesResult = er.Result;
                     op.Complete();
-                    Info("Text artifact {0} summary:", artifact.Id);
                     List<string> entities = new List<string>(), keywords = new List<string>(); 
                     for (int i = 0; i < _text.Count(); i++)
                     {

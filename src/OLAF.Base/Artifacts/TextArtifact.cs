@@ -51,6 +51,8 @@ namespace OLAF
         public List<string> RawText { get; }
 
         public string Text { get; protected set; }
+        
+        public ImageArtifact Image { get; set; }
 
         public Dictionary<string, double> Sentiment { get; protected set; }
 

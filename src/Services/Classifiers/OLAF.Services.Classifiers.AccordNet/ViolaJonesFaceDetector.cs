@@ -37,7 +37,7 @@ namespace OLAF.Services.Classifiers
             if (artifact.HasOCRText)
             {
                 Info("Not using face detector on text-rich image artifact {0}.", artifact.Id);
-                return ApiResult.Success;
+                return ApiResult.NoOp;
             }
 
             Bitmap image = artifact.Image;

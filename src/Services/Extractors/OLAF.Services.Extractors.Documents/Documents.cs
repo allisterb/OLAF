@@ -15,9 +15,7 @@ namespace OLAF.Services.Extractors
     {
         static Documents()
         {
-            Environment.SetEnvironmentVariable("TIKA_CONFIG", "tika-config.xml", EnvironmentVariableTarget.Process);
             /* Work around Tikaondotnet #15: https://github.com/KevM/tikaondotnet/issues/15 */
-
             var t = typeof(com.sun.codemodel.@internal.ClassType);
             t = typeof(com.sun.org.apache.xalan.@internal.xsltc.trax.TransformerFactoryImpl);
             t = typeof(com.sun.org.glassfish.external.amx.AMX); 
@@ -34,6 +32,11 @@ namespace OLAF.Services.Extractors
 
         protected override ApiResult ProcessClientQueueMessage(FileArtifact artifact)
         {
+            FileInfo f = new FileInfo(artifact.Path);
+            if (Profile.BasicImageWildcardExtensions.Contains("*" + f.Extension))
+            {
+                return ApiResult.NoOp;
+            }
             if (!artifact.HasData)
             {
                 try
@@ -54,6 +57,7 @@ namespace OLAF.Services.Extractors
                                     text.Metadata.Add(m.Key, m.Value);
                                 }
                             }
+                            text.Source = artifact;
                             EnqueueMessage(text);
                             Info("{0} added artifact id {1} of type {2} from artifact {3}.", Name, text.Id, text.GetType(),
                                 artifact.Id);

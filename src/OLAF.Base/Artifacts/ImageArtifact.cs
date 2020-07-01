@@ -14,7 +14,7 @@ namespace OLAF
         {
             Image = image;
             ImageConverter converter = new ImageConverter();
-            Data =  (byte[])converter.ConvertTo(image, typeof(byte[]));
+            Data = (byte[])converter.ConvertTo(image, typeof(byte[]));
         }
 
         public ImageArtifact(Bitmap image, FileArtifact artifact) : this(image)
@@ -26,10 +26,12 @@ namespace OLAF
 
         #region Properties
         public byte[] Data { get; }
-       
+
         public Bitmap Image { get; }
 
         public FileArtifact FileArtifact { get; }
+
+        public TextArtifact TextArtifact { get; set; }
 
         public bool HasData => Data != null && Data.Length != 0;
 
@@ -40,7 +42,7 @@ namespace OLAF
         public Dictionary<ImageObjectKinds, List<Rectangle>> DetectedObjects { get; }
             = new Dictionary<ImageObjectKinds, List<Rectangle>>();
 
-        
+
         public List<ArtifactCategory> Categories { get; } = new List<ArtifactCategory>();
 
         public bool IsAdultContent { get; set; }
@@ -50,10 +52,15 @@ namespace OLAF
         public bool IsRacy { get; set; }
 
         public double RacyContentScore { get; set; }
-        
+
         public List<string> OCRText { get; set; }
 
         public bool HasOCRText => OCRText != null;
+
+        public List<string> Captions { get; set; }
+
+        public List<string> Tags {get; set; }
+        
         #endregion
 
         #region Methods

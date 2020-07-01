@@ -106,11 +106,13 @@ namespace OLAF.Services.Extractors
             if (text.Count >= 7)
             {
                 TextArtifact artifact = new TextArtifact(message.Name + ".txt", string.Join(Environment.NewLine, text.ToArray()));
+                artifact.Source = message.Source;
+                artifact.Image = message;
+                message.TextArtifact = artifact;
                 EnqueueMessage(artifact);
                 Info("{0} added artifact id {1} of type {2} from artifact {3}.", Name, artifact.Id, artifact.GetType(), 
                     message.Id);
             }
-
             return ApiResult.Success;
         }
         #endregion

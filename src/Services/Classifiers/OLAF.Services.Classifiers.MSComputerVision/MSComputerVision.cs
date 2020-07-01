@@ -18,20 +18,21 @@ namespace OLAF.Services.Classifiers
         #region Constructors
         public MSComputerVision(Profile profile, params Type[] clients) : base(profile, clients)
         {
-            if (ConfigurationManager.AppSettings["OLAF-MS-CV"] == null)
+            string vk, ve;
+            if (string.IsNullOrEmpty(vk = Global.GetAppSetting("cred.config", "VK")))
             {
-                Error("No Microsoft Computer Vision API accounts are configured.");
+                Error("Could not read the Azure Computer Vision key from file {0}.", "cred.config");
                 Status = ApiStatus.ConfigurationError;
             }
-            else if (ConfigurationManager.AppSettings["OLAF-MS-CV-API"] == null)
+            else if (string.IsNullOrEmpty(ve = Global.GetAppSetting("cred.config", "VE")))
             {
-                Error("No Microsoft Computer Vision API accounts are configured.");
+                Error("Could not read the Azure Computer Vision endpoint URL from file {0}.", "cred.config");
                 Status = ApiStatus.ConfigurationError;
             }
             else
             {
-                ApiAccountKey = ConfigurationManager.AppSettings["OLAF-MS-CV"];
-                ApiEndpointUrl = ConfigurationManager.AppSettings["OLAF-MS-CV-API"];
+                ApiAccountKey = vk;
+                ApiEndpointUrl = ve;
                 Status = ApiStatus.Initializing;
             }
         }
@@ -49,7 +50,7 @@ namespace OLAF.Services.Classifiers
             }
             catch(Exception e)
             {
-                Error(e, "Error creating Microsoft Computer Vision API client.");
+                Error(e, "Error creating Microsoft Azure Vision API client.");
                 Status = ApiStatus.RemoteApiClientError;
                 return ApiResult.Failure;
             }
@@ -57,59 +58,45 @@ namespace OLAF.Services.Classifiers
 
         protected override ApiResult ProcessClientQueueMessage(ImageArtifact artifact)
         {
-            if (!artifact.HasDetectedObjects(ImageObjectKinds.FaceCandidate) || artifact.HasOCRText)
+            ImageAnalysis analysis = null;
+            using (var op = Begin("Analyze image using the Azure Computer Vision API"))
             {
-                Debug("Not calling MS Computer Vision API for image artifact {0} without face object candidates.", artifact.Id);
-            }
-
-            else if (artifact.FileArtifact == null)
-            {
-                Debug("Not calling MS Computer Vision API for non-file image artifact {0}.", artifact.Id);
-            }
-
-            else
-            {
-                Info("Artifact {0} is likely a photo with faces detected; analyzing using MS Computer Vision API.", artifact.Id);
-                ImageAnalysis analysis = null;
-                using (var op = Begin("Analyze image using MS Computer Vision API."))
+                try
                 {
-                    try
+                    using (Stream stream = artifact.FileArtifact.HasData ? (Stream) new MemoryStream(artifact.FileArtifact.Data)
+                        : new FileStream(artifact.FileArtifact.Path, FileMode.Open))
                     {
-                        using (Stream stream = artifact.FileArtifact.HasData ? (Stream) new MemoryStream(artifact.FileArtifact.Data)
-                            : new FileStream(artifact.FileArtifact.Path, FileMode.Open))
-                        {
-                            Task<ImageAnalysis> t1 = Client.AnalyzeImageInStreamAsync(stream,
-                                VisualFeatures, null, null, cancellationToken);
-                            analysis = t1.Result;
-                            op.Complete();
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Error(e, "An error occurred during image analysis using the Microsoft Computer Vision API.");
-                        return ApiResult.Failure;
+                        Task<ImageAnalysis> t1 = Client.AnalyzeImageInStreamAsync(stream,
+                            VisualFeatures, null, null, cancellationToken);
+                        analysis = t1.Result;
+                        op.Complete();
                     }
                 }
-
-                if (analysis.Categories != null)
+                catch (Exception e)
                 {
-                    Info("Image categories: {0}", analysis.Categories.Select(c => c.Name + "/" + c.Score.ToString()));
-                    foreach (Category c in analysis.Categories)
-                    {
-
-                        artifact.Categories.Add(new ArtifactCategory(c.Name, null, c.Score));
-                    }
+                    Error(e, "An error occurred during image analysis using the Azure Computer Vision API.");
+                    return ApiResult.Failure;
                 }
-
-                Info("Image properties: Adult: {0}/{1} Racy: {2}/{3} Description:{4}",
-                    analysis.Adult.IsAdultContent, analysis.Adult.AdultScore, analysis.Adult.IsRacyContent,
-                    analysis.Adult.RacyScore, analysis.Description.Tags);
-                artifact.IsAdultContent = analysis.Adult.IsAdultContent;
-                artifact.AdultContentScore = analysis.Adult.AdultScore;
-                artifact.IsRacy = analysis.Adult.IsRacyContent;
-                artifact.RacyContentScore = analysis.Adult.RacyScore;
-                analysis.Description = analysis.Description;
             }
+            if (analysis.Categories != null)
+            {
+                foreach (Category c in analysis.Categories)
+                {
+                    artifact.Categories.Add(new ArtifactCategory(c.Name, null, c.Score));
+                }
+                Info("Azure Computer Vision returned {0} categories.", analysis.Categories.Count);
+                Debug("Image categories: {0}", analysis.Categories.Select(c => c.Name + "/" + c.Score.ToString()));
+            }
+            Debug("Image properties: Adult: {0}/{1} Racy: {2}/{3} Tags: {4}, Captions: {5}.",
+                analysis.Adult.IsAdultContent, analysis.Adult.AdultScore, analysis.Adult.IsRacyContent,
+                analysis.Adult.RacyScore, analysis.Description.Tags, analysis.Description.Captions.Where(c => c.Confidence > 0.6).Select(c => c.Text));
+
+            artifact.IsAdultContent = analysis.Adult.IsAdultContent;
+            artifact.AdultContentScore = analysis.Adult.AdultScore;
+            artifact.IsRacy = analysis.Adult.IsRacyContent;
+            artifact.RacyContentScore = analysis.Adult.RacyScore;
+            artifact.Captions = analysis.Description.Captions.Where(c => c.Confidence > 0.6).Select(c => c.Text).ToList();
+            artifact.Tags = analysis.Description.Tags.ToList();
             return ApiResult.Success;
         }
         #endregion
@@ -120,7 +107,9 @@ namespace OLAF.Services.Classifiers
         {
             VisualFeatureTypes.Categories,
             VisualFeatureTypes.Description,
-            VisualFeatureTypes.Adult
+            VisualFeatureTypes.Adult,
+            VisualFeatureTypes.Faces,
+            VisualFeatureTypes.Tags,
         };
         
         #endregion

@@ -11,6 +11,7 @@ namespace OLAF
     {
         Unknown = -1,
         Success = 0,
-        Failure = 1
+        Failure = 1,
+        NoOp = 2
     }
 }

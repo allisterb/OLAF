@@ -26,10 +26,9 @@ namespace OLAF.Profiles
                 Status = ApiStatus.FileNotFound;
                 return;
             }
-
             Monitors.Add(new DirectoryChangesMonitor(UserKnownFolders.ToArray(),
-                DocumentWildcardExtensions, this));
-            Monitors.Add(new StorageDeviceMonitor(BasicImageWildcardExtensions.ToArray(), this));
+                DocumentWildcardExtensions.Concat(BasicImageWildcardExtensions).ToArray(), this));
+            Monitors.Add(new StorageDeviceMonitor(DocumentWildcardExtensions.Concat(BasicImageWildcardExtensions).ToArray(), this));
             Pipeline = new DocumentPipeline(this);
             Status = Pipeline.Status;
         }

@@ -28,6 +28,8 @@ namespace OLAF
         public virtual string Name { get; protected set; }
 
         public bool Preserve { get; set; }
+
+        public Artifact Source { get; set; }
         #endregion
 
         #region Methods

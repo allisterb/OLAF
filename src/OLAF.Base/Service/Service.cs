@@ -144,25 +144,33 @@ namespace OLAF
                     {
                         Debug("{0} consuming message {1}.", Name, message.Id);
                         ApiResult r = ProcessClientQueueMessage(message as TClientMessage);
-                        if (r != ApiResult.Success)
+                        if (r == ApiResult.NoOp)
+                        {
+                            Debug("{0} passing on message {1}.", Name, message.Id);
+                            EnqueueMessage(message);
+                            return;
+                        }
+                        else if (r != ApiResult.Success)
                         {
                             Debug("{0} did not succeed for artifact {1}.", Name, message.Id);
                             Debug("Pipeline ending for artifact {0}.", message.Id);
+                            return;
                         }
-                        else if (IsLastInPipeline)
+
+                        if (IsLastInPipeline)
                         {
                             Debug("Pipeline ending for artifact {0}.", message.Id);
                         }
-                        else if (!(message is TServiceMessage))
-                        {
-                            Debug("Pipeline ending for artifact {0}.", message.Id);
-                        }
+                        //else if (!(message is TServiceMessage))
+                        //{
+                        //    Debug("Pipeline ending for artifact {0}.", message.Id);
+                        //}
                         else
                         {
                             EnqueueMessage(message);
                         }
                     }
-                    else
+                    else // Not a handled message
                     {
                         if (IsLastInPipeline)
                         {
@@ -170,7 +178,6 @@ namespace OLAF
                         }
                         else
                         {
-                            Debug("{0} passing on message {1} of type {2}.", Name, message.Id, message.GetType().ToString());
                             EnqueueMessage(message);
                         }
                     }

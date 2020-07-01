@@ -17,7 +17,11 @@ namespace OLAF.Pipelines
         public DocumentPipeline(Profile profile) : base(profile)
         {
             AddService<Documents>();
+            AddService<Images>();
+            AddService<TesseractOCR>();
+            AddService<ViolaJonesFaceDetector>();
             AddService<MSTextAnalytics>();
+            AddService<MSComputerVision>();
             //AddService<AzureLogAnalytics>();
             SetPipelineInitializingStatus();
         }
