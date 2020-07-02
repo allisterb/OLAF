@@ -11,20 +11,24 @@ namespace OLAF
     public abstract class Artifact : Message
     {
         #region Constructors
-        protected Artifact() : base()
+        public Artifact() 
         {
-            Name = Id.ToString();
-        }
-
-        public Artifact(long id) : base(id)
-        {
-            Name = Id.ToString();
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
                 CurrentWindowTitle = Win32.Interop.GetCurrentWindowTitle();
             }
             MachineName = Environment.MachineName;
-            User = Environment.UserName;
+            UserName = Environment.UserName;
+        }
+
+        public Artifact(long id ) : base(id)
+        {
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                CurrentWindowTitle = Win32.Interop.GetCurrentWindowTitle();
+            }
+            MachineName = Environment.MachineName;
+            UserName = Environment.UserName;
         }
         #endregion
 
@@ -36,12 +40,14 @@ namespace OLAF
         public bool Preserve { get; set; }
 
         public Artifact Source { get; set; }
-        
+
+        public DateTime CreationTime { get; } = DateTime.Now;
+
         public string CurrentWindowTitle { get; set; } 
 
         public string MachineName { get; set; }
 
-        public string User { get;  }
+        public string UserName { get;  }
         #endregion
 
         #region Methods

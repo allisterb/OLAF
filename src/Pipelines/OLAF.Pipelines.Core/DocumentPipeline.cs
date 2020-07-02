@@ -22,7 +22,7 @@ namespace OLAF.Pipelines
             AddService<ViolaJonesFaceDetector>();
             AddService<MSTextAnalytics>();
             AddService<MSComputerVision>();
-            //AddService<AzureLogAnalytics>();
+            AddService<AzureLogAnalytics>();
             SetPipelineInitializingStatus();
         }
     }

@@ -20,6 +20,12 @@ namespace OLAF.Services.Extractors
 
         protected override ApiResult ProcessClientQueueMessage(FileArtifact artifact)
         {
+            FileInfo f = new FileInfo(artifact.Path);
+            if (!Profile.BasicImageWildcardExtensions.Contains("*" + f.Extension))
+            {
+                return ApiResult.NoOp;
+            }
+
             if (!artifact.HasData)
             {
                 try

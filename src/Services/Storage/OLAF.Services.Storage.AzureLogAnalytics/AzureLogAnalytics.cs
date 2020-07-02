@@ -34,12 +34,16 @@ namespace OLAF.Services.Storage
 
         protected override ApiResult ProcessClientQueueMessage(Artifact message)
         {
-            var b = new BaseLogEvent()
+            if (message is TextArtifact ta)
             {
-                Type = "OLAF_TEST",
-                Message = "test"
-            };
-            Wrapper.SendLogEntry(b, "OLAF").Wait();
+                var e = new DocumentLogEvent(ta);
+                Wrapper.SendLogEntry(e, "OLAF").Wait();
+            }
+            else
+            {
+                var e = new BaseLogEvent(message);
+                Wrapper.SendLogEntry(e, "OLAF").Wait();
+            }
             return ApiResult.Success;
            
         }

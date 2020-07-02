@@ -8,12 +8,30 @@ namespace OLAF.Services.Storage
 {
     public class BaseLogEvent
     {
-        public string Type { get; set; }
-        public string Severity { get; set; }
+        public BaseLogEvent() {}
 
-        public string ComputerName { get; set; } = System.Environment.MachineName;
+        public BaseLogEvent(Artifact artifact)
+        {
+            UserName = artifact.UserName;
+            EventTime = artifact.CreationTime;
+            Application = artifact.CurrentWindowTitle;
+        }
+        public string Severity { get; set; }
+        
+        public string UserName { get; set; }
+
+        public string ComputerName { get; set; } = Environment.MachineName;
+        
         public string Message { get; set; }
+        
         public string Source { get; set; }
+        
         public string Category { get; set; }
+        
+        public string ArtifactType { get; set; }
+
+        public DateTime EventTime { get; set; }
+
+        public string Application { get; set; }
     }
 }
