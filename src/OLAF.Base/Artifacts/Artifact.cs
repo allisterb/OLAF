@@ -19,6 +19,12 @@ namespace OLAF
         public Artifact(long id) : base(id)
         {
             Name = Id.ToString();
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                CurrentWindowTitle = Win32.Interop.GetCurrentWindowTitle();
+            }
+            MachineName = Environment.MachineName;
+            User = Environment.UserName;
         }
         #endregion
 
@@ -30,6 +36,12 @@ namespace OLAF
         public bool Preserve { get; set; }
 
         public Artifact Source { get; set; }
+        
+        public string CurrentWindowTitle { get; set; } 
+
+        public string MachineName { get; set; }
+
+        public string User { get;  }
         #endregion
 
         #region Methods

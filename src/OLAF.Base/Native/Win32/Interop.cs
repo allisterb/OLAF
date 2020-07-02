@@ -246,6 +246,11 @@ namespace OLAF.Win32
             return UnsafeNativeMethods.RegisterDeviceNotification(wndHandle, buffer, 0);
         }
 
+        public static string GetCurrentWindowTitle()
+        {
+            IntPtr activeWindowHandle = GetForegroundWindow();
+            return GetWindowTitle(activeWindowHandle);
+        }
         private static object interopLock = new object();
 
     }
