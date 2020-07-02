@@ -148,23 +148,16 @@ namespace OLAF
                         {
                             Debug("{0} passing on message {1}.", Name, message.Id);
                             EnqueueMessage(message);
-                            return;
                         }
                         else if (r != ApiResult.Success)
                         {
                             Debug("{0} did not succeed for artifact {1}.", Name, message.Id);
-                            Debug("Pipeline ending for artifact {0}.", message.Id);
-                            return;
+                            EnqueueMessage(message);
                         }
-
-                        if (IsLastInPipeline)
+                        else if (IsLastInPipeline)
                         {
                             Debug("Pipeline ending for artifact {0}.", message.Id);
                         }
-                        //else if (!(message is TServiceMessage))
-                        //{
-                        //    Debug("Pipeline ending for artifact {0}.", message.Id);
-                        //}
                         else
                         {
                             EnqueueMessage(message);
@@ -181,7 +174,6 @@ namespace OLAF
                             EnqueueMessage(message);
                         }
                     }
-                    
                 }
                 Info("Stopping {0} client queue observer in service {1}.", client.Name, type.Name);
                 Status = ApiStatus.Ok;

@@ -15,6 +15,13 @@ namespace OLAF.Services.Storage
             KeyWords = string.Join(",", artifact.KeyWords.ToArray());
             Entities = string.Join(",", artifact.Entities.ToArray());
         }
+
+        public DocumentLogEvent(ImageArtifact artifact) : base(artifact)
+        {
+            Name = artifact.Name;
+            Categories = string.Join(",", artifact.Categories.Select(c => c.Name).ToArray());
+            Tags = string.Join(",", artifact.Tags);
+        }
         
         public string Name { get; set; }
 
