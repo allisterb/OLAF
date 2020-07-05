@@ -51,6 +51,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -67,14 +70,13 @@
     <Compile Include="BaseLogEvent.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\ext\Log-Analytics-Data-Collector-Wrapper\LogAnalytics.DataCollector.Wrapper\LogAnalytics.DataCollector.Wrapper\LogAnalytics.DataCollector.Wrapper.csproj">
-      <Project>{fde1296c-9e2f-4db7-8ac0-2868956252c0}</Project>
-      <Name>LogAnalytics.DataCollector.Wrapper</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\OLAF.Base\OLAF.Base.csproj">
       <Project>{8d448b26-d206-48c8-b17f-a31133c25665}</Project>
       <Name>OLAF.Base</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

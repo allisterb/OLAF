@@ -48,6 +48,8 @@ namespace OLAF
         public string MachineName { get; set; }
 
         public string UserName { get;  }
+
+        public bool HasFileSource => (Source != null) && Source.GetType() == typeof(FileArtifact);
         #endregion
 
         #region Methods

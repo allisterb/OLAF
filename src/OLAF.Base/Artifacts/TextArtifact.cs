@@ -78,6 +78,8 @@ namespace OLAF
 
         public Dictionary<string, string> SensitiveData { get; protected set; } = new Dictionary<string, string>();
 
+        public bool HasSensitiveData => SensitiveData.Count > 0;
+        
         public Dictionary<string, string> Languages { get; protected set; } = new Dictionary<string, string>();
 
         public Dictionary<string, object> Metadata { get; protected set; } = new Dictionary<string, object>();

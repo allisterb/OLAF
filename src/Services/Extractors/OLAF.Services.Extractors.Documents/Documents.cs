@@ -116,7 +116,7 @@ namespace OLAF.Services.Extractors
                     {
                         Debug("Extracted {0} document from artifact {1} data.", result.ContentType, artifact.Id);
                         op.Complete();
-                        TextArtifact text = new TextArtifact(artifact.Path, result.Text);
+                        TextArtifact text = new TextArtifact(artifact.Name, result.Text);
                         if (result.Metadata != null)
                         {
                             foreach (var m in result.Metadata)
