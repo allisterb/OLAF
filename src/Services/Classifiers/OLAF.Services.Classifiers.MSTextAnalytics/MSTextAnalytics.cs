@@ -57,7 +57,11 @@ namespace OLAF.Services.Classifiers
         protected override ApiResult ProcessClientQueueMessage(TextArtifact artifact)
         {
 
-            var _text = artifact.Text.Split(Environment.NewLine.ToCharArray());
+            if (artifact.Text.Length > 5120)
+            {
+                Warn("Text artifact has length {0}. Only the first 5120 characters will be analyzed.", artifact.Text.Length);
+            }
+            var _text = new string(artifact.Text.Take(5120).ToArray()).Split(Environment.NewLine.ToCharArray());
             List<MultiLanguageInput> mlinput = _text.Select((t, i) => new MultiLanguageInput("en", i.ToString(), t)).ToList();
             Info("Analyzing text artifact {0} using Azure Text Analytics.", artifact.Id);
             EntitiesBatchResultV2dot1 entitiesResult;

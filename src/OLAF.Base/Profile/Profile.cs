@@ -31,7 +31,7 @@ namespace OLAF
         public static string[] ImageWildcardExtensions = {"*.bmp", "*.dib", "*.rle", "*.jpg", "*.jpeg", "*.jpe", "*.jfif", "*.gif", "*.tif",
             "*.tiff", "*.png"};
 
-        public static string[] DocumentWildcardExtensions = { "*.pdf", "*.doc", "*.xlsx", "*.docx"};
+        public static string[] DocumentWildcardExtensions = { "*.txt", "*.pdf", "*.doc", "*.xlsx", "*.docx"};
 
         public static List<string> UserKnownFolders = new List<string>()
         {

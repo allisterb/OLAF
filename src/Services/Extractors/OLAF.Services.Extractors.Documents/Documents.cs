@@ -50,6 +50,7 @@ namespace OLAF.Services.Extractors
                             Debug("Extracted {0} document from file {1}.", result.ContentType, artifact.Path);
                             op.Complete();
                             TextArtifact text = new TextArtifact(artifact.Path, result.Text);
+                            text.Source = artifact;
                             if (result.Metadata != null)
                             {
                                 foreach (var m in result.Metadata)

@@ -12,33 +12,45 @@ namespace OLAF
         #region Constructors
         static TextArtifact()
         {
-            for(int i = 0; i < PatternsSource.Count; i++)
+            for(int i = 0; i < SensitiveDataPatternsSource.Count; i++)
             {
-                var kv = PatternsSource.ElementAt(i);
-                Patterns.Add(kv.Key, new Regex(kv.Value, RegexOptions.Compiled | RegexOptions.IgnoreCase));
+                var kv = SensitiveDataPatternsSource.ElementAt(i);
+                SensitiveDataPatterns.Add(kv.Key, new Regex(kv.Value, RegexOptions.Compiled | RegexOptions.IgnoreCase));
             }
         }
         
-        public TextArtifact(string rawText) : base()
+        public TextArtifact(string rawText) :base()
         {
             Text = rawText;
-            Urls = new List<string>();
-            Metadata = new Dictionary<string, object>();
-            foreach (string t in rawText.Split(Environment.NewLine.ToCharArray()))
+            foreach (var p in SensitiveDataPatterns)
             {
-                var urls = t.Split(new[] { ' ','\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Where(w => w.StartsWith("http:") || w.StartsWith("hitp:") 
-                    || w.StartsWith("https:") || w.StartsWith("hitps:")
-                    || w.StartsWith("https/") || w.StartsWith("http/")
-                    );
-                if (urls.Count() > 0)
+                if (p.Value.IsMatch(Text))
                 {
-                    Urls.AddRange(urls);
-                    continue;
-                }
-             
+                    var match = "";
+                    foreach (Match m in p.Value.Matches(Text))
+                    {
+                        if (m.Success)
+                        {
+                            Info("Potential sensitive data {0}:{1}.", p.Key, m.Value);
+                            match += m.Value + ",";
+                        }
+                    }
+                    SensitiveData.Add(p.Key, match.TrimEnd(','));   
+                }    
             }
-            Debug("Added text artifact with {0} characters and {1} Urls.", Text.Length, Urls.Count);
+
+            if (UrlRegEx.IsMatch(Text))
+            {
+                foreach (Match m in UrlRegEx.Matches(Text))
+                {
+                    if (m.Success)
+                    {
+                        Urls.Add(m.Value);
+                    }
+                }
+            }
+
+            Debug("Added text artifact with {0} characters.", Text.Length);
         }
 
         public TextArtifact(string name, string rawText) : this(rawText)
@@ -64,20 +76,26 @@ namespace OLAF
 
         public Dictionary<string, bool?> HasCompetitorName { get; protected set; }
 
-        public Dictionary<string, string> Languages { get; protected set; }
+        public Dictionary<string, string> SensitiveData { get; protected set; } = new Dictionary<string, string>();
 
-        public Dictionary<string, object> Metadata { get; protected set; }
+        public Dictionary<string, string> Languages { get; protected set; } = new Dictionary<string, string>();
 
-        public static Dictionary<string, string> PatternsSource { get; protected set; } = new Dictionary<string, string>()
+        public Dictionary<string, object> Metadata { get; protected set; } = new Dictionary<string, object>();
+
+        public static Regex UrlRegEx { get; } = new Regex(@"^(ht|f)tp(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&%\$#_]*)?$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        public static Dictionary<string, string> SensitiveDataPatternsSource { get; protected set; } = new Dictionary<string, string>()
         {
             { "Apt", @"(apt|bldg|dept|fl|hngr|lot|pier|rm|ste|slip|trlr|unit|#)\.? *[a-z0-9-]+\b" },
             { "P.O. Box", @"P\.? ?O\.? *Box +\d+" },
             { "Credit Card", @"\d{4}[ -]?\d{4}[ -]?\d{4}[ -]?\d{4}|\d{4}[ -]?\d{6}[ -]?\d{4}\d?/" },
             { "SSN", @"\b\d{3}[ -.]\d{2}[ -.]\d{4}\b" },
-            { "credentials", @"(login( cred(ential)?s| info(rmation)?)?|cred(ential)?s) ?:\s*\S+\s+\/?\s*\S+" }
+            { "credentials", @"(login( cred(ential)?s| info(rmation)?)?|cred(ential)?s) ?:\s*\S+\s+\/?\s*\S+" },
+            { "emailaddress", @"([a-z0-9_\-.+]+)@\w+(\.\w+)*" },
+            { "username", @"(user( ?name)?|login): \S+" },
+            { "password", @"(pass(word|phrase)?|secret): \S+" }
         };
 
-        public static Dictionary<string, Regex> Patterns { get; } = new Dictionary<string, Regex>();
+        public static Dictionary<string, Regex> SensitiveDataPatterns { get; } = new Dictionary<string, Regex>();
         #endregion
 
         #region Methods
