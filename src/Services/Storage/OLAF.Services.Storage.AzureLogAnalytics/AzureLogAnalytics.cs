@@ -42,25 +42,18 @@ namespace OLAF.Services.Storage
 
         protected override ApiResult ProcessClientQueueMessage(Artifact message)
         {
-          
             if (message is TextArtifact ta)
             {
                 var e = new DocumentLogEvent(ta);
-                var r = SendLogEntry(e, "OLAF").Result;
+                return SendLogEntry(e, "OLAF").Result;
 
             }
-            if (message is ImageArtifact ia)
+            else if (message is ImageArtifact ia)
             {
                 var e = new DocumentLogEvent(ia);
-                var r = SendLogEntry(e, "OLAF").Result;
+                return SendLogEntry(e, "OLAF").Result;
             }
-            else
-            {
-                var e = new BaseLogEvent(message);
-                SendLogEntry(e, "OLAF").Wait();
-            }
-            return ApiResult.Success;
-           
+            else return ApiResult.NoOp;
         }
         #endregion
 
