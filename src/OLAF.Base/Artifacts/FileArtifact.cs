@@ -5,6 +5,12 @@ using System.Threading.Tasks;
 
 namespace OLAF
 {
+    public enum UserFileOperation
+    {
+        CREATE,
+        DOWNLOAD,
+        COPY_EXTERNAL
+    }
     public class FileArtifact : Artifact
     {
         #region Constructors
@@ -12,6 +18,7 @@ namespace OLAF
         {
             Path = artifactPath;
             base.Name = Path?.GetPathFilename();
+
         }
 
         public FileArtifact(long id, string artifactPath, byte[] artifactFileData) : this(id, artifactPath)
@@ -26,6 +33,7 @@ namespace OLAF
         public int FileOpenAttempts { get; set; } = 0;
         public byte[] Data { get; set; }
         public bool HasData => Data != null && Data.Length > 0;
+        public UserFileOperation UserOp { get; set; } = UserFileOperation.CREATE;
         #endregion
     }
 }

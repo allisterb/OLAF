@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,7 @@ namespace OLAF.Monitors
     public class DirectoryChangesMonitor : FileSystemMonitor<FileSystemActivity, FileSystemChangeMessage, FileArtifact>, IDisposable
     {
         #region Constructors
-        public DirectoryChangesMonitor(string[] dirs, string[] exts, Profile profile) : base(dirs, exts, profile) {}
+        public DirectoryChangesMonitor(string[] dirs, string[] exts, Profile profile, UserFileOperation userOp = UserFileOperation.CREATE) : base(dirs, exts, profile, userOp) {}
         #endregion
 
         #region Overridden members
@@ -57,6 +58,11 @@ namespace OLAF.Monitors
             Thread.Sleep(300);
             if (TryOpenFile(message.Path, out FileInfo f))
             {
+                var hwnd = Win32.UnsafeNativeMethods.GetForegroundWindow();
+                Win32.UnsafeNativeMethods.GetWindowThreadProcessId(hwnd, out var pid);
+                var title = Win32.Interop.GetWindowTitle(hwnd);
+                var process = Process.GetProcessById((int)pid);
+                Info("Current process is {0} with window title {1}.", process.ProcessName, title);
                 if (f.Length < 1024 * 1024 * 500)
                 {
                     if (TryReadFile(message.Path, out byte[] data))
@@ -64,7 +70,11 @@ namespace OLAF.Monitors
                         Debug("Read {0} bytes from {1}.", data.Length, message.Path);
                         File.WriteAllBytes(artifactPath, data);
                         Debug("Wrote {0} bytes to {1}.", data.Length, artifactPath);
-                        Global.MessageQueue.Enqueue<DirectoryChangesMonitor>(new FileArtifact(aid, artifactPath, data));
+                        var artifact = new FileArtifact(aid, artifactPath, data);
+                        artifact.CurrentProcess = process.ProcessName;
+                        artifact.CurrentWindowTitle = title;
+                        artifact.UserOp = UserOp;
+                        Global.MessageQueue.Enqueue<DirectoryChangesMonitor>(artifact);
                         return ApiResult.Success;
                     }
                     else
@@ -78,7 +88,11 @@ namespace OLAF.Monitors
                     if (TryCopyFile(message.Path, artifactPath))
                     {
                         Debug("Copied artifact {0} to {1}.", message.Path, artifactPath);
-                        Global.MessageQueue.Enqueue<DirectoryChangesMonitor>(new FileArtifact(aid, artifactPath));
+                        var artifact = new FileArtifact(aid, artifactPath);
+                        artifact.CurrentProcess = process.ProcessName;
+                        artifact.CurrentWindowTitle = title;
+                        artifact.UserOp = UserOp;
+                        Global.MessageQueue.Enqueue<DirectoryChangesMonitor>(artifact);
                         return ApiResult.Success;
                     }
                     else

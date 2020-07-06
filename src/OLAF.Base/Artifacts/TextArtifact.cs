@@ -38,7 +38,10 @@ namespace OLAF
                     SensitiveData.Add(p.Key, match.TrimEnd(','));   
                 }    
             }
-
+            if (Pipeline.Dictionaries["competitors_en"].Any(c => Text.Contains(c)))
+            {
+                CompetitorNamesPresent.AddRange(Pipeline.Dictionaries["competitors_en"].Where(c => Text.Contains(c)));
+            }
             if (UrlRegEx.IsMatch(Text))
             {
                 foreach (Match m in UrlRegEx.Matches(Text))
@@ -74,7 +77,7 @@ namespace OLAF
 
         public List<string> KeyWords { get; } = new List<string>();
 
-        public Dictionary<string, bool?> HasCompetitorName { get; protected set; }
+        public List<string> CompetitorNamesPresent { get; protected set; } = new List<string>();
 
         public Dictionary<string, string> SensitiveData { get; protected set; } = new Dictionary<string, string>();
 

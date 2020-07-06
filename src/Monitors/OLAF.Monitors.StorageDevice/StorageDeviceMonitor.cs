@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 
 using OLAF.Win32;
@@ -76,13 +77,8 @@ namespace OLAF.Monitors
             if (message.EventType == StorageActivityEventType.Inserted)
             {
                 Info("Storage device mounted at drive letter {0}.", message.DriveLetter);
-                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-                {
-                    var title = Win32.Interop.GetWindowTitle(Win32.UnsafeNativeMethods.GetForegroundWindow());
-                    Info("Current windows title is {0}.", title);
-                }
                 var path = message.DriveLetter + "\\";
-                var m = new DirectoryChangesMonitor(new string[] { path }, Extensions, this.Profile);
+                var m = new DirectoryChangesMonitor(new string[] { path }, Extensions, this.Profile, UserFileOperation.COPY_EXTERNAL);
                 if (m.Init() == ApiResult.Failure)
                 {
                     m.Dispose();

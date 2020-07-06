@@ -10,7 +10,7 @@ namespace OLAF
     public class ImageArtifact : Artifact
     {
         #region Constructors
-        public ImageArtifact(Bitmap image) : base()
+        public ImageArtifact(Bitmap image)
         {
             Image = image;
             ImageConverter converter = new ImageConverter();
@@ -21,6 +21,10 @@ namespace OLAF
         {
             FileArtifact = artifact;
             Name = FileArtifact.Name;
+            Source = artifact;
+            CurrentProcess = artifact.CurrentProcess;
+            CurrentWindowTitle = artifact.CurrentWindowTitle;
+
         }
         #endregion
 

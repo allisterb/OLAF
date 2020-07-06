@@ -39,7 +39,6 @@ namespace OLAF.Services.Extractors
                             image.VerticalResolution);
                         op.Complete();
                         ImageArtifact img = new ImageArtifact(image, artifact);
-                        img.Source = artifact;
                         EnqueueMessage(img);
                         Info("{0} added artifact id {1} of type {2} from artifact {3}.", Name, img.Id, img.GetType(),
                             artifact.Id);

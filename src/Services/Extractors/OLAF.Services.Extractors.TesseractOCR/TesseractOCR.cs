@@ -107,6 +107,8 @@ namespace OLAF.Services.Extractors
             {
                 TextArtifact artifact = new TextArtifact(message.Name + ".txt", string.Join(Environment.NewLine, text.ToArray()));
                 artifact.Source = message.Source;
+                artifact.CurrentProcess = message.CurrentProcess;
+                artifact.CurrentWindowTitle = message.CurrentWindowTitle;
                 artifact.Image = message;
                 message.TextArtifact = artifact;
                 EnqueueMessage(artifact);

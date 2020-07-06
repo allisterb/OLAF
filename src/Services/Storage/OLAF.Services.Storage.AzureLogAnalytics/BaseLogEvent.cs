@@ -13,7 +13,8 @@ namespace OLAF.Services.Storage
             Name = artifact.HasFileSource ? System.IO.Path.GetFileName(artifact.Name) : artifact.Name;
             UserName = artifact.UserName;
             EventTime = artifact.CreationTime;
-            Application = artifact.CurrentWindowTitle;
+            Application = artifact.CurrentProcess;
+            WindowTitle = artifact.CurrentWindowTitle;
         }
         public string Severity { get; set; }
         
@@ -34,5 +35,7 @@ namespace OLAF.Services.Storage
         public DateTime EventTime { get; set; }
 
         public string Application { get; set; }
+
+        public string WindowTitle { get; set; }
     }
 }

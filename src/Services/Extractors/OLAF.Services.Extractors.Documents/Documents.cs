@@ -50,6 +50,8 @@ namespace OLAF.Services.Extractors
                             Debug("Extracted {0} document from file {1}.", result.ContentType, artifact.Path);
                             op.Complete();
                             TextArtifact text = new TextArtifact(artifact.Path, result.Text);
+                            text.CurrentProcess = artifact.CurrentProcess;
+                            text.CurrentWindowTitle = artifact.CurrentWindowTitle;
                             text.Source = artifact;
                             if (result.Metadata != null)
                             {
@@ -58,7 +60,6 @@ namespace OLAF.Services.Extractors
                                     text.Metadata.Add(m.Key, m.Value);
                                 }
                             }
-                            text.Source = artifact;
                             EnqueueMessage(text);
                             Info("{0} added artifact id {1} of type {2} from artifact {3}.", Name, text.Id, text.GetType(),
                                 artifact.Id);
@@ -117,6 +118,9 @@ namespace OLAF.Services.Extractors
                         Debug("Extracted {0} document from artifact {1} data.", result.ContentType, artifact.Id);
                         op.Complete();
                         TextArtifact text = new TextArtifact(artifact.Name, result.Text);
+                        text.CurrentProcess = artifact.CurrentProcess;
+                        text.CurrentWindowTitle = artifact.CurrentWindowTitle;
+                        text.Source = artifact;
                         if (result.Metadata != null)
                         {
                             foreach (var m in result.Metadata)

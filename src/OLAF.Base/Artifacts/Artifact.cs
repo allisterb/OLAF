@@ -43,6 +43,8 @@ namespace OLAF
 
         public DateTime CreationTime { get; } = DateTime.Now;
 
+        public string CurrentProcess { get; set; }
+
         public string CurrentWindowTitle { get; set; } 
 
         public string MachineName { get; set; }
