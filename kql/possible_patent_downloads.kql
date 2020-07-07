@@ -1,0 +1,7 @@
+OLAF_CL
+| where Name_s endswith "pdf"
+| where WindowTitle_s contains "patent" or Name_s contains "patent" or KeyWords_s contains "patent" or KeyWords_s startswith "US" 
+| sort  by  TimeGenerated
+| project TimeGenerated, UserName_s, UserOp_s, ComputerName_s, Name_s, WindowTitle_s,Categories_s, KeyWords_s, Tags_s
+| extend AccountCustomEntity = UserName_s
+| extend HostCustomEntity = ComputerName_s
