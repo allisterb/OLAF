@@ -1,0 +1,7 @@
+OLAF_CL
+| where IsAdultImage_b == True
+| sort  by  TimeGenerated
+| project TimeGenerated, Name_s, UserName_s, ComputerName_s, Application_s, WindowTitle_s, IsAdultImage_b, KeyWords_s, Tags_s
+| extend AccountCustomEntity = UserName_s
+| extend HostCustomEntity = ComputerName_s
+| extend TimestampCustomEntity = TimeGenerated
