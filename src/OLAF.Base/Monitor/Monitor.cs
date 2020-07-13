@@ -15,6 +15,12 @@ namespace OLAF
         where TDetectorMessage : Message
         where TMonitorMessage : Message
     {
+        #region  Constructors
+        public Monitor(Profile profile) : base()
+        {
+            this.Profile = profile;
+        }
+        #endregion
         #region Abstract methods
         public abstract ApiResult Init();
         protected abstract ApiResult ProcessDetectorQueueMessage(TDetectorMessage message);
@@ -116,7 +122,11 @@ namespace OLAF
                 {
                     TDetectorMessage message =
                         (TDetectorMessage)Global.MessageQueue.Dequeue<TDetector>(cancellationToken);
-                    ProcessDetectorQueueMessage(message);
+                    if (ProcessDetectorQueueMessage(message) == ApiResult.NoOp)
+                    {
+                        Global.MessageQueue.Enqueue<TDetector>(message);
+                        Thread.Sleep(100);
+                    }
                 }
                 Info("Stopping {0} detector queue observer in monitor {1}.", typeof(TDetector).Name, Name);
                 Status = ApiStatus.Ok;

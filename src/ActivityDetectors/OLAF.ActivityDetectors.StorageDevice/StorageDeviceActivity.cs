@@ -10,7 +10,7 @@ namespace OLAF.ActivityDetectors
     public class StorageDeviceActivity : ActivityDetector<StorageDeviceActivityMessage>, IDisposable
     {
         #region Constructors
-        public StorageDeviceActivity(Type mt) : base(mt) 
+        public StorageDeviceActivity(IMonitor monitor, Type mt) : base(monitor, mt) 
         {
             Watcher = new ManagementEventWatcher();
             WqlEventQuery query = new WqlEventQuery("SELECT * FROM Win32_VolumeChangeEvent WHERE EventType = 2 or EventType = 3");

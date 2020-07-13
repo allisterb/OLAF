@@ -10,17 +10,14 @@ namespace OLAF
         where TMessage : Message
     {
         #region Constructors
-        public ActivityDetector(int pid, Type mt)
+        public ActivityDetector(int pid, IMonitor monitor, Type mt)
         {
             processId = pid;
+            Monitor = monitor;
             monitorType = mt;
         }
 
-        public ActivityDetector(Type mt)
-        {
-            processId = 0;
-            monitorType = mt;
-        }
+        public ActivityDetector(IMonitor monitor, Type mt) : this(0, monitor, mt) {}
         #endregion
 
         #region Abstract methods
@@ -28,6 +25,7 @@ namespace OLAF
         #endregion
 
         #region Properties
+        public IMonitor Monitor { get; }
         public long CurrentArtifactId => currentMessageId;
         #endregion
 

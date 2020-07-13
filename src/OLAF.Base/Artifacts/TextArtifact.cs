@@ -131,6 +131,8 @@ namespace OLAF
             }
             return an.ToString();
         }
+
+        public static bool IsNumber(string s) => s.All(c => Char.IsDigit(c));
         #endregion
 
         #region Fields

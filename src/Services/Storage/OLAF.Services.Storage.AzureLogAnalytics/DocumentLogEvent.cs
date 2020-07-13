@@ -25,7 +25,7 @@ namespace OLAF.Services.Storage
             Tags = string.Join(",", artifact.Tags);
             IsAdultImage = artifact.IsAdultContent || artifact.IsRacy;
             UserOp = artifact.HasFileSource ? (artifact.Source as FileArtifact).UserOp.ToString() : string.Empty;
-            Global.Logger.Debug("Created Azure Log Analytics log event {0} for image artifact {1} at {2}.", Name, artifact.Id, DateTime.Now);
+            Global.Logger.Debug("Created Azure Log Analytics log event {0} for image artifact {1} from user op {2} at {3}.", Name, artifact.Id, UserOp, DateTime.Now);
         }
 
         public string FilePath { get; set; }

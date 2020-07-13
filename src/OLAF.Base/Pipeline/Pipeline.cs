@@ -32,6 +32,8 @@ namespace OLAF
 
         public static Dictionary<string, string> DictionaryFiles { get; } = new Dictionary<string, string>()
         {
+            {"common_words_en", "common_words_en.txt.gz" },
+            {"sensitive_data_phrases_en", "sensitive_data_phrases_en.txt" },
             {"competitors_en", "competitors_en.txt" }
         };
 
@@ -194,9 +196,12 @@ namespace OLAF
                                 Dictionaries.Add(df.Key, new HashSet<string>(data));
                                 Debug("Read {0} entries from file.", data.Length, dfpath);
                                 Info("Dictionary {0} has {1} entries from file: {2}.", df.Key, Dictionaries[df.Key].Count, dfpath);
-                                Dictionaries.Add(df.Key + "_3grams", new HashSet<string>(data.Where(w => w.Length <= 3)));
-                                Info("Dictionary {0} has {1} entries from file: {2}.", df.Key + "_3grams",  
-                                    Dictionaries[df.Key  + "_3grams"].Count, dfpath);
+                                if (df.Key == "common_words_en")
+                                {
+                                    Dictionaries.Add(df.Key + "_3grams", new HashSet<string>(data.Where(w => w.Length <= 3)));
+                                    Info("Dictionary {0} has {1} entries from file: {2}.", df.Key + "_3grams",
+                                        Dictionaries[df.Key + "_3grams"].Count, dfpath);
+                                }
                                 setup++;
                             }
                         }

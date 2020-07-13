@@ -6,10 +6,10 @@ namespace OLAF.Monitors.Windows
 {
     public class AppWindowMonitor : Monitor<AppWindowActivity, AppWindowActivityMessage, AppWindowArtifact>
     {
-        public AppWindowMonitor(string processName) : base()
+        public AppWindowMonitor(Profile profile, string processName) : base(profile)
         {
             ProcessName = processName;
-            AppWindowActivity = new AppWindowActivity(Type, processName, TimeSpan.FromMilliseconds(5000));
+            AppWindowActivity = new AppWindowActivity(this, Type, processName, TimeSpan.FromMilliseconds(5000));
             if (AppWindowActivity.Status == ApiStatus.Ok)
             {
                 Detectors.Add(AppWindowActivity);

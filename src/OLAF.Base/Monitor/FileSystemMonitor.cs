@@ -16,9 +16,8 @@ namespace OLAF
         where TMonitorMessage : Message
     {
         #region Constructors
-        public FileSystemMonitor(string[] directories, string[] extensions, Profile profile, UserFileOperation userOp = UserFileOperation.CREATE)
+        public FileSystemMonitor(string[] directories, string[] extensions, Profile profile) : base(profile)
         {
-            UserOp = userOp;
             if (directories == null)
             {
                 throw new ArgumentNullException(nameof(directories));
@@ -102,7 +101,6 @@ namespace OLAF
         #endregion
 
         #region Properties
-        public UserFileOperation UserOp { get; set; }
         protected Dictionary<DirectoryInfo, string> Paths;
         #endregion
     }

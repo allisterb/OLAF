@@ -35,9 +35,9 @@ namespace OLAF.Profiles
             
             List<IMonitor> browserWindowMonitors = new List<IMonitor>()
             {
-                new AppWindowMonitor("chrome"),
-                new AppWindowMonitor("firefox"),
-                new AppWindowMonitor("MicrosoftEdgeCP"),
+                new AppWindowMonitor(this, "chrome"),
+                new AppWindowMonitor(this, "firefox"),
+                new AppWindowMonitor(this, "MicrosoftEdgeCP"),
             };
             Monitors.AddRange(browserWindowMonitors);
 

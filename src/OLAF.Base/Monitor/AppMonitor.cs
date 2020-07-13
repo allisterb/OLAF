@@ -14,7 +14,7 @@ namespace OLAF
         where TMessage : Message
     {
         #region Constructors
-        public AppMonitor(string processName)
+        public AppMonitor(Profile profile, string processName) : base(profile)
         {
             var processes = Process.GetProcessesByName(processName);
             if (processes == null || processes.Length == 0)

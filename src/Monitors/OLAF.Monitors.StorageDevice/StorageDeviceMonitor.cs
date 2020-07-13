@@ -13,10 +13,10 @@ namespace OLAF.Monitors
     public class StorageDeviceMonitor : Monitor<StorageDeviceActivity, StorageDeviceActivityMessage, FileArtifact>
     {
         #region Constructors
-        public StorageDeviceMonitor(string[] extensions, Profile profile) : base()
+        public StorageDeviceMonitor(string[] extensions, Profile profile) : base(profile)
         {
             Extensions = extensions;
-            Detector = new StorageDeviceActivity(typeof(StorageDeviceMonitor));
+            Detector = new StorageDeviceActivity(this, typeof(StorageDeviceMonitor));
             Status = ApiStatus.Initializing;
         }
         #endregion
@@ -78,7 +78,7 @@ namespace OLAF.Monitors
             {
                 Info("Storage device mounted at drive letter {0}.", message.DriveLetter);
                 var path = message.DriveLetter + "\\";
-                var m = new DirectoryChangesMonitor(new string[] { path }, Extensions, this.Profile, UserFileOperation.COPY_EXTERNAL);
+                var m = new DirectoryChangesMonitor(new string[] { path }, Extensions, this.Profile);
                 if (m.Init() == ApiResult.Failure)
                 {
                     m.Dispose();
@@ -132,6 +132,5 @@ namespace OLAF.Monitors
         protected ConcurrentDictionary<string, DirectoryChangesMonitor> DirectoryChangesMonitors { get; } = new ConcurrentDictionary<string, DirectoryChangesMonitor>();
         protected Thread Win32MessageThread { get; set; }
         #endregion
-
     }
 }

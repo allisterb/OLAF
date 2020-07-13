@@ -75,16 +75,25 @@ namespace OLAF.Services.Extractors
                 PageIteratorLevel pageIteratorLevel = PageIteratorLevel.RIL_PARA;
                 do
                 {
-                    string r = resultIterator.GetUTF8Text(pageIteratorLevel);
-                    if (r.IsEmpty()) continue;
-                    text.Add(r.Trim());
+                    string ant = TextArtifact.GetAlphaNumericString(resultIterator.GetUTF8Text(pageIteratorLevel));
+                    ant = string.Join(" ",
+                        ant.Split(new[] { ' ', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Where(word => TextArtifact.IsNumber(word) || word.Length > 3 || Pipeline.Dictionaries["common_words_en_3grams"].Contains(word)))
+                        .Trim();
+                    if (ant.IsEmpty())
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        text.Add(ant);
+                    }
                 }
                 while (resultIterator.Next(pageIteratorLevel));
 
                 if (text.Count > 0)
                 {
                     string alltext = text.Aggregate((s1, s2) => s1 + " " + s2).Trim();
-
                     if (text.Count < 7)
                     {
                         Info("Artifact id {0} is likely a photo or non-text image.", message.Id);
@@ -122,6 +131,13 @@ namespace OLAF.Services.Extractors
         #region Properties
         public TessBaseAPI TesseractImage { get; }
         public Pix Pix { get; protected set; }
+        #endregion
+
+        #region Methods
+        protected static string RemoveBigrams(string l)
+        {
+            return l.Split('\r', '\n', ' ').Select(w => w.Trim()).Where(w => w.Length > 2).Aggregate((s1, s2) => s1 + " " + s2);
+        }
         #endregion
     }
 }

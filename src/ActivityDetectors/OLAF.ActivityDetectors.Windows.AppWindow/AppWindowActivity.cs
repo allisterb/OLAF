@@ -19,7 +19,7 @@ namespace OLAF.ActivityDetectors.Windows
     public class AppWindowActivity : ActivityDetector<AppWindowActivityMessage>
     {
         #region Constructors
-        public AppWindowActivity(Type monitorType, string processName, TimeSpan interval): base(monitorType)
+        public AppWindowActivity(IMonitor monitor, Type monitorType, string processName, TimeSpan interval): base(monitor, monitorType)
         {
             this.processName = processName;
             D3D9Capture = new D3D9Capture();
