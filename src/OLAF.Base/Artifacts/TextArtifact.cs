@@ -19,7 +19,7 @@ namespace OLAF
             }
         }
         
-        public TextArtifact(string rawText) :base()
+        public TextArtifact(string rawText)
         {
             Text = rawText;
             foreach (var p in SensitiveDataPatterns)
@@ -38,10 +38,13 @@ namespace OLAF
                     SensitiveData.Add(p.Key, match.TrimEnd(','));   
                 }    
             }
-            if (Pipeline.Dictionaries["competitors_en"].Any(c => Text.Contains(c)))
+            if (Pipeline.Dictionaries["competitors_en"].Any(c => Text.ToLower().Contains(c.ToLower())))
             {
-                CompetitorNamesPresent.AddRange(Pipeline.Dictionaries["competitors_en"].Where(c => Text.Contains(c)));
+                CompetitorNamesPresent.AddRange(Pipeline.Dictionaries["competitors_en"].Where(c => Text.ToLower().Contains(c.ToLower())));
+                Info("Text has competitor's name: {0}.", Pipeline.Dictionaries["competitors_en"].First(c => Text.ToLower().Contains(c.ToLower())));
             }
+
+
             if (UrlRegEx.IsMatch(Text))
             {
                 foreach (Match m in UrlRegEx.Matches(Text))
@@ -90,14 +93,13 @@ namespace OLAF
         public static Regex UrlRegEx { get; } = new Regex(@"^(ht|f)tp(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&%\$#_]*)?$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         public static Dictionary<string, string> SensitiveDataPatternsSource { get; protected set; } = new Dictionary<string, string>()
         {
-            { "Apt", @"(apt|bldg|dept|fl|hngr|lot|pier|rm|ste|slip|trlr|unit|#)\.? *[a-z0-9-]+\b" },
-            { "P.O. Box", @"P\.? ?O\.? *Box +\d+" },
             { "Credit Card", @"\d{4}[ -]?\d{4}[ -]?\d{4}[ -]?\d{4}|\d{4}[ -]?\d{6}[ -]?\d{4}\d?/" },
             { "SSN", @"\b\d{3}[ -.]\d{2}[ -.]\d{4}\b" },
             { "credentials", @"(login( cred(ential)?s| info(rmation)?)?|cred(ential)?s) ?:\s*\S+\s+\/?\s*\S+" },
             { "emailaddress", @"([a-z0-9_\-.+]+)@\w+(\.\w+)*" },
             { "username", @"(user( ?name)?|login): \S+" },
-            { "password", @"(pass(word|phrase)?|secret): \S+" }
+            { "password", @"(pass(word|phrase)?|secret): \S+" },
+            { "secret", @"\.*(secret|confidential|classified)\.*" }
         };
 
         public static Dictionary<string, Regex> SensitiveDataPatterns { get; } = new Dictionary<string, Regex>();
